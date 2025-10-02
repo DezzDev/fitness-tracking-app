@@ -1,0 +1,80 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2022",                          // Versión de JavaScript de salida
+    "lib": ["ES2022"],                           // Librerías TypeScript disponibles
+    // "experimentalDecorators": true,              // Para decoradores (útil con TypeORM, etc.)
+    // "emitDecoratorMetadata": true,               // Metadata para decoradores
+    
+    /* Modules */
+    "module": "nodenext",                        // Sistema de módulos (CommonJS para Node.js)
+    "moduleResolution": "nodenext",                  // Estrategia de resolución de módulos
+    
+		"rootDir": "./src",                          // Directorio raíz del código fuente                          // Base para paths absolutos
+    "types": ["node"],                             // Tipos globales a incluir
+    "paths": {  
+			"@/*":["./src/*"]                                 // Alias de rutas (path mapping)
+      // "@config/*": ["src/config/*"],
+      // "@controllers/*": ["src/controllers/*"],
+      // "@middlewares/*": ["src/middlewares/*"],
+      // "@models/*": ["src/models/*"],
+      // "@routes/*": ["src/routes/*"],
+      // "@services/*": ["src/services/*"],
+      // "@utils/*": ["src/utils/*"],
+      // "@types/*": ["src/types/*"]
+    },
+    "resolveJsonModule": true,                   // Permite importar archivos JSON
+    // "typeRoots": ["./node_modules/@types", "./src/types"],  // Ubicación de tipos
+    
+    /* Emit */
+    "outDir": "./dist",                          // Directorio de salida compilado
+    "removeComments": true,                      // Eliminar comentarios en build
+    "sourceMap": true,                           // Generar source maps para debugging
+    "declaration": true,                         // Generar archivos .d.ts
+    "declarationMap": true,                      // Source maps para declaraciones
+    
+    /* Interop Constraints */
+    "esModuleInterop": true,                     // Interoperabilidad con CommonJS
+    "allowSyntheticDefaultImports": true,        // Imports default sintéticos
+    "forceConsistentCasingInFileNames": true,    // Consistencia en nombres de archivos
+    "isolatedModules": true,                     // Cada archivo como módulo aislado
+    
+    /* Type Checking */
+    "strict": true,                              // Habilitar todas las opciones strict
+    "noImplicitAny": true,                       // Error en tipos implícitos 'any'
+    "strictNullChecks": true,                    // Verificación estricta de null/undefined
+    "strictFunctionTypes": true,                 // Verificación estricta de funciones
+    "strictBindCallApply": true,                 // Verificación de bind/call/apply
+    "strictPropertyInitialization": true,        // Propiedades deben inicializarse
+    "noImplicitThis": true,                      // Error en 'this' implícito
+    "alwaysStrict": true,                        // 'use strict' en todos los archivos
+    "noUnusedLocals": true,                      // Error en variables locales sin usar
+    "noUnusedParameters": true,                  // Error en parámetros sin usar
+    "noImplicitReturns": true,                   // Error si no todas las rutas retornan
+    "noFallthroughCasesInSwitch": true,         // Error en casos switch sin break
+    "noUncheckedIndexedAccess": true,           // Verificar acceso a índices
+    "allowUnusedLabels": false,                  // No permitir labels sin usar
+    "allowUnreachableCode": false,               // No permitir código inalcanzable
+    
+    /* Completeness */
+    "skipLibCheck": true                         // Skip checking de archivos .d.ts (performance)
+  },
+  
+  "include": [
+    "src/**/*"                                   // Archivos a incluir
+  ],
+  
+  "exclude": [
+    "node_modules",                              // Excluir dependencias
+    "dist",                                      // Excluir build
+    "tests",                                     // Excluir tests del build
+    "**/*.spec.ts",                              // Excluir archivos de test
+    "**/*.test.ts"
+  ],
+  
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],      // Para soportar path aliases en desarrollo
+    "transpileOnly": true,                       // Solo transpilar (más rápido)
+    "files": true
+  }
+}

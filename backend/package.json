@@ -1,0 +1,38 @@
+{
+	"name": "fitness-tracker-api",
+	"version": "1.0.0",
+	"description": "api for fitness tracker app",
+	"main": "src/index.ts",
+	"scripts": {
+		"start": "node dist/index.js",
+		"dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
+		"dev:debug": "ts-node-dev --inspect --respawn --transpile-only --ignore-watch node_modules src/server.ts",
+		"build": "tsc"
+	},
+	"keywords": [],
+	"author": "Daniel Z",
+	"license": "ISC",
+	"packageManager": "pnpm@10.17.1",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^17.2.3",
+		"express": "^5.1.0",
+		"express-rate-limit": "^8.1.0",
+		"helmet": "^8.1.0",
+		"morgan": "^1.10.1"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.36.0",
+		"@types/express": "^5.0.3",
+		"@types/node": "^24.6.2",
+		"@typescript-eslint/eslint-plugin": "^8.45.0",
+		"@typescript-eslint/parser": "^8.45.0",
+		"eslint": "^9.36.0",
+		"globals": "^16.4.0",
+		"ts-node": "^10.9.2",
+		"ts-node-dev": "^2.0.0",
+		"tsconfig-paths": "^4.2.0",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.45.0"
+	}
+}
