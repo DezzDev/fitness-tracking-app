@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { turso } from "@/config/database";
 import cors from "cors";
+import {log_error, log_info} from "@/utils/logger";
 
 
 dotenv.config();
@@ -18,10 +19,10 @@ async function testDatabaseConnection() {
 			sql: "select * from exercises",
 
 		})
-		console.log(result)
+		log_info("Database connection successful. Sample data:", result.rows);
 
 	}catch(error){
-		console.error("Database connection failed:", error);
+		log_error("Database connection failed:", error);
 		process.exit(1);
 	}
 }
@@ -29,5 +30,5 @@ async function testDatabaseConnection() {
 testDatabaseConnection();
 
 app.listen(PORT, () => {
-	console.log(`Server is running on http://localhost:${PORT}`);
+	log_info(`Server is running on http://localhost:${PORT}`);
 });

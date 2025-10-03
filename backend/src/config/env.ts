@@ -10,6 +10,8 @@ interface EnvConfig {
 	PORT: number;
 	TURSO_DATABASE_URL: string;
 	TURSO_AUTH_TOKEN: string;
+	LOG_LEVEL:string;
+
 }
 
 const requireEnv = (key: string, defaultValue?: string): string => {
@@ -41,6 +43,7 @@ export const env:EnvConfig={
 	PORT: parseIntEnv("PORT", 3000),
 	TURSO_DATABASE_URL: requireEnv("TURSO_DATABASE_URL"),
 	TURSO_AUTH_TOKEN: requireEnv("TURSO_AUTH_TOKEN"),
+	LOG_LEVEL: requireEnv("LOG_LEVEL", "info"),
 }
 
 
