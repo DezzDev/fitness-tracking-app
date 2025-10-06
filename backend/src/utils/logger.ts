@@ -41,18 +41,27 @@ function format(level: LogLevel, msg: string, meta?: unknown): string {
   return out;
 }
 
-export const log_debug = (msg: string, meta?: unknown): void => {
+const log_debug = (msg: string, meta?: unknown): void => {
   if (shouldLog('debug')) console.log(format('debug', msg, meta));
 };
 
-export const log_info = (msg: string, meta?: unknown): void => {
+const log_info = (msg: string, meta?: unknown): void => {
   if (shouldLog('info')) console.log(format('info', msg, meta));
 };
 
-export const log_warn = (msg: string, meta?: unknown): void => {
+const log_warn = (msg: string, meta?: unknown): void => {
   if (shouldLog('warn')) console.warn(format('warn', msg, meta));
 };
 
-export const log_error = (msg: string, meta?: unknown): void => {
+const log_error = (msg: string, meta?: unknown): void => {
   if (shouldLog('error')) console.error(format('error', msg, meta));
 };
+
+const logger = {
+  debug: log_debug,
+  info: log_info,
+  warn: log_warn,
+  error: log_error
+};
+
+export default logger;
