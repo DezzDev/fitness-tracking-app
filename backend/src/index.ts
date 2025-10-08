@@ -1,34 +1,31 @@
+// src/index.ts
 import express from "express";
-import dotenv from "dotenv";
-import { turso } from "@/config/database";
+
+import { connectDatabase} from "@/config/database";
 import cors from "cors";
-import {log_error, log_info} from "@/utils/logger";
+import logger from "@/utils/logger";
+import {env} from "@/config/env";
 
 
-dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-async function testDatabaseConnection() {
-	try {
-		const result = await turso.execute({
-			sql: "select * from exercises",
+async function startServer(){
 
-		})
-		log_info("Database connection successful. Sample data:", result.rows);
+	// Conectar a la base de datos
+	await connectDatabase();
 
-	}catch(error){
-		log_error("Database connection failed:", error);
-		process.exit(1);
-	}
+
 }
 
-testDatabaseConnection();
+startServer();
 
-app.listen(PORT, () => {
-	log_info(`Server is running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+	logger.info(`Server is running on http://localhost:${env.PORT} in ${env.NODE_ENV} mode`);
 });
+
+
+

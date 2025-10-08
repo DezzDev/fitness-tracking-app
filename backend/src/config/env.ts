@@ -1,51 +1,57 @@
+// src/config/env.ts
 import dotenv from "dotenv";
 import path from "path";
+import z from "zod";
+import logger from "@/utils/logger";
+import { LogLevel, NodeEnv } from "@/types/common.types";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env") })
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-type NodeEnv = 'development' | 'production' | 'test';
+
+
 
 interface EnvConfig {
 	NODE_ENV: NodeEnv;
 	PORT: number;
 	TURSO_DATABASE_URL: string;
 	TURSO_AUTH_TOKEN: string;
-	LOG_LEVEL:string;
+	LOG_LEVEL: string;
 
 }
 
-const requireEnv = (key: string, defaultValue?: string): string => {
-	const value = process.env[ key ] ?? defaultValue;
-	if (value === undefined) {
-		throw new Error(`Missing env var: ${key}`);
-	}
-	return value;
-};
 
-const parseIntEnv = (key: string, defaultValue?: number): number => {
 
-	let str: string;
-	if (defaultValue !== undefined) {
-		str = requireEnv(key, defaultValue.toString());
-	} else {
-		str = requireEnv(key);
-	}
+const EnvSchema = z.object({
+	NODE_ENV: z.enum(NodeEnv).default(NodeEnv.Development),
+	PORT: z.string().transform(Number).pipe(z.number().int().min(1).max(65535)).default(3000),
+	TURSO_DATABASE_URL: z.url('Invalid database URL format'),
+	TURSO_AUTH_TOKEN: z.string().min(1, 'TURSO_AUTH_TOKEN is required'),
+	LOG_LEVEL: z.enum(LogLevel).default(LogLevel.Info),
+});
 
-	const parsed = parseInt(str, 10);
-	if (isNaN(parsed)) {
-		throw new Error(`Env var ${key} is not a valid number: ${str}`);
+// ============================================
+// VALIDACIÓN Y EXPORTACIÓN
+// ============================================
+
+function validateEnv() {
+	try {
+		return EnvSchema.parse(process.env);
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			logger.error("❌ Invalid environment variables:");
+			error.issues.forEach(issue => {
+				logger.error(` - ${issue.path.join('.')}: ${issue.message}`);
+			});
+			process.exit(1);
+		}
+		throw error;
 	}
-	return parsed;
 }
 
-export const env:EnvConfig={
-	NODE_ENV: requireEnv("NODE_ENV", "development") as NodeEnv,
-	PORT: parseIntEnv("PORT", 3000),
-	TURSO_DATABASE_URL: requireEnv("TURSO_DATABASE_URL"),
-	TURSO_AUTH_TOKEN: requireEnv("TURSO_AUTH_TOKEN"),
-	LOG_LEVEL: requireEnv("LOG_LEVEL", "info"),
-}
-
-
+export const env: EnvConfig = validateEnv();
 export const isProduction = env.NODE_ENV === 'production';
 export const isDevelopment = env.NODE_ENV === 'development';
+export const isTest = env.NODE_ENV === 'test';
+
+// Type-safe export
+// export type Env = z.infer<typeof EnvSchema>;
