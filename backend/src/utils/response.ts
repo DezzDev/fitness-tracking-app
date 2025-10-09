@@ -5,7 +5,7 @@ import { Response } from "express";
 // TIPOS
 // ============================================
 
-import { ApiResponse } from '@/types/common.types';
+import { ApiResponse } from '@/types/common/common.types';
 
 export const ResponseHandler = {
 	success<T>(res: Response, data: T, message = 'Success', statusCode = 200): Response {

@@ -8,8 +8,6 @@ export interface ApiResponse<T=unknown>{
 	timestamp:string;
 }
 
-
-
 // Entornos y niveles de log
 export enum NodeEnv {
 	Development = 'development',

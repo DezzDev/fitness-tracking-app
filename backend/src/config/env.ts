@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import z from "zod";
 import logger from "@/utils/logger";
-import { LogLevel, NodeEnv } from "@/types/common.types";
+import { LogLevel, NodeEnv } from "@/types";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 

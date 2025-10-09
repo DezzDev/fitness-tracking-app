@@ -8,7 +8,7 @@ import { ZodError } from 'zod';
 // TIPOS
 // ============================================
 
-import { AppError } from '@/types/error.types';
+import { AppError } from '@/types';
 interface ErrorPayload {
 	success: false;
 	error: string;
@@ -20,7 +20,7 @@ interface ErrorPayload {
 
 
 // ============================================
-// FACTORY: Crear errores
+// FACTORY: Crear errores (exportar para usar en controllers)
 // ============================================
 
 export const createAppError = (
