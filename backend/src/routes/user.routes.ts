@@ -1,21 +1,22 @@
 import { Router } from "express";
 import { validateBody, validateParams } from "@/middlewares/validate.middleware";
 import { RegisterSchema, LoginSchema, UpdateUserSchema, UserIdSchema } from "@/schemas/user.schema";
+import { userRegister } from "@/controller/user.controller";
 
-const router = Router();
+const router:Router = Router();
 
 // POST /users/register - Validar body
 router.post(
 	'/register',
 	validateBody(RegisterSchema), // <- valida req.body
-	userController.register
+	userRegister
 );
 
 // POST /users/login - Validar body
 router.post(
 	'/login',
 	validateBody(LoginSchema), // <- valida req.body
-	userController.login
+	//userController.login
 );
 
 // Validar PARAMS(ID en la URL)
@@ -25,14 +26,14 @@ router.patch(
 	'/:id',
 	validateParams(UserIdSchema),  // ← Valida req.params.id
 	validateBody(UpdateUserSchema), // ← Valida req.body
-	userController.updateUser
+	//userController.updateUser
 );
 
 // DELETE /users/:id
 router.delete(
 	'/:id',
 	validateParams(UserIdSchema),
-	userController.deleteUser
+	//userController.deleteUser
 );
 
 // Validar QUERY(Query String)
