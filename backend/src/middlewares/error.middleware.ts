@@ -1,93 +1,152 @@
-import {Request, Response} from 'express';
+// src/middlewares/error.middleware.ts
+import { Request, Response, NextFunction } from 'express';
 import logger from "@/utils/logger";
 import { isDevelopment } from '@/config/env';
+import { ZodError } from 'zod';
 
 // ============================================
 // TIPOS
 // ============================================
 
-export interface AppError extends Error {
-	statusCode: number;
-	isOperational: boolean;
-}
-
+import { AppError } from '@/types';
 interface ErrorPayload {
-  success: boolean;
-  error: string;
-  timestamp: string;
-  stack?: string;
-}
+	success: false;
+	error: string;
+	details?: unknown;
+	timestamp: string;
+	stack?: string;
+};
 
-interface NotFoundPayload {
-  success: boolean;
-  error: string;
-  timestamp: string;
-}
+
 
 // ============================================
-// FACTORY FUNCTIONS (reemplazo de clases)
+// FACTORY: Crear errores 
 // ============================================
 
-export const createAppError = (message: string, statusCode: 500, isOperational = true): AppError => {
-	const error = new Error(message) as AppError;
+export const createAppError = (
+	message: string,
+	statusCode = 500,
+	isOperational = true,
+	details?: unknown
+): AppError => {
+	const error = new Error(message) as Error & AppError;
+	error.name = 'AppError';
 	error.statusCode = statusCode;
 	error.isOperational = isOperational;
+	error.details = details;
 	Error.captureStackTrace(error, createAppError);
-	return error;	
-}
+	return error;
+
+};
+
+// ============================================
+// TYPE GUARDS (Funciones Puras)
+// ============================================
+
+const isAppError = (err: unknown): err is AppError => (
+	typeof err === 'object' &&
+	err !== null &&
+	'name' in err &&
+	err.name === 'AppError'
+);
+
+const isZodError = (err: unknown): err is ZodError =>
+	err instanceof ZodError;
 
 // ============================================
 // FUNCIONES PURAS
 // ============================================
 
-const isAppError = (err: Error): err is AppError =>
-	'statusCode' in err && 'isOperational' in err;
+const getStatusCode = (err: unknown): number => {
+	if (isAppError(err)) return err.statusCode;
+	if (isZodError(err)) return 400;
+	return 500;
+};
 
-const getStatusCode = (err:Error |AppError):number =>
-	isAppError(err) ? err.statusCode : 500;
+const getMessage = (err: unknown): string => {
+	if (err instanceof Error) return err.message;
+	if (typeof err == 'string') return err;
+	return 'Internal Server Error';
+};
 
-const getMessage = (err:Error):string =>
-	err.message || 'Internal Server Error';
+const formatZodErrors = (err: ZodError) =>
+	err.issues.map(issue => ({
+		field: issue.path.join('.'),
+		message: issue.message
+	}));
 
-const createErrorPayload = (err:Error): ErrorPayload => ({
-	success: false,
-	error: getMessage(err),
-	timestamp: new Date().toISOString(),
-	...(isDevelopment && { stack: err.stack }),
-})
+const buildErrorPayload = (error: unknown): ErrorPayload => {
+	const payload: ErrorPayload = {
+		success: false,
+		error: getMessage(error),
+		timestamp: new Date().toISOString(),
+	};
 
-const createNotFoundPayload = (method:string, url:string):NotFoundPayload =>({
-	success:false,
-	error: `Route ${method} ${url} not found`,
-	timestamp: new Date().toISOString(),
-})
+	if (isZodError(error)) {
+		payload.details = formatZodErrors(error);
+	} else if (isAppError(error) && error.details) {
+		payload.details = error.details;
+	}
 
-const logError = (err:Error, req:Request):void =>{
-	logger.error('Error capturado', {
-		message: err.message,
-		stack: err.stack,
+	if (isDevelopment && error instanceof Error) {
+		payload.stack = error.stack;
+	}
+
+	return payload;
+};
+
+const logError = (error: unknown, req: Request): void => {
+	logger.error('Error Capturado por el Middleware:', {
+		message: getMessage(error),
+		stack: error instanceof Error ? error.stack : undefined,
 		url: req.url,
 		method: req.method,
-	})
-}
+		body: req.body,
+		isOperational: isAppError(error) ? error.isOperational : false,
+	});
+};
+
 
 // ============================================
-// HANDLERS (Side Effects)
+// MIDDLEWARE: Error Handler (Side Effect)
 // ============================================
 
 export const errorHandler = (
-	err: Error | AppError,
+	err: unknown,
 	req: Request,
-	res: Response
-	//,next: NextFunction
+	res: Response,
+	//_next: NextFunction
 ): void => {
 	logError(err, req);
 	const statusCode = getStatusCode(err);
-	const payload = createErrorPayload(err);
+	const payload = buildErrorPayload(err);
 	res.status(statusCode).json(payload);
-}
+};
 
-export const notFoundHandler = (req:Request, res: Response): void => {
-	const payload = createNotFoundPayload(req.method,req.url);
-	res.status(404).json(payload);
-}
+// ============================================
+// MIDDLEWARE: Not Found
+// ============================================
+
+export const notFoundHandler = (req: Request, res: Response): void => {
+	res.status(404).json({
+		success: false,
+		error: `Route ${req.method} ${req.originalUrl} not found`,
+		timestamp: new Date().toISOString(),
+	});
+};
+
+// ============================================
+// WRAPPER: Async Handler (Higher Order Function)
+// ============================================
+
+
+type AsyncHandler = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => Promise<Response | undefined>;
+
+export const asyncHandler = (fn: AsyncHandler) => (
+	req: Request, res: Response, next: NextFunction): void => {
+	Promise.resolve(fn(req, res, next)).catch(next);
+};

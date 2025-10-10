@@ -1,12 +1,11 @@
+// src/utils/response.ts
 import { Response } from "express";
 
-interface ApiResponse<T=unknown>{
-	success: boolean;
-	message?:string;
-	data?:T;
-	error?:string;
-	timestamp:string;
-}
+// ============================================
+// TIPOS
+// ============================================
+
+import { ApiResponse } from '@/types/common/common.types';
 
 export const ResponseHandler = {
 	success<T>(res: Response, data: T, message = 'Success', statusCode = 200): Response {
