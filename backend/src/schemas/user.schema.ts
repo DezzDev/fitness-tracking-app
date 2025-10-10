@@ -45,6 +45,11 @@ export const UpdateUserSchema = z.object({
   bio: z.string().max(500).optional()
 }).strict(); // No permite campos adicionales
 
+// Schema para validar ID en params
+export const UserIdSchema = z.object({
+	id: z.uuid({ message: 'Invalid user ID format' })
+});
+
 // Inferir tipos TypeScript
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
