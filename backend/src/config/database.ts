@@ -134,13 +134,14 @@ export const startHealthCheck = (): NodeJS.Timeout => {
 // ============================================
 
 export const executeWithRetry = async <T>(
-  queryFn: (client: Client) => Promise<T>,
+	queryFn: (client: Client) => Promise<T>, // 👈 recibe una función que usa un cliente
   retries = 2
 ): Promise<T> => {
   const client = getClient();
 
   for (let attempt = 1; attempt <= retries + 1; attempt++) {
     try {
+			// 👇 ejecuta tu función, pasándole el cliente
       return await queryFn(client);
     } catch (error) {
       if (attempt > retries) throw error;

@@ -29,6 +29,7 @@ export const RegisterSchema = BaseUserSchema.extend({
   name: z.string().min(2).max(50).trim(),
   age: z.number().int().min(18).max(120),
   role: z.enum(['user', 'admin']).default('user'),
+	profile_image: z.string().optional().default('http://localhost:3000/public/images/default-avatar.jpg'),
   acceptTerms: z.boolean().refine(val => val === true, { message: 'You must accept the terms and conditions' }),
 });
 
@@ -42,7 +43,6 @@ export const LoginSchema = BaseUserSchema.pick({
 export const UpdateUserSchema = z.object({
   name: z.string().min(2).max(50).trim().optional(),
   age: z.number().int().min(18).max(120).optional(),
-  bio: z.string().max(500).optional()
 }).strict(); // No permite campos adicionales
 
 // Schema para validar ID en params
