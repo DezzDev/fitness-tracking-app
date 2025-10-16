@@ -4,6 +4,7 @@ import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
 
 
+
 // ============================================
 // REPOSITORY - Acceso a datos
 // ============================================
@@ -97,6 +98,16 @@ const queries = {
 	delete: {
 		sql: 'DELETE FROM users WHERE id= ?',
 		args: (id: string) => [ id ],
+	},
+
+	updatePassword: {
+		sql: `
+			UPDATE users 
+			SET password_hash = ? 
+			WHERE id = ? 
+			RETURNING *
+			`,
+		args: (password_hash: string, id: string) => [ password_hash, id ]
 	}
 
 };
@@ -242,8 +253,26 @@ export const userRepository = {
 	/**
 	 * Verificar si existe un usuario por email
 	 */
-	existByEmail: async(email:string):Promise<boolean> =>{
+	existByEmail: async (email: string): Promise<boolean> => {
 		const user = await userRepository.findByEmail(email);
 		return user !== null;
+	},
+
+	/**
+	 * Actualizar contraseña
+	 */
+	updatePassword: async (id: string, passwordHash: string): Promise<User> => {
+		const result = await executeWithRetry(client =>
+			client.execute({
+				sql: queries.updatePassword.sql,
+				args: queries.updatePassword.args(id, passwordHash)
+			})
+		);
+
+		if (result.rows.length === 0) {
+			throw new Error('User not found');
+		}
+
+		return mapRowToUser(result.rows[ 0 ] as unknown as UserRow);
 	}
 };

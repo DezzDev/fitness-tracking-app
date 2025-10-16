@@ -18,7 +18,7 @@ export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt'> & {
 };
 
 // Para update en DB
-export type UserUpdateData = Partial<Omit<User, 'id' | 'email' | 'createdAt' | 'updatedAt'>>;
+export type UserUpdateData = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>;
 
 
 // Row de la DB (si usas snake_case)
