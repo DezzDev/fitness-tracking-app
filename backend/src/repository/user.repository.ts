@@ -25,15 +25,15 @@ const mapRowToUser = (row: UserRow): User => ({
 
 });
 
-const mapUserToRow = (user: User): Omit<UserRow, 'created_at' | 'updated_at' | 'password_hash'> => ({
-	id: user.id,
-	email: user.email,
-	name: user.name,
-	age: user.age,
-	role: user.role,
-	is_active: user.is_active,
-	profile_image: user.profile_image
-});
+// const mapUserToRow = (user: User): Omit<UserRow, 'created_at' | 'updated_at' | 'password_hash'> => ({
+// 	id: user.id,
+// 	email: user.email,
+// 	name: user.name,
+// 	age: user.age,
+// 	role: user.role,
+// 	is_active: user.is_active,
+// 	profile_image: user.profile_image
+// });
 
 // ============================================
 // QUERIES: Funciones puras que retornan SQL
@@ -131,7 +131,6 @@ export const userRepository = {
 	/**
 	 * Buscar usuario por ID
 	 */
-
 	findById: async (id: string): Promise<User | null> => {
 		const result = await execute({
 			sql: queries.findById.sql,
@@ -146,7 +145,6 @@ export const userRepository = {
 	/**
 	 * Buscar usuario por email
 	 */
-
 	findByEmail: async (email: string): Promise<User | null> => {
 		const result = await execute({
 			sql: queries.findByEmail.sql,
@@ -161,7 +159,6 @@ export const userRepository = {
 	/**
 	 * Buscar usuario por email (con password)
 	 */
-
 	findByEmailWithPassword: async (
 		email: string
 	): Promise<(User & { passwordHash: string }) | null> => {
@@ -178,5 +175,75 @@ export const userRepository = {
 			...mapRowToUser(row),
 			passwordHash: row.password_hash
 		};
+	},
+
+	/**
+	* Listar todos los usuarios (paginado)
+	*/
+	findAll: async (page = 1, limit = 10): Promise<User[]> => {
+		const offset = (page - 1) * limit;
+
+		const result = await execute({
+			sql: queries.findAll.sql,
+			args: queries.findAll.args(limit, offset)
+		});
+		return result.rows.map(row => mapRowToUser(row as unknown as UserRow));
+	},
+
+
+	/**
+	 * Contar total de usuarios
+	 * *********************************PENDIENTE DE REVISIÓN 
+	 */
+	count: async (): Promise<number> => {
+		const result = await execute({
+			sql: queries.count.sql,
+			args: queries.count.args()
+		});
+		return (result.rows[ 0 ] as unknown as { total: number }).total;
+	},
+
+	/**
+	* Actualizar usuario
+	*/
+	update: async (id: string, data: UserUpdateData): Promise<User> => {
+		const fields = Object.keys(data);
+
+		if (fields.length === 0) {
+			throw new Error('No fields to update');
+		}
+
+		const result = await executeWithRetry(client =>
+			client.execute({
+				sql: queries.update.sql(fields),
+				args: queries.update.args(id, data)
+			})
+		);
+
+		if (result.rows.length === 0) {
+			throw new Error('User not found');
+		}
+
+		return mapRowToUser(result.rows[ 0 ] as unknown as UserRow);
+	},
+
+	/**
+	 * Eliminar usuario
+	 */
+	delete: async (id: string): Promise<void> => {
+		await executeWithRetry(client =>
+			client.execute({
+				sql: queries.delete.sql,
+				args: queries.delete.args(id)
+			})
+		);
+	},
+
+	/**
+	 * Verificar si existe un usuario por email
+	 */
+	existByEmail: async(email:string):Promise<boolean> =>{
+		const user = await userRepository.findByEmail(email);
+		return user !== null;
 	}
 };

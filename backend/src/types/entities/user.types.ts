@@ -14,7 +14,7 @@ export interface User {
 
 // Para insert en DB
 export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt'> & {
-	password: number;
+	password: string;
 };
 
 // Para update en DB
