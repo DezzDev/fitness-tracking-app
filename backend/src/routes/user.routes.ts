@@ -3,13 +3,17 @@
 // ============================================
 import { Router } from 'express';
 import { 
-	validateBody, 
+	validateBody,
+	validateParams,
+	validateQuery, 
 	// validateParams, 
 	// validateQuery 
 } from '@/middlewares/validate.middleware';
 import {
 	RegisterSchema,
 	LoginSchema,
+	UserIdSchema,
+	PaginationSchema,
 	// UpdateUserSchema,
 	// UserIdSchema,
 	// PaginationSchema,
@@ -35,5 +39,31 @@ router.post('/register', validateBody(RegisterSchema), userController.register);
  * Login
  */
 router.post('/login', validateBody(LoginSchema), userController.login);
+
+// ============================================
+// ADMIN ROUTES
+// ============================================
+
+/**
+ * GET /users
+ */
+router.get(
+	'/',
+	// authenticate,
+	// authorize('admin'),
+	validateQuery(PaginationSchema),
+	userController.listUsers
+);
+
+/**
+ * GET /users/:id
+ */
+router.get(
+	'/:id',
+	// authenticate,
+	validateParams(UserIdSchema), // ← AQUÍ está la validación
+	userController.getUser
+);
+
 
 export default router;

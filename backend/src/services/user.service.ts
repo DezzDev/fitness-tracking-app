@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { RegisterInput, LoginInput } from '@/schemas/user.schema';
 import { User, UserCreateData, UserUpdateData } from '@/types';
 import { userRepository } from '@/repository/user.repository';
 import { createAppError } from '@/middlewares/error.middleware';
@@ -44,26 +45,40 @@ const sanitizeUser = (user: User): Omit<User, 'passwordHash'> => {
 
 export const userService = {
 	/**
-		* Registrar un nuevo usuario
-	*/
-	register: async (data: UserCreateData): Promise<{ user: User; token: string }> => {
+	 * Registrar usuario
+	 * INPUT: RegisterInput (schema con validaciones)
+	 * OUTPUT: User (entity del dominio)
+	 */
+	register: async (input: RegisterInput): Promise<{ user: User; token: string }> => {
 		// 1. Verificar si el email ya existe
-		const existingUser = await userRepository.existByEmail(data.email);
+		const existingUser = await userRepository.existByEmail(input.email);
 
 		if (existingUser) {
 			throw createAppError('Email already registered', 409);
 		}
 
-		// 2. Hashear contraseña
-		const passwordHash = await hashPassword(data.password);
+		// 2. Convertir schema -> entity type
+		const createData: UserCreateData = {
+			email: input.email,
+			password: input.password,
+			name: input.name,
+			age: input.age,
+			role: input.role,
+			profile_image: input.profile_image,
+			// acceptTerms no se pasa (solo se valida)
+		};
 
-		// 3. Crear usuario
-		const user = await userRepository.create(data, passwordHash);
+		// 3. Hashear contraseña
+		const passwordHash = await hashPassword(createData.password);
 
-		// 4. Generar token
+		// 4. Crear usuario en DB
+		// obtenemos entity type
+		const user: User = await userRepository.create(createData, passwordHash);
+
+		// 5. Generar token
 		const token = generateToken(user.id, user.email, user.role);
 
-		// 5. Retornar usuario sanitizado y token
+		// 6. Retornar usuario sanitizado y token
 		return {
 			user: sanitizeUser(user),
 			token
@@ -71,18 +86,20 @@ export const userService = {
 	},
 
 	/**
-	 * Login de usuario
+	 * Login
+	 * INPUT: LoginInput (schema)
+	 * OUTPUT: User (entity)
 	 */
-	login: async (email: string, password: string): Promise<{ user: User; token: string }> => {
+	login: async (input:LoginInput): Promise<{ user: User; token: string }> => {
 		// 1. Buscar usuarios por email, obtener sus datos y su password_hash
-		const user = await userRepository.findByEmailWithPassword(email);
+		const user = await userRepository.findByEmailWithPassword(input.email);
 
 		if (!user) {
 			throw createAppError('Invalid credentials', 401);
 		}
 
 		// 2.Verificar password
-		const isPasswordValid = await comparePassword(password, user.passwordHash);
+		const isPasswordValid = await comparePassword(input.password, user.passwordHash);
 
 		if (!isPasswordValid) {
 			throw createAppError('Invalid credentials', 401);
@@ -123,19 +140,19 @@ export const userService = {
 		const user = await userRepository.findByEmail(email);
 
 		if (!user) {
-			throw createAppError('User not fonund', 404);
+			throw createAppError('User not found', 404);
 		}
 		return sanitizeUser(user);
 	},
 
 	/**
-	 * Listar usuarios con paginación
+	 * Listar usuarios con pagination
 	 */
 	findAll: async (
 		page = 1,
 		limit = 10
 	): Promise<{ users: User[], total: number; page: number; totalPages: number }> => {
-		// validación basica
+		// validación básica
 		if (page < 1) page = 1;
 		if (limit < 1 || limit > 100) limit = 10;
 
@@ -220,7 +237,7 @@ export const userService = {
 		const isPasswordValid = await comparePassword(oldPassword, userWithPassword.passwordHash);
 
 		if (!isPasswordValid) {
-			throw createAppError('Current password is incorret', 401);
+			throw createAppError('Current password is incorrect', 401);
 		}
 
 		// 3. Hashear nueva contraseña

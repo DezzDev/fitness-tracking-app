@@ -1,4 +1,4 @@
-//import { Client } from "@libsql/client";
+// user.repository
 import { execute, executeWithRetry } from "@/config/database";
 import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
@@ -107,7 +107,7 @@ const queries = {
 			WHERE id = ? 
 			RETURNING *
 			`,
-		args: (password_hash: string, id: string) => [ password_hash, id ]
+		args: (id: string, password_hash: string) => [ password_hash, id ]
 	}
 
 };
@@ -211,7 +211,13 @@ export const userRepository = {
 			sql: queries.count.sql,
 			args: queries.count.args()
 		});
-		return (result.rows[ 0 ] as unknown as { total: number }).total;
+		const row = result.rows[ 0 ] as unknown as { total: number };
+
+		if (!row || typeof row.total !== 'number') {
+			return 0; // Fallback seguro
+		}
+
+		return row.total;
 	},
 
 	/**

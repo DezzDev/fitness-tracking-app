@@ -1,3 +1,4 @@
+// user.types
 export type UserRole = 'user' | 'admin';
 
 export interface User {
