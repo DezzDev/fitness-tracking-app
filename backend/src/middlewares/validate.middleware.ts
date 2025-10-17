@@ -1,6 +1,9 @@
+// validate.middleware
+
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodError, ZodType } from 'zod';
 import { createAppError } from '@/middlewares/error.middleware';
+
 
 
 // ============================================
@@ -25,7 +28,9 @@ const validateData = async <T extends ZodType>(
 
 ): Promise<z.infer<T>> => {
 	try {
-		console.log(options); // options: pendiente de usar o de eliminar
+		// Puedes usar options aquí en el futuro
+		console.log(options);
+
 		return await schema.parseAsync(data);
 
 	} catch (error) {
@@ -104,11 +109,12 @@ export const validate = (
 			next();
 		} catch (error) {
 			if (error instanceof ZodError) {
-				// Pasar error a error handler
 				const errors = formatZodErrors(error);
 				next(createAppError('Validation failed', 400, true, errors));
+			} else if (error instanceof Error) {
+				next(createAppError(error.message, 500));
 			} else {
-				next(createAppError('Unknown validation Error', 500));
+				next(createAppError('Unknown validation error', 500));
 			}
 		}
 	};
@@ -161,11 +167,13 @@ export const validateMulti = (schemas: MultiValidateSchemas) => {
 
 			next();
 		} catch (error) {
-			if (error instanceof ZodError) {
+				if (error instanceof ZodError) {
 				const errors = formatZodErrors(error);
 				next(createAppError('Validation failed', 400, true, errors));
+			} else if (error instanceof Error) {
+				next(createAppError(error.message, 500));
 			} else {
-				next(createAppError('Unknown validation Error', 500));
+				next(createAppError('Unknown validation error', 500));
 			}
 		}
 	};

@@ -1,3 +1,5 @@
+// user.service
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User, UserCreateData, UserUpdateData } from '@/types';

@@ -1,4 +1,4 @@
-
+// user.controller
 import { Request, Response } from 'express';
 import { asyncHandler, createAppError } from '@/middlewares/error.middleware';
 import { ResponseHandler } from '@/utils/response';
@@ -30,13 +30,10 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
  * Login de usuario
  */
 export const login = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const { id } = req.params;
+	
+	const {email, password} = req.body;
 
-	if (!id || typeof id !== 'string') {
-		throw createAppError('User ID is required must be a string');
-	}
-
-	const user = await userService.findById(id);
+	const user = await userService.login(email, password);
 
 	ResponseHandler.success(res, user);
 });

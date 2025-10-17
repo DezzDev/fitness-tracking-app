@@ -17,7 +17,14 @@ interface ErrorPayload {
 	stack?: string;
 };
 
-
+interface ZodMessage {
+	"expected": string,
+	"code": string,
+	"path": [
+		string
+	],
+	"message": string
+}
 
 // ============================================
 // FACTORY: Crear errores 
@@ -53,6 +60,7 @@ const isAppError = (err: unknown): err is AppError => (
 const isZodError = (err: unknown): err is ZodError =>
 	err instanceof ZodError;
 
+
 // ============================================
 // FUNCIONES PURAS
 // ============================================
@@ -63,9 +71,19 @@ const getStatusCode = (err: unknown): number => {
 	return 500;
 };
 
+const formatZodMessage = (message: ZodMessage[]): string =>
+	message.map(m => `expected: ${m.expected}, code: ${m.code}, path: ${m.path.map(p => p).join("-")}, message: ${m.message}` ).join('\n');
+
 const getMessage = (err: unknown): string => {
-	if (err instanceof Error) return err.message;
+	if (err instanceof ZodError) {
+
+		return formatZodMessage(JSON.parse(err.message));
+	};
+	if (err instanceof Error) {
+		return err.message;
+	};
 	if (typeof err === 'string') return err;
+
 	return 'Internal Server Error';
 };
 
@@ -115,7 +133,8 @@ export const errorHandler = (
 	err: unknown,
 	req: Request,
 	res: Response,
-	//_next: NextFunction
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	_next: NextFunction
 ): void => {
 	logError(err, req);
 	const statusCode = getStatusCode(err);
@@ -149,4 +168,5 @@ type AsyncHandler = (
 export const asyncHandler = (fn: AsyncHandler) => (
 	req: Request, res: Response, next: NextFunction): void => {
 	Promise.resolve(fn(req, res, next)).catch(next);
+	//                                  catch(error => next(error)) 
 };
