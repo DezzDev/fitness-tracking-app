@@ -3,7 +3,11 @@ import { Request, Response } from 'express';
 import { asyncHandler, createAppError } from '@/middlewares/error.middleware';
 import { ResponseHandler } from '@/utils/response';
 import { userService } from '@/services/user.service';
-import { RegisterInput, LoginInput, UpdateUserInput } from '@/schemas/user.schema';
+import { 
+	RegisterInput, 
+	// LoginInput, 
+	UpdateUserInput 
+} from '@/schemas/user.schema';
 
 // ============================================
 // AUTH CONTROLLERS
@@ -111,25 +115,25 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response): Prom
  * GET /users/me
  * Obtener perfil del usuario autenticado
  */
-export const getProfile = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	// Asumiendo que tienes un middleware de auth que añade req.user
-	const userId = (req as any).user?.userId;
+// export const getProfile = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+// 	// Asumiendo que tienes un middleware de auth que añade req.user
+// 	const userId = (req as any).user?.userId;
 
-	const user = await userService.findById(userId);
+// 	const user = await userService.findById(userId);
 
-	ResponseHandler.success(res, user);
-});
+// 	ResponseHandler.success(res, user);
+// });
 
-/**
- * PATCH /users/me/password
- * Cambiar contraseña del usuario autenticado
- */
+// /**
+//  * PATCH /users/me/password
+//  * Cambiar contraseña del usuario autenticado
+//  */
 
-export const changePassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-	const userId = (req as any).user?.userId;
-	const { oldPassword, newPassword } = req.body;
+// export const changePassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+// 	const userId = (req as any).user?.userId;
+// 	const { oldPassword, newPassword } = req.body;
 
-	await userService.changePassword(userId, oldPassword, newPassword);
+// 	await userService.changePassword(userId, oldPassword, newPassword);
 
-	ResponseHandler.success(res, null, 'Password changed successfully');
-});
+// 	ResponseHandler.success(res, null, 'Password changed successfully');
+// });

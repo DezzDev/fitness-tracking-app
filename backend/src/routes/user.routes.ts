@@ -18,7 +18,7 @@ import {
 import * as userController from '@/controllers/user.controller';
 // import { authenticate } from '@/middlewares/auth.middleware'; // Crearemos después
 
-const router = Router();
+const router: Router = Router();
 
 // ============================================
 // PUBLIC ROUTES (No requieren autenticación)
@@ -35,3 +35,5 @@ router.post('/register', validateBody(RegisterSchema), userController.register);
  * Login
  */
 router.post('/login', validateBody(LoginSchema), userController.login);
+
+export default router;
