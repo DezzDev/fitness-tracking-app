@@ -6,6 +6,7 @@ import { createAppError } from '@/middlewares/error.middleware';
 import { env } from '@/config/env';
 
 
+
 // ============================================
 // CONSTANTES
 // ============================================
@@ -103,6 +104,7 @@ export const userService = {
 	 * Obtener usuario por ID
 	 */
 	findById: async (id: string): Promise<User> => {
+
 		const user = await userRepository.findById(id);
 
 		if (!user) {

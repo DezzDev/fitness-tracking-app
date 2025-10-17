@@ -13,7 +13,7 @@ export interface User {
 };
 
 // Para insert en DB
-export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt'> & {
+export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'is_active'> & {
 	password: string;
 };
 

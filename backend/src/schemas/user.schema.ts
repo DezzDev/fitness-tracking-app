@@ -4,7 +4,7 @@ import { z } from 'zod';
 // Schema Base User
 const BaseUserSchema = z.object({
 	email: z
-		.string()
+		.string({error:'Email is required'})
 		.min(1, { message: 'Email is required' })
 		.regex(z.regexes.email, { message: 'Invalid email address' })
 		.toLowerCase()
@@ -30,7 +30,7 @@ export const RegisterSchema = BaseUserSchema.extend({
   age: z.number().int().min(18).max(120),
   role: z.enum(['user', 'admin']).default('user'),
 	profile_image: z.string().optional().default('http://localhost:3000/public/images/default-avatar.jpg'),
-  acceptTerms: z.boolean().refine(val => val === true, { message: 'You must accept the terms and conditions' }),
+	acceptTerms: z.boolean({ error: 'You must accept the terms and conditions' }).refine(val => val === true, { message: 'You must accept the terms and conditions' }),
 });
 
 // Schema para login (pick solo campos necesarios)
@@ -43,6 +43,7 @@ export const LoginSchema = BaseUserSchema.pick({
 export const UpdateUserSchema = z.object({
   name: z.string().min(2).max(50).trim().optional(),
   age: z.number().int().min(18).max(120).optional(),
+	profile_image: z.string().optional(),
 }).strict(); // No permite campos adicionales
 
 // Schema para validar ID en params
@@ -50,7 +51,31 @@ export const UserIdSchema = z.object({
 	id: z.uuid({ message: 'Invalid user ID format' })
 });
 
+// Schema para paginación
+export const PaginationSchema = z.object({
+	page: z
+		.string()
+		.default('1')
+		.transform(Number)
+		.pipe(z.number().int().min(1)),
+
+	limit: z
+		.string()
+		.default('10')
+		.transform(Number)
+		.pipe(z.number().int().min(1).max(100)),
+});
+
+// Schema para cambio de contraseña
+export const ChangePasswordSchema = z.object({
+	oldPassword: z.string().min(1, 'Current password is required'),
+	newPassword: BaseUserSchema.shape.password,
+});
+
 // Inferir tipos TypeScript
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+export type UserIdParams = z.infer<typeof UserIdSchema>;
+export type PaginationQuery = z.infer<typeof PaginationSchema>;
+export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;

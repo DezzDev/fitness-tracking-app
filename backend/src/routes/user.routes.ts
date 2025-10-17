@@ -1,48 +1,37 @@
-import { Router } from "express";
-import { validateBody, validateParams } from "@/middlewares/validate.middleware";
-import { RegisterSchema, LoginSchema, UpdateUserSchema, UserIdSchema } from "@/schemas/user.schema";
-import { userRegister } from "@/controller/user.controller";
+// ============================================
+// src/routes/user.routes.ts
+// ============================================
+import { Router } from 'express';
+import { 
+	validateBody, 
+	// validateParams, 
+	// validateQuery 
+} from '@/middlewares/validate.middleware';
+import {
+	RegisterSchema,
+	LoginSchema,
+	// UpdateUserSchema,
+	// UserIdSchema,
+	// PaginationSchema,
+	// ChangePasswordSchema,
+} from '@/schemas/user.schema';
+import * as userController from '@/controllers/user.controller';
+// import { authenticate } from '@/middlewares/auth.middleware'; // Crearemos después
 
-const router:Router = Router();
+const router = Router();
 
-// POST /users/register - Validar body
-router.post(
-	'/register',
-	validateBody(RegisterSchema), // <- valida req.body
-	userRegister
-);
+// ============================================
+// PUBLIC ROUTES (No requieren autenticación)
+// ============================================
 
-// POST /users/login - Validar body
-router.post(
-	'/login',
-	validateBody(LoginSchema), // <- valida req.body
-	//userController.login
-);
+/**
+ * POST /users/register
+ * Registrar nuevo usuario
+ */
+router.post('/register', validateBody(RegisterSchema), userController.register);
 
-// Validar PARAMS(ID en la URL)
-
-// PATCH /users/:id - Validar params
-router.patch(
-	'/:id',
-	validateParams(UserIdSchema),  // ← Valida req.params.id
-	validateBody(UpdateUserSchema), // ← Valida req.body
-	//userController.updateUser
-);
-
-// DELETE /users/:id
-router.delete(
-	'/:id',
-	validateParams(UserIdSchema),
-	//userController.deleteUser
-);
-
-// Validar QUERY(Query String)
-// GET /users?page=1&limit=10&role=admin
-
-// router.get(
-// 	'/',
-// 	validateQuery(PaginationSchema),  // ← Valida req.query
-// 	userController.listUsers
-// );
-
-export default router;
+/**
+ * POST /users/login
+ * Login
+ */
+router.post('/login', validateBody(LoginSchema), userController.login);
