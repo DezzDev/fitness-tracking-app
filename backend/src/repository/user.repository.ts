@@ -1,4 +1,4 @@
-//import { Client } from "@libsql/client";
+// user.repository
 import { execute, executeWithRetry } from "@/config/database";
 import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
@@ -95,6 +95,16 @@ const queries = {
 		}
 	},
 
+	softDelete: {
+		sql: `
+		UPDATE users
+		SET is_active=0, updated_at=datetime('now')
+		WHERE id= ?
+		`,
+		args: (id: string) => [ id ]
+
+	},
+
 	delete: {
 		sql: 'DELETE FROM users WHERE id= ?',
 		args: (id: string) => [ id ],
@@ -103,7 +113,7 @@ const queries = {
 	updatePassword: {
 		sql: `
 			UPDATE users 
-			SET password_hash = ? 
+			SET password_hash = ?, updated_at=datetime('now')
 			WHERE id = ? 
 			RETURNING *
 			`,
@@ -211,7 +221,7 @@ export const userRepository = {
 			sql: queries.count.sql,
 			args: queries.count.args()
 		});
-		return (result.rows[ 0 ] as unknown as { total: number }).total;
+		return Number((result.rows[ 0 ] as unknown as { total: number }).total);
 	},
 
 	/**
@@ -239,7 +249,20 @@ export const userRepository = {
 	},
 
 	/**
-	 * Eliminar usuario
+	 * Eliminar usuario (lógica: desactivar)
+	 */
+	softDelete: async (id: string): Promise<void> => {
+		await executeWithRetry(client =>
+			client.execute({
+				sql: queries.softDelete.sql,
+				args: queries.softDelete.args(id)
+			})
+		);
+	},
+
+
+	/**
+	 * Eliminar usuario permanentemente
 	 */
 	delete: async (id: string): Promise<void> => {
 		await executeWithRetry(client =>

@@ -1,4 +1,4 @@
-
+// types/common/error.types.ts
 export interface AppError {
 	name: 'AppError';
   message: string;

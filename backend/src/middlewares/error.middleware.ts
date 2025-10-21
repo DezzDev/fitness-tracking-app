@@ -3,12 +3,14 @@ import { Request, Response, NextFunction } from 'express';
 import logger from "@/utils/logger";
 import { isDevelopment } from '@/config/env';
 import { ZodError } from 'zod';
+import { isAppError } from '@/utils/error.utils';
 
 // ============================================
 // TIPOS
 // ============================================
 
 import { AppError } from '@/types';
+
 interface ErrorPayload {
 	success: false;
 	error: string;
@@ -50,12 +52,7 @@ export const createAppError = (
 // TYPE GUARDS (Funciones Puras)
 // ============================================
 
-const isAppError = (err: unknown): err is AppError => (
-	typeof err === 'object' &&
-	err !== null &&
-	'name' in err &&
-	err.name === 'AppError'
-);
+
 
 const isZodError = (err: unknown): err is ZodError =>
 	err instanceof ZodError;

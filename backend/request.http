@@ -10,7 +10,7 @@ content-type: application/json
 	"email": "daniel@email.com",
 	"password": "Zapata38",
   "name": "daniel",
-	"age": "31",
+	"age": 31,
 	"role": "admin",
 	"acceptTerms": true
 }

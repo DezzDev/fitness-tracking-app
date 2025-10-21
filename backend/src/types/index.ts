@@ -1,3 +1,5 @@
+// src/types/index.ts
+
 // Re-export types common
 export type {ApiResponse} from './common/common.types';
 export {NodeEnv, LogLevel} from './common/common.types';

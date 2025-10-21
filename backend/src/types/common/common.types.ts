@@ -1,3 +1,4 @@
+// types/common/common.types.ts
 
 // Respuestas API
 export interface ApiResponse<T=unknown>{

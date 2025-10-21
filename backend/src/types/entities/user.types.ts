@@ -1,3 +1,4 @@
+// types/entities/user.types.ts
 export type UserRole = 'user' | 'admin';
 
 export interface User {

@@ -4,6 +4,7 @@ import { env } from "@/config/env";
 import logger from "@/utils/logger";
 
 
+
 // ============================================
 // TIPOS
 // ============================================
@@ -154,7 +155,7 @@ export const executeWithRetry = async <T>(
     }
   }
 
-  throw new Error('Query failed after retries');
+  throw new Error(`Query failed after retries`);
 };
 
 // ============================================

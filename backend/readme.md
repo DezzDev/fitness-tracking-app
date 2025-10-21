@@ -112,3 +112,7 @@ GET /api/users 200 12.345 ms - 512
 Usa dev en desarrollo y combined en producción (más detallado).
 
 Redirige logs a un archivo en producción en lugar de consola.
+
+
+
+¿es necesario utilizar el logger en handleServiceError cuando el error es de tipo Error o desconocido?, ya que el middleware sin importar el tipo de error va a hacer un log

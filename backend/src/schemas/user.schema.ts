@@ -1,6 +1,8 @@
 // src/schemas/user.schema.ts
 import { z } from 'zod';
 
+const profile_image_default = 'http://localhost:3000/public/images/default-avatar.jpg';
+
 // Schema Base User
 const BaseUserSchema = z.object({
 	email: z
@@ -29,7 +31,7 @@ export const RegisterSchema = BaseUserSchema.extend({
   name: z.string().min(2).max(50).trim(),
   age: z.number().int().min(18).max(120),
   role: z.enum(['user', 'admin']).default('user'),
-	profile_image: z.string().optional().default('http://localhost:3000/public/images/default-avatar.jpg'),
+	profile_image: z.string().optional().default(profile_image_default),
 	acceptTerms: z.boolean({ error: 'You must accept the terms and conditions' }).refine(val => val === true, { message: 'You must accept the terms and conditions' }),
 });
 
