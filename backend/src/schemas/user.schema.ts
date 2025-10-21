@@ -50,7 +50,7 @@ export const UpdateUserSchema = z.object({
 
 // Schema para validar ID en params
 export const UserIdSchema = z.object({
-	id: z.uuid({ message: 'Invalid user ID format' })
+	id: z.uuid({ error: 'Invalid user ID format' })
 });
 
 // Schema para paginación
@@ -78,6 +78,6 @@ export const ChangePasswordSchema = z.object({
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
-export type UserIdParams = z.infer<typeof UserIdSchema>;
+export type UserIdParam = z.infer<typeof UserIdSchema>;
 export type PaginationQuery = z.infer<typeof PaginationSchema>;
 export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;

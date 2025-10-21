@@ -1,4 +1,5 @@
 // user.repository
+// user.repository
 import { execute, executeWithRetry } from "@/config/database";
 import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
@@ -117,7 +118,7 @@ const queries = {
 			WHERE id = ? 
 			RETURNING *
 			`,
-		args: (password_hash: string, id: string) => [ password_hash, id ]
+		args: (id: string, password_hash: string) => [ password_hash, id ]
 	}
 
 };

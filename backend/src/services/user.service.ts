@@ -85,7 +85,9 @@ export const userService = {
 	},
 
 	/**
-	 * Login de usuario
+	 * Login
+	 * INPUT: LoginInput (schema)
+	 * OUTPUT: User (entity)
 	 */
 	login: async (email: string, password: string): Promise<{ user: User; token: string }> => {
 		try {
@@ -169,7 +171,7 @@ export const userService = {
 	},
 
 	/**
-	 * Listar usuarios con paginación
+	 * Listar usuarios con pagination
 	 */
 	findAll: async (
 		page = 1,

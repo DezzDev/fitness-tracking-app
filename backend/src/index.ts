@@ -23,6 +23,12 @@ const app = express();
 app.use('/public', express.static('public'));
 
 // Middlewares globales
+// Middleware de logging
+app.use((req, _res, next) => {
+	logger.info(`🟢 Request recibido: method: ${req.method}; url: ${req.url}`);
+	next();
+});
+
 app.use(helmet());
 app.use(cors({
 	origin: isDevelopment ? '*' : process.env.ALLOWED_ORIGINS?.split(','),

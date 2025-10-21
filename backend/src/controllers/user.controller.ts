@@ -3,11 +3,24 @@ import { Request, Response } from 'express';
 import { asyncHandler, createAppError } from '@/middlewares/error.middleware';
 import { ResponseHandler } from '@/utils/response';
 import { userService } from '@/services/user.service';
-import { 
-	RegisterInput, 
-	// LoginInput, 
-	UpdateUserInput 
+import {
+	RegisterInput,
+	LoginInput,
+	UpdateUserInput
 } from '@/schemas/user.schema';
+
+// ============================================
+// HELPER: Extraer y validar ID
+// ============================================
+const extractId = (params: Record<string, string | undefined>): string => {
+	const { id } = params;
+
+	if (!id) {
+		throw createAppError('User ID is required', 400);
+	}
+
+	return id;
+};
 
 // ============================================
 // AUTH CONTROLLERS
@@ -30,12 +43,12 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
  * Login de usuario
  */
 export const login = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	
-	const {email, password} = req.body;
 
-	const user = await userService.login(email, password);
+	const data: LoginInput = req.body;
 
-	ResponseHandler.success(res, user);
+	const result = await userService.login(data);
+
+	ResponseHandler.success(res, result, 'Login successfully');
 });
 
 // ============================================
@@ -47,11 +60,7 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
  * Obtener usuario por ID
  */
 export const getUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const { id } = req.params;
-
-	if (!id || typeof id !== 'string') {
-		throw createAppError('User ID is required must be a string');
-	}
+	const id = extractId(req.params);
 
 	const user = await userService.findById(id);
 
@@ -79,12 +88,8 @@ export const listUsers = asyncHandler(async (req: Request, res: Response): Promi
  * Actualizar usuario
  */
 export const updateUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const { id } = req.params;
+	const id = extractId(req.params);
 	const data: UpdateUserInput = req.body;
-
-	if (!id || typeof id !== 'string') {
-		throw createAppError('User ID is required must be a string');
-	}
 
 	const user = await userService.update(id, data);
 
@@ -96,12 +101,7 @@ export const updateUser = asyncHandler(async (req: Request, res: Response): Prom
  * Eliminar usuario
  */
 export const deleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const { id } = req.params;
-
-	if (!id || typeof id !== 'string') {
-		throw createAppError('User ID is required must be a string');
-	}
-
+	const id = extractId(req.params);
 	await userService.delete(id);
 
 	ResponseHandler.noContent(res);
