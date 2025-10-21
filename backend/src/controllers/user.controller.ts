@@ -46,7 +46,7 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
 
 	const data: LoginInput = req.body;
 
-	const result = await userService.login(data);
+	const result = await userService.login(data.email, data.password);
 
 	ResponseHandler.success(res, result, 'Login successfully');
 });

@@ -3,6 +3,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodError, ZodType } from 'zod';
 import { createAppError } from '@/middlewares/error.middleware';
+import logger from '@/utils/logger';
 
 
 
@@ -98,7 +99,6 @@ export const validate = (
 		try {
 			// 1. Extraer datos según el target
 			const data = extractData(req, target);
-
 			// 2. Validar con Zod
 			const validatedData = await validateData(schema, data, options);
 
@@ -167,7 +167,7 @@ export const validateMulti = (schemas: MultiValidateSchemas) => {
 
 			next();
 		} catch (error) {
-				if (error instanceof ZodError) {
+			if (error instanceof ZodError) {
 				const errors = formatZodErrors(error);
 				next(createAppError('Validation failed', 400, true, errors));
 			} else if (error instanceof Error) {

@@ -6,21 +6,16 @@ import {
 	validateBody,
 	validateParams,
 	validateQuery, 
-	// validateParams, 
-	// validateQuery 
+	
 } from '@/middlewares/validate.middleware';
 import {
 	RegisterSchema,
 	LoginSchema,
 	UserIdSchema,
 	PaginationSchema,
-	// UpdateUserSchema,
-	// UserIdSchema,
-	// PaginationSchema,
-	// ChangePasswordSchema,
 } from '@/schemas/user.schema';
 import * as userController from '@/controllers/user.controller';
-// import { authenticate } from '@/middlewares/auth.middleware'; // Crearemos después
+import { authenticate, authorize } from '@/middlewares/auth.middleware'; // Crearemos después
 
 const router: Router = Router();
 
@@ -49,8 +44,8 @@ router.post('/login', validateBody(LoginSchema), userController.login);
  */
 router.get(
 	'/',
-	// authenticate,
-	// authorize('admin'),
+	authenticate,
+	authorize(['admin']),
 	validateQuery(PaginationSchema),
 	userController.listUsers
 );
