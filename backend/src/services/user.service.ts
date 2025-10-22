@@ -74,7 +74,7 @@ export const userService = {
 			};
 		} catch (error) {
 			// se utiliza handleServiceError para manejar errores que provienen del repository u otros
-			// ademas de convertir errores desconocidos en AppErrors
+			// ademas hacer un log y convertir errores conocidos o desconocidos en AppErrors
 			throw handleServiceError(
 				error,
 				'UserService.register',
@@ -178,7 +178,7 @@ export const userService = {
 		limit = 10
 	): Promise<{ users: User[], total: number; page: number; totalPages: number }> => {
 		try {
-			// validación basica
+			// validación básica
 			if (page < 1) page = 1;
 			if (limit < 1 || limit > 100) limit = 10;
 

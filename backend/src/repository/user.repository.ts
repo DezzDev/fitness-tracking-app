@@ -2,6 +2,7 @@
 // user.repository
 import { execute, executeWithRetry } from "@/config/database";
 import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
+import logger from "@/utils/logger";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -218,11 +219,39 @@ export const userRepository = {
 	 * *********************************PENDIENTE DE REVISIÓN 
 	 */
 	count: async (): Promise<number> => {
-		const result = await execute({
-			sql: queries.count.sql,
-			args: queries.count.args()
-		});
-		return Number((result.rows[ 0 ] as unknown as { total: number }).total);
+		try {
+			const result = await execute({
+				sql: queries.count.sql,
+				args: queries.count.args()
+			});
+
+			// Validar que existe el resultado
+			if (!result.rows || result.rows.length === 0) {
+				throw new Error('Count query returned no results');
+			}
+
+			const row = result.rows[ 0 ] as unknown as { total: number };
+
+			// Validar que el campo existe y es número
+			if (row.total === null || row.total === undefined) {
+				throw new Error('Count query returned null or undefined');
+			}
+
+			if (typeof row.total !== 'number' || row.total < 0) {
+				throw new Error(`Invalid count value: ${typeof row.total}`);
+			}
+
+			// Si llegamos aquí, el dato es válido
+			return row.total;
+		} catch (error) {
+
+			logger.error('Failed to count users', {
+				error: error instanceof Error ? error.message : error
+			});
+
+			throw error; // Re-lanzar el error después de loguearlo
+		}
+
 	},
 
 	/**

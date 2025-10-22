@@ -28,5 +28,6 @@ content-type: application/json
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYzUzMzVjYS0zNWMzLTRlZmItOWRiOS04N2RhNjI2MjI3MzAiLCJlbWFpbCI6ImRhbmllbEBlbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjEwNTMwODUsImV4cCI6MTc2MTY1Nzg4NX0.Sj3qocCXyAL0ulgk4o5uNoxlH9frxVNj1qG6dsWdx6w
 GET http://localhost:4000/api/users?page=1&limit=10
 Authorization: Bearer {{token}}
+Accept: application/json
 
 

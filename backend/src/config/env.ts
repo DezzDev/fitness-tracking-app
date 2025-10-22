@@ -27,7 +27,7 @@ const EnvSchema = z.object({
 	TURSO_DATABASE_URL: z.url('Invalid database URL format'),
 	TURSO_AUTH_TOKEN: z.string().min(1, 'TURSO_AUTH_TOKEN is required'),
 	LOG_LEVEL: z.enum(LogLevel).default(LogLevel.Info),
-	JWT_SECRET: z.string("Invalid jwt secret")
+	JWT_SECRET: z.string({ error: "Invalid jwt secret" })
 });
 
 // ============================================
