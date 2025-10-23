@@ -1,33 +1,87 @@
 
+@id = ec5335ca-35c3-4efb-9db9-87da62622730
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYzUzMzVjYS0zNWMzLTRlZmItOWRiOS04N2RhNjI2MjI3MzAiLCJlbWFpbCI6ImRhbmllbEBlbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjEyMTM2MDgsImV4cCI6MTc2MTgxODQwOCwiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.maH-898zG58LPPAvvGE0-Dr4ssjdft0oteWaVGUzG0k
+@baseUrl = http://localhost:4000/api
+
+
+# ==========================================
+# PUBLIC ROUTES (No requieren autenticación)
+# ==========================================
+
+
+### Health Check
+# check server status
 GET http://localhost:4000/health
 
-###
+### POST /users/register
+# registrar user
 
-POST http://localhost:4000/api/users/register HTTP/1.1
+POST {{baseUrl}}/users/register HTTP/1.1
+content-type: application/json
+
+{
+	"email": "alejandro3@email.com",
+	"password": "Zapata38",
+  "name": "alejandro",
+	"age": 20,
+	"acceptTerms": true
+}
+
+### POST /users/login
+# login user user
+@alejandro_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5YzVhZWQxNy1hYjhjLTRmYTUtYjI4Yi1mYjU5MTA2MTlhNDMiLCJlbWFpbCI6ImFsZWphbmRyb0BlbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTIyMzgzNCwiZXhwIjoxNzYxODI4NjM0LCJhdWQiOiJmaXRuZXNzLXRyYWNrZXItdXNlcnMiLCJpc3MiOiJmaXRuZXNzLXRyYWNrZXItYXBwIn0.nWT0XG_ouD_HO0u6MZ1UGAjd38o6Q5RpnVVbW_-IJsI
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "alejandro@email.com",
+	"password": "Zapata38"
+}
+
+### POST /users/login
+# login user admin
+POST {{baseUrl}}/users/login HTTP/1.1
 content-type: application/json
 
 {
 	"email": "daniel2@email.com",
-	"password": "Zapata38",
-  "name": "daniel",
-	"age": 31,
-	"role": "admin",
-	"acceptTerms": true
-}
-
-###
-POST http://localhost:4000/api/users/login HTTP/1.1
-content-type: application/json
-
-{
-	"email": "daniel@email.com",
 	"password": "Zapata38"
 }
 
-###
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYzUzMzVjYS0zNWMzLTRlZmItOWRiOS04N2RhNjI2MjI3MzAiLCJlbWFpbCI6ImRhbmllbEBlbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjEwNTMwODUsImV4cCI6MTc2MTY1Nzg4NX0.Sj3qocCXyAL0ulgk4o5uNoxlH9frxVNj1qG6dsWdx6w
-GET http://localhost:4000/api/users?page=1&limit=10
+# ==========================================
+#  PROTECTED ROUTES (Usuario autenticado)
+# ==========================================
+
+### GET /users/me
+# get my profile
+GET {{baseUrl}}/users/me HTTP/1.1
+# Authorization: Bearer {{token}}
 Authorization: Bearer {{token}}
+Accept: application/json
+
+
+
+### PATCH /users/me/password
+# Cambiar contraseña del usuario autenticado
+PATCH {{baseUrl}}/users/me/password HTTP/1.1
+Authorization: Bearer {{token}}
+content-type: application/json
+
+{
+	"oldPassword": "Zapata38",
+	"newPassword": "Zapata39"
+}
+
+
+
+# // ============================================
+# // ADMIN ROUTES
+# // ============================================
+
+# GET /users
+### list users
+GET {{baseUrl}}/users?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{alejandro_token}}
 Accept: application/json
 
 

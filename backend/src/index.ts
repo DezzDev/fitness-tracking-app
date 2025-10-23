@@ -29,6 +29,15 @@ app.use((req, _res, next) => {
 	next();
 });
 
+// Request logging (desarrollo)
+if (isDevelopment) {
+	app.use((req, _res, next) => {
+		logger.debug(`${req.method} ${req.path}`, { body: req.body, query: req.query });
+		next();
+	});
+}
+
+
 app.use(helmet());
 app.use(cors({
 	origin: isDevelopment ? '*' : process.env.ALLOWED_ORIGINS?.split(','),

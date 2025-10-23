@@ -6,12 +6,17 @@ import { userService } from '@/services/user.service';
 import {
 	RegisterInput,
 	LoginInput,
-	UpdateUserInput
+	UpdateUserInput,
+	PaginationQuery,
+	ChangePasswordInput,
+	UserIdParam
 } from '@/schemas/user.schema';
+
 
 // ============================================
 // HELPER: Extraer y validar ID
 // ============================================
+
 const extractId = (params: Record<string, string | undefined>): string => {
 	const { id } = params;
 
@@ -31,9 +36,10 @@ const extractId = (params: Record<string, string | undefined>): string => {
  * Registrar nuevo usuario
  */
 export const register = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const data: RegisterInput = req.body;
+	
+	const input = req.validatedBody as RegisterInput;
 
-	const result = await userService.register(data);
+	const result = await userService.register(input);
 
 	ResponseHandler.created(res, result, 'User register successfully');
 });
@@ -44,9 +50,9 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
  */
 export const login = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 
-	const data: LoginInput = req.body;
+	const input = req.validatedBody as LoginInput;
 
-	const result = await userService.login(data.email, data.password);
+	const result = await userService.login(input);
 
 	ResponseHandler.success(res, result, 'Login successfully');
 });
@@ -60,7 +66,7 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
  * Obtener usuario por ID
  */
 export const getUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.params);
+	const id = extractId(req.validatedParams as UserIdParam);
 
 	const user = await userService.findById(id);
 
@@ -73,11 +79,11 @@ export const getUser = asyncHandler(async (req: Request, res: Response): Promise
  * Listar usuarios (paginado)
  */
 export const listUsers = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const { page, limit } = req.query as { page?: string; limit?: string };
+	const { page, limit } = req.validatedQuery as PaginationQuery;
 
 	const result = await userService.findAll(
-		page ? parseInt(page) : 1,
-		limit ? parseInt(limit) : 10
+		page ? page : 1,
+		limit ? limit : 10
 	);
 
 	ResponseHandler.success(res, result);
@@ -88,7 +94,7 @@ export const listUsers = asyncHandler(async (req: Request, res: Response): Promi
  * Actualizar usuario
  */
 export const updateUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.params);
+	const id = extractId(req.validatedParams as UserIdParam);
 	const data: UpdateUserInput = req.body;
 
 	const user = await userService.update(id, data);
@@ -98,11 +104,23 @@ export const updateUser = asyncHandler(async (req: Request, res: Response): Prom
 
 /**
  * DELETE /users/:id
- * Eliminar usuario
+ * Eliminar usuario (soft delete)
  */
 export const deleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.params);
+	const id = extractId(req.validatedParams as UserIdParam);
 	await userService.delete(id);
+
+	ResponseHandler.noContent(res);
+
+});
+
+/**
+ * DELETE /users/:id
+ * Eliminar usuario (soft delete)
+ */
+export const HardDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+	const id = extractId(req.validatedParams as UserIdParam);
+	await userService.hardDelete(id);
 
 	ResponseHandler.noContent(res);
 
@@ -112,25 +130,38 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response): Prom
  * GET /users/me
  * Obtener perfil del usuario autenticado
  */
-// export const getProfile = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-// 	// Asumiendo que tienes un middleware de auth que añade req.user
-// 	const userId = (req as any).user?.userId;
+export const getProfile = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 
-// 	const user = await userService.findById(userId);
+	// no se debería dar el caso porque el middleware de auth ya lo verifica
+	// pero lo prefiero a usar el operador "!" por seguridad
+	if (!req.user) {
+		throw createAppError('User not authenticated', 401);
+	}
+	const userId = req.user.userId;
 
-// 	ResponseHandler.success(res, user);
-// });
+	const user = await userService.findById(userId);
 
-// /**
-//  * PATCH /users/me/password
-//  * Cambiar contraseña del usuario autenticado
-//  */
+	ResponseHandler.success(res, user);
+});
 
-// export const changePassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-// 	const userId = (req as any).user?.userId;
-// 	const { oldPassword, newPassword } = req.body;
+/**
+ * PATCH /users/me/password
+ * Cambiar contraseña del usuario autenticado
+ */
 
-// 	await userService.changePassword(userId, oldPassword, newPassword);
+export const changePassword = asyncHandler(
+	async (req: Request, res: Response): Promise<undefined> => {
 
-// 	ResponseHandler.success(res, null, 'Password changed successfully');
-// });
+		// no se debería dar el caso porque el middleware de auth ya lo verifica
+		// pero lo prefiero a usar el operador "!" por seguridad
+		if (!req.user) {
+			throw createAppError('User not authenticated', 401);
+		}
+		const userId = req.user.userId;
+
+		const { oldPassword, newPassword } = req.validatedBody as ChangePasswordInput;
+
+		await userService.changePassword(userId, oldPassword, newPassword);
+
+		ResponseHandler.success(res, null, 'Password changed successfully');
+	});

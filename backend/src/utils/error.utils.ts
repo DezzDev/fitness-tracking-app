@@ -77,8 +77,6 @@ export const analyzeError = (err: Error): ErrorAnalysis => {
 // ============================================
 // ERROR HANDLERS
 // ============================================
-// ✅ Usa try/catch + handleServiceError Cuando:
-// El método tiene lógica de negocio compleja
 
 export const handleServiceError = (
 	error: unknown,
@@ -89,12 +87,21 @@ export const handleServiceError = (
 
 	// si es AppError, propagar sin modificar
 	if (isAppError(error)) {
-		logger.error(`[${context}] AppError propagated: `, {
-			message: error.message,
-			stack: error.stack,
-			statusCode: error.statusCode,
-			...metadata
-		});
+		if (error.details) {
+			error.details = {
+				...error.details,
+				...metadata,
+				context,
+				userMessage
+			};
+		} else {
+			error.details = {
+				...metadata,
+				context,
+				userMessage
+			};
+		}
+		
 		throw error;
 	};
 
@@ -102,17 +109,19 @@ export const handleServiceError = (
 	if (isError(error)) {
 		const analysis = analyzeError(error);
 
-		logger.error(`[${context}] ${analysis.category} error: `, {
-			message: error.message,
-			stack: error.stack,
-			statusCode: analysis.statusCode,
-			...metadata
-		});
-
+	
 		throw createAppError(
 			userMessage,
 			analysis.statusCode,
-			analysis.isOperational
+			analysis.isOperational,
+			{
+				details: {
+					...metadata,
+					context,
+					errorMessage: error.message,
+					errorCategory: analysis.category
+				}
+			}
 		);
 	}
 

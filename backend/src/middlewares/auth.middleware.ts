@@ -5,6 +5,8 @@ import { createAppError } from '@/middlewares/error.middleware';
 import { verifyToken, extractTokenFromHeader } from '@/utils/jwt.utils';
 import logger from '@/utils/logger';
 import { env } from '@/config/env';
+import { userService } from '@/services/user.service';
+
 
 
 
@@ -37,8 +39,10 @@ interface AuthOptions {
  */
 export const authenticate = (options: AuthOptions = {}) => {
 	const { required = true, allowExpired = false } = options;
+	logger.debug('Authenticating request');
 
 	return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+		
 
 		try {
 			// Extraer token del header
@@ -57,9 +61,13 @@ export const authenticate = (options: AuthOptions = {}) => {
 			// Verificar y decodificar token
 			const payload = verifyToken(token);
 
+			const user = userService.findById(payload.userId);
+			if (!user) {
+				throw createAppError('User not found for the provided token', 401, true, { code: 'USER_NOT_FOUND' });
+			}
+
 
 			// Adjuntar usuario a la request
-
 			req.user = {
 				userId: payload.userId,
 				email: payload.email,

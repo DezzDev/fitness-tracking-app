@@ -116,8 +116,10 @@ const logError = (error: unknown, req: Request): void => {
 		stack: error instanceof Error ? error.stack : undefined,
 		url: req.url,
 		method: req.method,
+		statusCode: isAppError(error) ? error.statusCode : 500,
 		body: req.body,
 		isOperational: isAppError(error) ? error.isOperational : false,
+		details: isAppError(error) ? error.details : {}
 	});
 };
 

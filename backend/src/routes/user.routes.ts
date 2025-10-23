@@ -2,20 +2,23 @@
 // src/routes/user.routes.ts
 // ============================================
 import { Router } from 'express';
-import { 
+import {
 	validateBody,
 	validateParams,
-	validateQuery, 
-	
+	validateQuery,
+
 } from '@/middlewares/validate.middleware';
 import {
 	RegisterSchema,
 	LoginSchema,
 	UserIdSchema,
 	PaginationSchema,
+	ChangePasswordSchema,
+	UpdateUserSchema,
 } from '@/schemas/user.schema';
 import * as userController from '@/controllers/user.controller';
-import { authenticate, authorize } from '@/middlewares/auth.middleware'; // Crearemos después
+import { authenticate, requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
+import { authorize } from '@/middlewares/authorize.middleware';
 
 const router: Router = Router();
 
@@ -36,29 +39,94 @@ router.post('/register', validateBody(RegisterSchema), userController.register);
 router.post('/login', validateBody(LoginSchema), userController.login);
 
 // ============================================
-// ADMIN ROUTES
+// PROTECTED ROUTES (Usuario autenticado)
+// ============================================
+
+/**
+ * GET /users/me
+ * Obtener perfil del usuario autenticado
+ */
+router.get(
+	'/me',
+	requireAuth,
+	userController.getProfile
+);
+
+/**
+ * PATCH /users/me/password
+ * Cambiar contraseña del usuario autenticado
+ */
+router.patch(
+	'/me/password',
+	requireAuth,
+	validateBody(ChangePasswordSchema),
+	userController.changePassword
+);
+
+// ============================================
+// ADMIN ROUTES (Solo administradores)
 // ============================================
 
 /**
  * GET /users
+ * Listar todos los usuarios
  */
 router.get(
 	'/',
-	authenticate,
-	authorize(['admin']),
+	requireAuth,
+	authorize([ 'admin' ]),
 	validateQuery(PaginationSchema),
 	userController.listUsers
 );
 
 /**
  * GET /users/:id
+ * Obtener usuario específico
  */
 router.get(
 	'/:id',
-	// authenticate,
-	validateParams(UserIdSchema), // ← AQUÍ está la validación
+	requireAuth,
+	authorize([ 'admin' ]),
+	validateParams(UserIdSchema),
 	userController.getUser
 );
+
+/**
+ * PATCH /users/:id
+ * Actualizar usuario
+ */
+router.patch(
+	'/:id',
+	authenticate(),
+	validateParams(UserIdSchema),
+	validateBody(UpdateUserSchema),
+	userController.updateUser
+);
+
+/**
+ * DELETE /users/:id 
+ * Eliminar usuario (soft delete)
+ */
+router.delete(
+	'/:id',
+	authenticate(),
+	authorize('admin'),
+	validateParams(UserIdSchema),
+	userController.deleteUser
+);
+
+/**
+ * DELETE /users/:id 
+ * Eliminar usuario (hard delete)
+ */
+router.delete(
+	'/:id',
+	authenticate(),
+	authorize('admin'),
+	validateParams(UserIdSchema),
+	userController.HardDeleteUser
+);
+
 
 
 export default router;

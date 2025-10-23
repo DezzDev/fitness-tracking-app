@@ -7,10 +7,14 @@ declare global {
 				userId: string;
 				email: string;
 				role: 'user' | 'admin';
-			}
+			},
+			validatedBody?: Record<string, unknown>;
+			validatedQuery?: Record<string, unknown>;
+			validatedParams?: Record<string, unknown>;
 		}
 	}
 }
+
 
 export { };
 

@@ -3,12 +3,12 @@
 // todos los errores que se lanzan desde servicios deben de ser appErrors
 
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { User, UserCreateData, UserUpdateData } from '@/types';
+import { User } from '@/types';
+import { LoginInput, RegisterInput, UpdateUserInput } from '@/schemas/user.schema';
 import { userRepository } from '@/repository/user.repository';
 import { createAppError } from '@/middlewares/error.middleware';
 import { handleServiceError } from '@/utils/error.utils';
-import { env } from '@/config/env';
+import { generateToken } from '@/utils/jwt.utils';
 
 
 
@@ -17,7 +17,6 @@ import { env } from '@/config/env';
 // ============================================
 
 const SALT_ROUNDS = 10;
-const JWT_EXPIRES_IN = '7d';
 
 // ============================================
 // FUNCIONES PURAS: Utilidades
@@ -28,13 +27,6 @@ const hashPassword = async (password: string): Promise<string> =>
 
 const comparePassword = async (password: string, hash: string): Promise<boolean> =>
 	bcrypt.compare(password, hash);
-
-const generateToken = (userId: string, email: string, role: string): string =>
-	jwt.sign(
-		{ userId, email, role },
-		env.JWT_SECRET,
-		{ expiresIn: JWT_EXPIRES_IN }
-	);
 
 const sanitizeUser = (user: User): Omit<User, 'passwordHash'> => {
 	// Remover campos sensibles si los hubiera
@@ -49,23 +41,23 @@ export const userService = {
 	/**
 		* Registrar un nuevo usuario
 	*/
-	register: async (data: UserCreateData): Promise<{ user: User; token: string }> => {
+	register: async (input: RegisterInput): Promise<{ user: User; token: string }> => {
 		try {
 			// 1. Verificar si el email ya existe
-			const existingUser = await userRepository.existByEmail(data.email);
+			const existingUser = await userRepository.existByEmail(input.email);
 
 			if (existingUser) {
 				throw createAppError('Email already registered', 409);
 			}
 
 			// 2. Hashear contraseña
-			const passwordHash = await hashPassword(data.password);
+			const passwordHash = await hashPassword(input.password);
 
 			// 3. Crear usuario
-			const user = await userRepository.create(data, passwordHash);
+			const user = await userRepository.create(input, passwordHash);
 
 			// 4. Generar token
-			const token = generateToken(user.id, user.email, user.role);
+			const token = generateToken({userId: user.id, email: user.email, role: user.role});
 
 			// 5. Retornar usuario sanitizado y token
 			return {
@@ -79,7 +71,7 @@ export const userService = {
 				error,
 				'UserService.register',
 				'Unable to register user',
-				{ email: data.email }
+				{ email: input.email }
 			);
 		}
 	},
@@ -89,24 +81,24 @@ export const userService = {
 	 * INPUT: LoginInput (schema)
 	 * OUTPUT: User (entity)
 	 */
-	login: async (email: string, password: string): Promise<{ user: User; token: string }> => {
+	login: async (input: LoginInput): Promise<{ user: User; token: string }> => {
 		try {
 			// 1. Buscar usuarios por email, obtener sus datos y su password_hash
-			const user = await userRepository.findByEmailWithPassword(email);
+			const user = await userRepository.findByEmailWithPassword(input.email);
 
 			if (!user) {
 				throw createAppError('Invalid credentials', 401);
 			}
 
 			// 2.Verificar password
-			const isPasswordValid = await comparePassword(password, user.passwordHash);
+			const isPasswordValid = await comparePassword(input.password, user.passwordHash);
 
 			if (!isPasswordValid) {
 				throw createAppError('Invalid credentials', 401);
 			}
 
 			// 3. Generar token
-			const token = generateToken(user.id, user.email, user.role);
+			const token = generateToken({userId: user.id, email: user.email, role: user.role});
 
 
 			// Retornar usuario sanitizado (sin password)		
@@ -122,7 +114,7 @@ export const userService = {
 				error,
 				'UserService.login',
 				'Unable to login',
-				{ email }
+				{ email: input.email }
 			);
 		}
 	},
@@ -209,7 +201,7 @@ export const userService = {
 	/**
 	 * Actualizar usuario
 	 */
-	update: async (id: string, data: UserUpdateData): Promise<User> => {
+	update: async (id: string, input: UpdateUserInput): Promise<User> => {
 		try {
 			// 1. Verifica que el usuario existe
 			const existingUser = await userRepository.findById(id);
@@ -219,8 +211,8 @@ export const userService = {
 			}
 
 			// 2. si se actualiza email verifica que no existe
-			if (data.email && data.email !== existingUser.email) {
-				const emailExists = await userRepository.existByEmail(data.email);
+			if (input.email && input.email !== existingUser.email) {
+				const emailExists = await userRepository.existByEmail(input.email);
 
 				if (emailExists) {
 					throw createAppError('Email already in use', 409);
@@ -228,14 +220,14 @@ export const userService = {
 			}
 
 			// 3. Actualizar
-			const updateUser = await userRepository.update(id, data);
+			const updateUser = await userRepository.update(id, input);
 			return sanitizeUser(updateUser);
 		} catch (error) {
 			throw handleServiceError(
 				error,
 				'UserService.update',
 				'Unable to update user',
-				{ userId: id, data }
+				{ userId: id, input }
 			);
 		}
 	},

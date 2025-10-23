@@ -32,7 +32,7 @@ export const RegisterSchema = BaseUserSchema.extend({
   age: z.number().int().min(18).max(120),
   role: z.enum(['user', 'admin']).default('user'),
 	profile_image: z.string().optional().default(profile_image_default),
-	acceptTerms: z.boolean({ error: 'You must accept the terms and conditions' }).refine(val => val === true, { message: 'You must accept the terms and conditions' }),
+	acceptTerms: z.boolean().refine(val => val === true, { message: 'You must accept the terms and conditions' }),
 });
 
 // Schema para login (pick solo campos necesarios)
@@ -43,6 +43,7 @@ export const LoginSchema = BaseUserSchema.pick({
 
 // Schema para actualización (todos opcionales)
 export const UpdateUserSchema = z.object({
+	email: BaseUserSchema.shape.email.optional(),
   name: z.string().min(2).max(50).trim().optional(),
   age: z.number().int().min(18).max(120).optional(),
 	profile_image: z.string().optional(),
