@@ -23,7 +23,7 @@ content-type: application/json
 	"email": "alejandro3@email.com",
 	"password": "Zapata38",
   "name": "alejandro",
-	"age": 20,
+	"age": "20",
 	"acceptTerms": true
 }
 
@@ -82,6 +82,12 @@ content-type: application/json
 ### list users
 GET {{baseUrl}}/users?page=1&limit=10 HTTP/1.1
 Authorization: Bearer {{alejandro_token}}
+Accept: application/json
+
+### DELETE /users/hardDelete:id
+# hard delete user by id
+DELETE {{baseUrl}}/users/hardDelete/394db242-5e3c-48db-8d0b-6762f0a3dce5 HTTP/1.1
+Authorization: Bearer {{token}}
 Accept: application/json
 
 

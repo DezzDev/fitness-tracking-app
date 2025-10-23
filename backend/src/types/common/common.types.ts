@@ -6,6 +6,8 @@ export interface ApiResponse<T=unknown>{
 	message?:string;
 	data?:T;
 	error?:string;
+	details?:string[];
+	stack?:string;
 	timestamp:string;
 }
 

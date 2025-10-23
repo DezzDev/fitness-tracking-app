@@ -31,6 +31,8 @@ export const ResponseHandler = {
 		return res.status(statusCode).json(payload);
 	},
 
+	
+
 	noContent(res: Response): Response {
 		return res.status(204).send();
 	}

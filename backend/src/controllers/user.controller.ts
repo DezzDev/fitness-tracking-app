@@ -36,7 +36,7 @@ const extractId = (params: Record<string, string | undefined>): string => {
  * Registrar nuevo usuario
  */
 export const register = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	
+
 	const input = req.validatedBody as RegisterInput;
 
 	const result = await userService.register(input);
@@ -110,7 +110,7 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response): Prom
 	const id = extractId(req.validatedParams as UserIdParam);
 	await userService.delete(id);
 
-	ResponseHandler.noContent(res);
+	ResponseHandler.success(res, null, 'User deleted successfully');
 
 });
 
@@ -120,9 +120,10 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response): Prom
  */
 export const HardDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 	const id = extractId(req.validatedParams as UserIdParam);
+	console.log({ id });
 	await userService.hardDelete(id);
 
-	ResponseHandler.noContent(res);
+	ResponseHandler.success(res, null, 'User hard deleted successfully');
 
 });
 

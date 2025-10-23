@@ -108,7 +108,7 @@ router.patch(
  * Eliminar usuario (soft delete)
  */
 router.delete(
-	'/:id',
+	'/softDelete/:id',
 	authenticate(),
 	authorize('admin'),
 	validateParams(UserIdSchema),
@@ -120,7 +120,7 @@ router.delete(
  * Eliminar usuario (hard delete)
  */
 router.delete(
-	'/:id',
+	'/hardDelete/:id',
 	authenticate(),
 	authorize('admin'),
 	validateParams(UserIdSchema),

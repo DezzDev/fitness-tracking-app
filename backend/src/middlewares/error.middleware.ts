@@ -4,12 +4,14 @@ import logger from "@/utils/logger";
 import { isDevelopment } from '@/config/env';
 import { ZodError } from 'zod';
 import { isAppError } from '@/utils/error.utils';
+import { ResponseHandler } from '@/utils/response';
 
 // ============================================
 // TIPOS
 // ============================================
 
 import { AppError } from '@/types';
+
 
 interface ErrorPayload {
 	success: false;
@@ -69,7 +71,7 @@ const getStatusCode = (err: unknown): number => {
 };
 
 const formatZodMessage = (message: ZodMessage[]): string =>
-	message.map(m => `expected: ${m.expected}, code: ${m.code}, path: ${m.path.map(p => p).join("-")}, message: ${m.message}` ).join('\n');
+	message.map(m => `expected: ${m.expected}, code: ${m.code}, path: ${m.path.map(p => p).join("-")}, message: ${m.message}`).join('\n');
 
 const getMessage = (err: unknown): string => {
 	if (err instanceof ZodError) {
@@ -99,7 +101,8 @@ const buildErrorPayload = (error: unknown): ErrorPayload => {
 
 	if (isZodError(error)) {
 		payload.details = formatZodErrors(error);
-	} else if (isAppError(error) && error.details) {
+	}
+	else if (isAppError(error) && error.details) {
 		payload.details = error.details;
 	}
 
@@ -138,7 +141,11 @@ export const errorHandler = (
 	logError(err, req);
 	const statusCode = getStatusCode(err);
 	const payload = buildErrorPayload(err);
-	res.status(statusCode).json(payload);
+	if (isDevelopment) {
+		res.status(statusCode).json(payload);
+		return;
+	}
+	ResponseHandler.error(res, getMessage(err), statusCode);
 };
 
 // ============================================
