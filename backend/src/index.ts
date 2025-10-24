@@ -46,13 +46,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging (desarrollo)
-if (isDevelopment) {
-	app.use((req, _res, next) => {
-		logger.debug(`${req.method} ${req.path}`, { body: req.body, query: req.query });
-		next();
-	});
-}
+
 
 // ============================================
 // HEALTH CHECK

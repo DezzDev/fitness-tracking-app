@@ -114,5 +114,24 @@ Usa dev en desarrollo y combined en producción (más detallado).
 Redirige logs a un archivo en producción en lugar de consola.
 
 
+7. Dependencias de testing
+# Testing framework
+npm install -D jest ts-jest @types/jest
+
+# Testing utilities
+npm install -D supertest @types/supertest
+
+# Mocking
+npm install -D jest-mock-extended
+
+# Coverage
+npm install -D @jest/globals
+
+
+
+
 
 ¿es necesario utilizar el logger en handleServiceError cuando el error es de tipo Error o desconocido?, ya que el middleware sin importar el tipo de error va a hacer un log
+
+es necesario en handleService error, pasarle como parametro un userMessage 
+ya que tenemos el message del error

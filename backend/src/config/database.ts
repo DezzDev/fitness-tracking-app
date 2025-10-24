@@ -89,7 +89,7 @@ export const connectDatabase = async (retries = MAX_RETRIES): Promise<Client> =>
   throw new Error('Failed to connect to database after all retries');
 };
 
-export const disconnectDatabase = (): void => {
+export const disconnectDatabase = async (): Promise<undefined> => {
   if (state?.client) {
     state.client.close();
     state = null;

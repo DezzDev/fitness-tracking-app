@@ -61,7 +61,7 @@
   },
   
   "include": [
-    "src/**/*"                                   // Archivos a incluir
+    "src/**/*"                                  // Archivos a incluir
   ],
   
   "exclude": [
@@ -69,7 +69,7 @@
     "dist",                                      // Excluir build
     "tests",                                     // Excluir tests del build
     "**/*.spec.ts",                              // Excluir archivos de test
-    "**/*.test.ts"
+    "**/*.test.ts",		
   ],
   
   "ts-node": {

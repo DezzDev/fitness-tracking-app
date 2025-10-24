@@ -20,10 +20,10 @@ POST {{baseUrl}}/users/register HTTP/1.1
 content-type: application/json
 
 {
-	"email": "alejandro3@email.com",
+	"email": "alejandro4@email.com",
 	"password": "Zapata38",
   "name": "alejandro",
-	"age": "20",
+	"age": 15,
 	"acceptTerms": true
 }
 
@@ -56,7 +56,7 @@ content-type: application/json
 # get my profile
 GET {{baseUrl}}/users/me HTTP/1.1
 # Authorization: Bearer {{token}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{alejandro_token}}
 Accept: application/json
 
 
@@ -81,7 +81,7 @@ content-type: application/json
 # GET /users
 ### list users
 GET {{baseUrl}}/users?page=1&limit=10 HTTP/1.1
-Authorization: Bearer {{alejandro_token}}
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ### DELETE /users/hardDelete:id

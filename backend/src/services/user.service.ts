@@ -5,7 +5,7 @@
 import bcrypt from 'bcrypt';
 import { User } from '@/types';
 import { LoginInput, RegisterInput, UpdateUserInput } from '@/schemas/user.schema';
-import { userRepository } from '@/repository/user.repository';
+import { userRepository } from '@/repositories/user.repository';
 import { createAppError } from '@/middlewares/error.middleware';
 import { handleServiceError } from '@/utils/error.utils';
 import { generateToken } from '@/utils/jwt.utils';

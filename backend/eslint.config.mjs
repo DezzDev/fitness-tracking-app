@@ -18,6 +18,7 @@ export default defineConfig(
 			rules: {
 				semi: [ "error", "always" ],
 			},
+			excludes: [ 'dist/**', 'node_modules/**' ],
 		},
 	]
 );
