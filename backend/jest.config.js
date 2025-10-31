@@ -29,3 +29,11 @@ export const moduleNameMapper = {
 export const setupFilesAfterEnv = [ '<rootDir>/src/test-utils/setup.ts' ];
 export const testTimeout = 10000;
 export const verbose = true;
+export const transform={
+	 '^.+\\.ts$': [
+      'ts-jest',
+      {
+        useESM: true, // esto permite importar uuid ESM dentro de tests
+      },
+    ],
+}

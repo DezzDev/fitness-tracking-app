@@ -2,7 +2,7 @@
 import { execute, executeWithRetry } from "@/config/database";
 import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
 import logger from "@/utils/logger";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from "uuid"
 
 
 
