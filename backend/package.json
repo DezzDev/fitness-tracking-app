@@ -7,7 +7,9 @@
 		"start": "node dist/index.js",
 		"dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
 		"dev:debug": "ts-node-dev --inspect --respawn --transpile-only --ignore-watch node_modules src/server.ts",
-		"build": "tsc"
+		"build": "tsc",
+		"test": "jest",
+		"test:unit": "jest --testPathPattern=unit"
 	},
 	"keywords": [],
 	"author": "Daniel Z",
@@ -22,7 +24,7 @@
 		"express-rate-limit": "^8.1.0",
 		"helmet": "^8.1.0",
 		"jsonwebtoken": "^9.0.2",
-		"uuid": "^13.0.0",
+		"uuid": "^9.0.1",
 		"zod": "^4.1.11"
 	},
 	"devDependencies": {

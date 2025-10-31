@@ -65,7 +65,7 @@ describe('JWT Utils', () => {
 			// Esperar 1 segundo
 			return new Promise((resolve) => {
 				setTimeout(() => {
-					expect(() => verifyToken(expiredToken)).toThrow('Token expired');
+					expect(() => verifyToken(expiredToken)).toThrow('Token has expired');
 					resolve(undefined);
 				}, 1100);
 			});

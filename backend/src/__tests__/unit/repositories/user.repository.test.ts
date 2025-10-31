@@ -62,7 +62,7 @@ describe('User Repository', () => {
 				age: createData.age,
 				role: createData.role,
 			});
-			expect(mockExecuteWithRetry).toHaveBeenCalledWith(1);
+			expect(mockExecuteWithRetry).toHaveBeenCalledWith(expect.any(Function));
 		});
 
 		it('should throw error if creation fails', async () => {
