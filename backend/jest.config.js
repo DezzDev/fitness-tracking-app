@@ -29,11 +29,13 @@ export const moduleNameMapper = {
 export const setupFilesAfterEnv = [ '<rootDir>/src/test-utils/setup.ts' ];
 export const testTimeout = 10000;
 export const verbose = true;
-export const transform={
-	 '^.+\\.ts$': [
-      'ts-jest',
-      {
-        useESM: true, // esto permite importar uuid ESM dentro de tests
-      },
-    ],
-}
+// export const transform={
+// 	 '^.+\\.ts$': [
+//       'ts-jest',
+//       {
+//         useESM: true, // esto permite importar uuid ESM dentro de tests
+//       },
+//     ],
+// }
+// Este truco de useESM: true hace que Jest pueda cargar librerías ESM puras (como uuid@13),
+// aunque tu entorno general sea CommonJS.

@@ -1,12 +1,17 @@
 // src/__tests__/unit/repositories/user.repository.test.ts
 
+
 import { userRepository } from './../../../repositories/user.repository';
 import { execute, executeWithRetry } from './../../../config/database';
 import { createMockUser } from './../../../test-utils/helpers';
 import { describe, it, expect, jest } from '@jest/globals';
 import { UserCreateData } from './../../../types';
 import { beforeEach } from 'node:test';
-import { create } from 'domain';
+
+// Simulamos la librería 'uuid' ANTES de importarla
+jest.mock('uuid', () => ({
+	v4: jest.fn(() => 'mocked-uuid-1234'),
+}));
 
 // Mock de las funciones de database
 jest.mock('@/config/database');
