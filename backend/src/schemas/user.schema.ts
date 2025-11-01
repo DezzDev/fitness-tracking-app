@@ -45,7 +45,7 @@ export const LoginSchema = BaseUserSchema.pick({
 export const UpdateUserSchema = z.object({
 	email: BaseUserSchema.shape.email.optional(),
   name: RegisterSchema.shape.name.optional(),
-  age: RegisterSchema.optional(),
+  age: RegisterSchema.shape.age.optional(),
 	profile_image: z.string().optional(),
 }).strict(); // No permite campos adicionales
 
