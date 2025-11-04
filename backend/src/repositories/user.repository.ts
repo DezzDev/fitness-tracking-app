@@ -293,7 +293,7 @@ export const userRepository = {
 	/**
 	 * Eliminar usuario permanentemente
 	 */
-	delete: async (id: string): Promise<void> => {
+	hardDelete: async (id: string): Promise<void> => {
 		await executeWithRetry(client =>
 			client.execute({
 				sql: queries.delete.sql,

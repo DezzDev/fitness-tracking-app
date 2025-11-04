@@ -112,7 +112,7 @@ router.delete(
 	authenticate(),
 	authorize('admin'),
 	validateParams(UserIdSchema),
-	userController.deleteUser
+	userController.softDeleteUser
 );
 
 /**
@@ -124,7 +124,7 @@ router.delete(
 	authenticate(),
 	authorize('admin'),
 	validateParams(UserIdSchema),
-	userController.HardDeleteUser
+	userController.hardDeleteUser
 );
 
 

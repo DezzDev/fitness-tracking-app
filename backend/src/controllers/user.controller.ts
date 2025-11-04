@@ -104,11 +104,11 @@ export const updateUser = asyncHandler(async (req: Request, res: Response): Prom
 
 /**
  * DELETE /users/:id
- * Eliminar usuario (soft delete)
+ * Eliminar usuario - desactivar (soft delete)
  */
-export const deleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+export const softDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 	const id = extractId(req.validatedParams as UserIdParam);
-	await userService.delete(id);
+	await userService.softDelete(id);
 
 	ResponseHandler.success(res, null, 'User deleted successfully');
 
@@ -116,9 +116,9 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response): Prom
 
 /**
  * DELETE /users/:id
- * Eliminar usuario (soft delete)
+ * Eliminar usuario permanentemente (hard delete)
  */
-export const HardDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+export const hardDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 	const id = extractId(req.validatedParams as UserIdParam);
 	console.log({ id });
 	await userService.hardDelete(id);

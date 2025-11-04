@@ -235,7 +235,7 @@ export const userService = {
 	/**
 	* Eliminar usuario (lógica: desactivar)
 	*/
-	delete: async (id: string): Promise<void> => {
+	softDelete: async (id: string): Promise<void> => {
 		try {
 			// 1. Verificar que existe
 			const user = await userRepository.findById(id);
@@ -271,7 +271,7 @@ export const userService = {
 			}
 
 			// 2. Eliminar
-			await userRepository.delete(id);
+			await userRepository.hardDelete(id);
 		} catch (error) {
 			throw handleServiceError(
 				error,
