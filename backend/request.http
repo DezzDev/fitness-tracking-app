@@ -20,7 +20,7 @@ POST {{baseUrl}}/users/register HTTP/1.1
 content-type: application/json
 
 {
-	"email": "alejandro4@email.com",
+	"email": "alejandro6email.com",
 	"password": "Zapata38",
   "name": "alejandro",
 	"age": 15,

@@ -3,8 +3,7 @@ import { userRepository } from './../../../repositories/user.repository';
 import bcrypt from "bcrypt";
 import { createMockUser } from './../../../test-utils/helpers';
 import { validateRegisterData, validateLoginData } from './../../../test-utils/fixtures';
-import { describe, it, expect, jest } from '@jest/globals';
-import { beforeEach, mock } from 'node:test';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 // Simulamos la librería 'uuid' ANTES de importarla
 jest.mock('uuid', () => ({
@@ -25,17 +24,7 @@ describe('User Service', () => {
 
 	describe('register', () => {
 
-		it('should throw error if email already exists', async () => {
-			mockUserRepository.existByEmail.mockResolvedValue(true);
-
-			await expect(userService.register(validateRegisterData)).rejects.toThrow(
-				'Email already registered'
-			);
-
-			expect(mockBcrypt.hash).not.toHaveBeenCalled();
-			expect(mockUserRepository.create).not.toHaveBeenCalled();
-		})
-
+		
 		it('should register a new user successfully', async () => {
 			const mockUser = createMockUser({ email: validateRegisterData.email });
 
@@ -52,6 +41,18 @@ describe('User Service', () => {
 			expect(mockBcrypt.hash).toHaveBeenCalled();
 			expect(mockUserRepository.create).toHaveBeenCalled();
 		});
+
+		it('should throw error if email already exists', async () => {
+			mockUserRepository.existByEmail.mockResolvedValue(true);
+
+			await expect(userService.register(validateRegisterData)).rejects.toThrow(
+				'Email already registered'
+			);
+
+			expect(mockBcrypt.hash).not.toHaveBeenCalled();
+			expect(mockUserRepository.create).not.toHaveBeenCalled();
+		})
+
 
 	})
 

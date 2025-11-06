@@ -25,7 +25,7 @@ export const validateLoginData: LoginInput ={
 /**
  * Datos inválidos (para test negativos)
  */
-export const invalidRegtisterData = {
+export const invalidRegisterData = {
 	emailMissing: {...validateRegisterData, email: undefined},
 	emailInvalid: {...validateRegisterData, email: 'invalidemail'},
 	passwordShort: {...validateRegisterData, password: 'short'},

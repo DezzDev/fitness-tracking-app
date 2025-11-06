@@ -6,7 +6,7 @@ import { execute, executeWithRetry } from './../../../config/database';
 import { createMockUser } from './../../../test-utils/helpers';
 import { describe, it, expect, jest } from '@jest/globals';
 import { UserCreateData } from './../../../types';
-import { beforeEach } from 'node:test';
+import { beforeEach } from '@jest/globals';
 
 // Simulamos la librería 'uuid' ANTES de importarla
 jest.mock('uuid', () => ({

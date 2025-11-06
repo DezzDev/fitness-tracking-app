@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 	age INTEGER NOT NULL CHECK(age BETWEEN 10 AND 120),
 	password_hash TEXT NOT NULL,
 	role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('user', 'admin')),
-	display_name TEXT,
+	name TEXT,
 	profile_image TEXT,
 	is_active BOOLEAN NOT NULL DEFAULT 1,
 	acceptTerms BOOLEAN NOT NULL CHECK(acceptTerms = 1), 
