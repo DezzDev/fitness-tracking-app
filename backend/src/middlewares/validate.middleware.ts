@@ -25,12 +25,12 @@ interface ValidationOptions {
 const validateData = async <T extends ZodType>(
 	schema: T,
 	data: unknown,
-	options: ValidationOptions = {},
+	_options: ValidationOptions = {},
 
 ): Promise<z.infer<T>> => {
 	try {
 		// Puedes usar options aquí en el futuro
-		console.log(options);
+	
 
 		return await schema.parseAsync(data);
 

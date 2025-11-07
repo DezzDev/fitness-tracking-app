@@ -7,7 +7,7 @@ import {env} from '@/config/env';
 /**
  * Generar token JWT para testing
  */
-export const generateTestToken = (user:Partial<User>): string =>{
+export const generateTokenTest = (user:Partial<User>): string =>{
 	return jwt.sign(
 		{
 			userId: user.id ?? 'test-user-id',
