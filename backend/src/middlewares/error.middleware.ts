@@ -116,13 +116,13 @@ const buildErrorPayload = (error: unknown): ErrorPayload => {
 const logError = (error: unknown, req: Request): void => {
 	logger.error('Error Capturado por el Middleware:', {
 		message: getMessage(error),
-		stack: error instanceof Error ? error.stack : undefined,
 		url: req.url,
 		method: req.method,
 		statusCode: isAppError(error) ? error.statusCode : 500,
-		body: req.body,
 		isOperational: isAppError(error) ? error.isOperational : false,
-		details: isAppError(error) ? error.details : {}
+		body: req.body,
+		details: isAppError(error) ? error.details : {},
+		stack: error instanceof Error ? error.stack : undefined,
 	});
 };
 
@@ -141,11 +141,8 @@ export const errorHandler = (
 	logError(err, req);
 	const statusCode = getStatusCode(err);
 	const payload = buildErrorPayload(err);
-	if (isDevelopment) {
-		res.status(statusCode).json(payload);
-		return;
-	}
-	ResponseHandler.error(res, getMessage(err), statusCode);
+	
+	ResponseHandler.error(res, payload, statusCode);
 };
 
 // ============================================

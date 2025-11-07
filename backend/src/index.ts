@@ -76,6 +76,7 @@ app.use(errorHandler);
 
 async function startServer() {
 	try {
+		
 		await connectDatabase();
 
 		const server = app.listen(env.PORT, () => {

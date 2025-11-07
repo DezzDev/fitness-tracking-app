@@ -45,7 +45,9 @@ const delay = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
 
 const testConnection = async (client: Client): Promise<boolean> => {
+	
   try {
+		
     await client.execute('SELECT 1');
     return true;
   } catch {
@@ -66,6 +68,7 @@ export const connectDatabase = async (retries = MAX_RETRIES): Promise<Client> =>
   const client = state?.client ?? createDatabaseClient();
 
   for (let attempt = 1; attempt <= retries; attempt++) {
+		
     const isConnected = await testConnection(client);
 
     if (isConnected) {
@@ -78,7 +81,7 @@ export const connectDatabase = async (retries = MAX_RETRIES): Promise<Client> =>
       logger.info('✅ Database connected successfully');
       return client;
     }
-
+		
     logger.warn(`Database connection attempt ${attempt}/${retries} failed`);
 
     if (attempt < retries) {

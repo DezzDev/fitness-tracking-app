@@ -80,7 +80,7 @@ export const analyzeError = (err: Error): ErrorAnalysis => {
 
 export const handleServiceError = (
 	error: unknown,
-	context: string,
+	context:string,
 	userMessage: string,
 	metadata?: Record<string, unknown>
 ): never => {
@@ -89,15 +89,13 @@ export const handleServiceError = (
 	if (isAppError(error)) {
 		if (error.details) {
 			error.details = {
-				...error.details,
 				...metadata,
-				context,
-				userMessage
+				userMessage,
+				...error.details,
 			};
 		} else {
 			error.details = {
 				...metadata,
-				context,
 				userMessage
 			};
 		}
@@ -111,14 +109,13 @@ export const handleServiceError = (
 
 	
 		throw createAppError(
-			userMessage,
+			error.message,
 			analysis.statusCode,
 			analysis.isOperational,
 			{
 				details: {
 					...metadata,
-					context,
-					errorMessage: error.message,
+					userMessage,
 					errorCategory: analysis.category
 				}
 			}

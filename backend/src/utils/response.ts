@@ -22,13 +22,17 @@ export const ResponseHandler = {
 		return ResponseHandler.success(res, data, message, 201);
 	},
 
-	error(res: Response, error: string, statusCode = 500): Response {
-		const payload: ApiResponse = {
-			success: false,
-			error,
-			timestamp: new Date().toISOString(),
+	error(res: Response, payload: {
+		success: false;
+		error: string;
+		details?: unknown;
+		timestamp: string;
+		stack?: string;
+	}, statusCode = 500): Response {
+		const response: ApiResponse = {
+		...payload,
 		};
-		return res.status(statusCode).json(payload);
+		return res.status(statusCode).json(response);
 	},
 
 	
