@@ -8,6 +8,7 @@ import { validateLoginData, validateRegisterData, invalidRegisterData } from '..
 import { beforeAll, jest, it, describe, expect, beforeEach, afterAll } from '@jest/globals';
 import { connectDatabase } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
+import { userService } from '../../services/user.service';
 
 
 // Genera un id aleatorio simple
@@ -43,7 +44,10 @@ describe('authentication integration tests', () => {
 		(uuidv4 as jest.Mock).mockReturnValue(`mocked-${randomId()}`)
 	})
 
-	
+	afterAll(async()=>{
+		await userService.deleteMockUsers();
+	})
+
 	describe('POST /api/users/register', () => {
 		
 

@@ -325,7 +325,22 @@ export const userService = {
 				{ userId: id }
 			);
 		}
-	}
+	},
+
+	/**
+	 * Eliminar todos los usuarios de prueba
+	 */
+	deleteMockUsers: async (): Promise<void> => {
+		try {
+			await userRepository.deleteMockUsers();
+		} catch (error) {
+			throw handleServiceError(
+				error,
+				'UserService.deleteMockUsers',
+				'Unable to delete mock users',				
+			);
+		}
+	},
 
 
 };

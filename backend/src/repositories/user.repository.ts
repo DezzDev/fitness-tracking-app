@@ -106,7 +106,7 @@ const queries = {
 
 	},
 
-	delete: {
+	hardDelete: {
 		sql: 'DELETE FROM users WHERE id= ?',
 		args: (id: string) => [ id ],
 	},
@@ -119,6 +119,14 @@ const queries = {
 			RETURNING *
 			`,
 		args: (id: string, password_hash: string) => [ password_hash, id ]
+	}, 
+
+	deleteMockUsers:{
+		sql: `
+			DELETE FROM users
+			WHERE id like 'mocked-%'
+		`,
+		args:()=>[]
 	}
 
 };
@@ -296,8 +304,8 @@ export const userRepository = {
 	hardDelete: async (id: string): Promise<void> => {
 		await executeWithRetry(client =>
 			client.execute({
-				sql: queries.delete.sql,
-				args: queries.delete.args(id)
+				sql: queries.hardDelete.sql,
+				args: queries.hardDelete.args(id)
 			})
 		);
 	},
@@ -326,5 +334,17 @@ export const userRepository = {
 		}
 
 		return mapRowToUser(result.rows[ 0 ] as unknown as UserRow);
+	},
+
+	/**
+	 * Eliminar todos los usuarios de prueba
+	 */
+	deleteMockUsers: async (): Promise<void> => {
+		await executeWithRetry(client =>
+			client.execute({
+				sql: queries.deleteMockUsers.sql,
+				args: queries.deleteMockUsers.args()
+			})
+		);
 	}
 };
