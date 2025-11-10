@@ -110,7 +110,7 @@ export const softDeleteUser = asyncHandler(async (req: Request, res: Response): 
 	const id = extractId(req.validatedParams as UserIdParam);
 	await userService.softDelete(id);
 
-	ResponseHandler.success(res, null, 'User deleted successfully');
+	ResponseHandler.noContent(res);
 
 });
 
@@ -123,7 +123,7 @@ export const hardDeleteUser = asyncHandler(async (req: Request, res: Response): 
 	console.log({ id });
 	await userService.hardDelete(id);
 
-	ResponseHandler.success(res, null, 'User hard deleted successfully');
+	ResponseHandler.noContent(res);
 
 });
 

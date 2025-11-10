@@ -18,7 +18,8 @@ import {
 } from '@/schemas/user.schema';
 import * as userController from '@/controllers/user.controller';
 import { authenticate, requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
-import { authorize } from '@/middlewares/authorize.middleware';
+import { authorize, requireAdmin } from '@/middlewares/authorize.middleware';
+import { request } from 'http';
 
 const router: Router = Router();
 
@@ -30,13 +31,21 @@ const router: Router = Router();
  * POST /users/register
  * Registrar nuevo usuario
  */
-router.post('/register', validateBody(RegisterSchema), userController.register);
+router.post(
+	'/register', 
+	validateBody(RegisterSchema), 
+	userController.register
+);
 
 /**
  * POST /users/login
  * Login
  */
-router.post('/login', validateBody(LoginSchema), userController.login);
+router.post(
+	'/login', 
+	validateBody(LoginSchema),
+	userController.login
+);
 
 // ============================================
 // PROTECTED ROUTES (Usuario autenticado)
@@ -74,7 +83,7 @@ router.patch(
 router.get(
 	'/',
 	requireAuth,
-	authorize([ 'admin' ]),
+	requireAdmin,
 	validateQuery(PaginationSchema),
 	userController.listUsers
 );
@@ -86,7 +95,7 @@ router.get(
 router.get(
 	'/:id',
 	requireAuth,
-	authorize([ 'admin' ]),
+	requireAdmin,
 	validateParams(UserIdSchema),
 	userController.getUser
 );
@@ -97,7 +106,7 @@ router.get(
  */
 router.patch(
 	'/:id',
-	authenticate(),
+	requireAuth,
 	validateParams(UserIdSchema),
 	validateBody(UpdateUserSchema),
 	userController.updateUser
@@ -109,8 +118,8 @@ router.patch(
  */
 router.delete(
 	'/softDelete/:id',
-	authenticate(),
-	authorize('admin'),
+	requireAuth,
+	requireAdmin,
 	validateParams(UserIdSchema),
 	userController.softDeleteUser
 );
@@ -121,8 +130,8 @@ router.delete(
  */
 router.delete(
 	'/hardDelete/:id',
-	authenticate(),
-	authorize('admin'),
+	requireAuth,
+	requireAdmin,
 	validateParams(UserIdSchema),
 	userController.hardDeleteUser
 );

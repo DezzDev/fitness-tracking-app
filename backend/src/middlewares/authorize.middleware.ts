@@ -60,7 +60,7 @@ export const authorize = (
 			: roles.includes(userRole); // Requiere al menos uno
 
 		if (!hasAccess) {
-			logger.warn('Authorization denied', {
+			logger.warn('Insufficient permissions to access this resource', {
 				userId: req.user.userId,
 				userRole,
 				requiredRoles: roles,

@@ -8,12 +8,8 @@ import { validateLoginData, validateRegisterData, invalidRegisterData } from '..
 import { beforeAll, jest, it, describe, expect, beforeEach, afterAll } from '@jest/globals';
 import { connectDatabase } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
-import { userService } from '../../services/user.service';
+import { clearTestDatabase, mockedRandomId, wait } from "../../test-utils/helpers";
 
-
-// Genera un id aleatorio simple
-// 1e9 es una notación científica para 1*10^9 o 1 000 000 000
-const randomId = () => `${Math.floor(Math.random() * 1e9)}`;
 
 // setup de la app para testing
 const createTestApp = async (): Promise<Application> => {
@@ -37,23 +33,22 @@ describe('authentication integration tests', () => {
 
 	beforeAll(async () => {
 		app = await createTestApp();
+		// creamos uuid aleatorio para el id del usuario
+		(uuidv4 as jest.Mock).mockImplementation(() => `${mockedRandomId()}`)
 	})
 
-	// crea un nuevo id aleatorio para cada test
-	beforeEach(() => {
-		(uuidv4 as jest.Mock).mockReturnValue(`mocked-${randomId()}`)
-	})
 
-	afterAll(async()=>{
-		await userService.deleteMockUsers();
-	})
+	// afterAll(async () => {
+	// 	await wait(2000)
+	// 	await clearTestDatabase();
+	// })
 
 	describe('POST /api/users/register', () => {
-		
+
 
 		it('should register a new user with valid data', async () => {
 
-			const newEmail = `mocked-${randomId()}@example.com`;
+			const newEmail = `mocked-${mockedRandomId()}@example.com`;
 
 			const response = await request(app)
 				.post('/api/users/register')
@@ -144,7 +139,7 @@ describe('authentication integration tests', () => {
 		})
 
 		it('should return 409 if email already exists', async () => {
-			const newEmail = `mocked-${randomId()}@example.com`;
+			const newEmail = `mocked-${mockedRandomId()}@example.com`;
 			// primer registro
 			const response = await request(app)
 				.post('/api/users/register')
@@ -167,11 +162,11 @@ describe('authentication integration tests', () => {
 		});
 	});
 
-	describe('POST /api/users/login', () => {		
+	describe('POST /api/users/login', () => {
 		// creamos un email aleatorio para los tests
-		const newEmail = `mocked-${randomId()}@example.com`; 
+		const newEmail = `mocked-${mockedRandomId()}@example.com`;
 
-		it('should login with valid credentials', async ()=>{
+		it('should login with valid credentials', async () => {
 
 
 			// registramos un usuario
@@ -188,8 +183,8 @@ describe('authentication integration tests', () => {
 					password: validateLoginData.password
 				})
 				.expect(200);
-			
-			expect(response.body).toHaveProperty('success',true);
+
+			expect(response.body).toHaveProperty('success', true);
 			expect(response.body.data).toHaveProperty('user');
 			expect(response.body.data).toHaveProperty('token');
 			expect(response.body.data.user.email).toBe(newEmail);
@@ -197,7 +192,7 @@ describe('authentication integration tests', () => {
 			expect(typeof response.body.data.token).toBe("string");
 		});
 
-		it('should return 401 for invalid email', async()=>{
+		it('should return 401 for invalid email', async () => {
 			const response = await request(app)
 				.post('/api/users/login')
 				.send({
@@ -209,19 +204,19 @@ describe('authentication integration tests', () => {
 			expect(response.body.error).toContain('Invalid credentials');
 		});
 
-		it('should return 401 for invalid password', async()=>{
+		it('should return 401 for invalid password', async () => {
 			const response = await request(app)
 				.post('/api/users/login')
 				.send({
 					email: newEmail,
 					password: 'WrongPassword123'
 				})
-				.expect(401); 
+				.expect(401);
 
 			expect(response.body.error).toContain('Invalid credentials');
 		});
 
-		it('should return 400 for missing credentials', async()=>{
+		it('should return 400 for missing credentials', async () => {
 			await request(app).post('/api/users/login').send({}).expect(400);
 		});
 

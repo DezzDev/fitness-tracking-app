@@ -124,7 +124,7 @@ const queries = {
 	deleteMockUsers:{
 		sql: `
 			DELETE FROM users
-			WHERE id like 'mocked-%'
+			WHERE email like 'mocked-%'
 		`,
 		args:()=>[]
 	}
