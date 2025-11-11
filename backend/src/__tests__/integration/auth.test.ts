@@ -38,11 +38,6 @@ describe('authentication integration tests', () => {
 	})
 
 
-	// afterAll(async () => {
-	// 	await wait(2000)
-	// 	await clearTestDatabase();
-	// })
-
 	describe('POST /api/users/register', () => {
 
 

@@ -17,9 +17,8 @@ import {
 	UpdateUserSchema,
 } from '@/schemas/user.schema';
 import * as userController from '@/controllers/user.controller';
-import { authenticate, requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
-import { authorize, requireAdmin } from '@/middlewares/authorize.middleware';
-import { request } from 'http';
+import { requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
+import { requireAdmin } from '@/middlewares/authorize.middleware';
 
 const router: Router = Router();
 
@@ -32,8 +31,8 @@ const router: Router = Router();
  * Registrar nuevo usuario
  */
 router.post(
-	'/register', 
-	validateBody(RegisterSchema), 
+	'/register',
+	validateBody(RegisterSchema),
 	userController.register
 );
 
@@ -42,7 +41,7 @@ router.post(
  * Login
  */
 router.post(
-	'/login', 
+	'/login',
 	validateBody(LoginSchema),
 	userController.login
 );

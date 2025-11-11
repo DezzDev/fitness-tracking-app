@@ -4,12 +4,20 @@ import request from "supertest";
 import express, { Application, response } from "express";
 import userRoutes from "../../routes/user.routes";
 import { errorHandler, notFoundHandler } from "../../middlewares/error.middleware";
-import {generateTokenTest, createMockUser, createMockAdmin} from "../../test-utils/helpers";
+import {	
+	generateTokenTest, 
+	createMockUser, 
+	createMockAdmin, 
+	clearTestDatabase, 
+	wait, 
+	mockedRandomId
+} from "../../test-utils/helpers";
 import {validateRegisterData} from "./../../test-utils/fixtures";
-import {describe, jest, it, beforeAll, expect, beforeEach} from "@jest/globals";
+import {describe, jest, it, beforeAll, expect, beforeEach, afterAll} from "@jest/globals";
 import { v4 as uuidv4 } from 'uuid';
 import { connectDatabase } from "../../config/database";
-import {mockedRandomId} from "../../test-utils/helpers";
+import { RegisterInput } from "../../schemas/user.schema";
+import { email } from "zod";
 
 
 // Simulamos la librería 'uuid' ANTES de importarla
@@ -33,6 +41,8 @@ describe('Users API Integration Tests', ()=>{
 	let userToken: string;
 	let adminToken: string;
 	let userId: string;
+	let userRegularEmail: string;
+	let userAdminEmail: string;
 
 	beforeAll(async()=>{
 		app = await createTestApp();
@@ -41,7 +51,7 @@ describe('Users API Integration Tests', ()=>{
 		(uuidv4 as jest.Mock).mockImplementation(() => `${mockedRandomId()}`)
 		
 		// registramos un usuario regular
-		const userRegularEmail = `mocked-${mockedRandomId()}@example.com`;
+		userRegularEmail = `mocked-${mockedRandomId()}@example.com`;
 		const userResponse = await request(app)
 			.post('/api/users/register')
 			.send({
@@ -54,7 +64,7 @@ describe('Users API Integration Tests', ()=>{
 		userId = userResponse.body.data.user.id;
 
 		// creamos un usuario admin
-		const userAdminEmail = `mocked-${mockedRandomId()}@example.com`;
+		userAdminEmail = `mocked-${mockedRandomId()}@example.com`;
 		const adminResponse = await request(app)
 			.post('/api/users/register')
 			.send({
@@ -66,6 +76,11 @@ describe('Users API Integration Tests', ()=>{
 			// obtenemos token del usuario admin
 			adminToken = adminResponse.body.data.token;
 	});
+
+	afterAll(async () => {
+			await wait(2000)
+			await clearTestDatabase();
+		})
 
 	describe('GET /api/users/me', ()=>{
 		it('should get authenticated user profile', async ()=>{
@@ -154,9 +169,9 @@ describe('Users API Integration Tests', ()=>{
 		});
 
 		it('should return 404 for non-existent user', async()=>{
-			const fakeid = mockedRandomId();
+			const fakeId = mockedRandomId();
 			const response = await request(app)
-				.get(`/api/users/${fakeid}`)
+				.get(`/api/users/${fakeId}`)
 				.set('Authorization', `Bearer ${adminToken}`)
 				.expect(404);
 			
@@ -199,9 +214,9 @@ describe('Users API Integration Tests', ()=>{
 		})
 
 		it('should return 404 for non-existent user', async ()=>{
-			const fakeid = mockedRandomId();
+			const fakeId = mockedRandomId();
 			await request(app)
-				.patch(`/api/users/${fakeid}`)
+				.patch(`/api/users/${fakeId}`)
 				.set('Authorization', `Bearer ${userToken}`)
 				.send({name:`test`}) // Menor de 15
 				.expect(404);
@@ -230,7 +245,7 @@ describe('Users API Integration Tests', ()=>{
 					email: newEmail
 				})
 				.expect(201);
-			console.log({daniel:response.body.data})
+			
 			userToDeleteId = response.body.data.user.id;
 		});
 
@@ -241,21 +256,97 @@ describe('Users API Integration Tests', ()=>{
 				.expect(204);
 
 			
-			const response =await request(app)
+			await request(app)
 				.get(`/api/users/${userToDeleteId}`)
 				.set('Authorization', `Bearer ${adminToken}`)
 				.expect(404);
 			
-			console.log({daniel: response.body})
-			// verifica que el usuario es is_active: 0
-			expect(response.body.data.user.is_active).toBe(0)
-
-			
 		})
 
+		it('should hard delete user for admin',async()=>{
+			await request(app)
+				.delete(`/api/users/hardDelete/${userToDeleteId}`)
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(204);
+
+			await request(app)
+				.get(`/api/users/${userToDeleteId}`)
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(404);
+		})
+
+		it('should return 403 for non-admin user',async()=>{
+			await request(app)
+				.delete(`/api/users/softDelete/${userToDeleteId}`)
+				.set('Authorization', `Bearer ${userToken}`)
+				.expect(403);
+		})
 	
+		it('should return 404 for non-existent user', async ()=>{
+			const fakeId = mockedRandomId();
 
+			await request(app)
+				.delete(`/api/users/softDelete/${fakeId}`)
+				.set('Authorization', `Bearer ${adminToken}`)
+				.expect(404);
+		})
 
+	})
+
+	describe('PATCH /api/users/me/password', ()=>{
+		it('should change password for authenticated user', async()=>{
+			const response = await request(app)
+				.patch(`/api/users/me/password`)
+				.set('Authorization', `Bearer ${userToken}`)
+				.send({oldPassword: validateRegisterData.password, newPassword: 'NewPassword123'})
+				.expect(200);
+
+			expect(response.body).toHaveProperty('success', true);
+			expect(response.body.message).toContain('Password changed successfully');
+
+			// verificar que se puede hacer login con el nuevo password
+			const loginResponse = await request(app)
+				.post('/api/users/login')
+				.send({
+					email: userRegularEmail,
+					password: 'NewPassword123'
+				})
+				.expect(200);
+
+			expect(loginResponse.body).toHaveProperty('success', true);
+			expect(loginResponse.body.data).toHaveProperty('token');
+		})
+
+		it('should return 401 for incorrect old password', async ()=>{
+			const response = await request(app)
+				.patch(`/api/users/me/password`)
+				.set('Authorization', `Bearer ${userToken}`)
+				.send({oldPassword: 'WrongPassword123', newPassword: 'NewPassword123'})
+				.expect(401);
+			
+			expect(response.body.error).toContain('Current password is incorrect')
+		});
+
+		it('should return 400 for invalid new password', async()=>{
+			await request(app)
+				.patch(`/api/users/me/password`)
+				.set('Authorization', `Bearer ${userToken}`)
+				.send({
+					oldPassword: validateRegisterData.password, 
+					newPassword: 'weak' // No cumple requisitos
+				})
+				.expect(400);
+		})
+
+		it('should return 401 without token', async()=>{
+			await request(app)
+				.patch(`/api/users/me/password`)
+				.send({
+					oldPassword: validateRegisterData.password, 
+					newPassword: 'NewPassword123'
+				})
+				.expect(401);
+		})
 	})
 
 	
