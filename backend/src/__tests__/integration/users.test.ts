@@ -5,9 +5,6 @@ import express, { Application, response } from "express";
 import userRoutes from "../../routes/user.routes";
 import { errorHandler, notFoundHandler } from "../../middlewares/error.middleware";
 import {	
-	generateTokenTest, 
-	createMockUser, 
-	createMockAdmin, 
 	clearTestDatabase, 
 	wait, 
 	mockedRandomId
@@ -16,8 +13,6 @@ import {validateRegisterData} from "./../../test-utils/fixtures";
 import {describe, jest, it, beforeAll, expect, beforeEach, afterAll} from "@jest/globals";
 import { v4 as uuidv4 } from 'uuid';
 import { connectDatabase } from "../../config/database";
-import { RegisterInput } from "../../schemas/user.schema";
-import { email } from "zod";
 
 
 // Simulamos la librería 'uuid' ANTES de importarla
@@ -213,12 +208,21 @@ describe('Users API Integration Tests', ()=>{
 				.expect(400);
 		})
 
-		it('should return 404 for non-existent user', async ()=>{
+		it('should return 403 for non update own profile', async ()=>{
 			const fakeId = mockedRandomId();
 			await request(app)
 				.patch(`/api/users/${fakeId}`)
 				.set('Authorization', `Bearer ${userToken}`)
-				.send({name:`test`}) // Menor de 15
+				.send({name:`test`}) 
+				.expect(403);
+		})
+
+		it('should return 404 for non-existent user', async ()=>{
+			const fakeId = mockedRandomId();
+			await request(app)
+				.patch(`/api/users/${fakeId}`)
+				.set('Authorization', `Bearer ${adminToken}`)
+				.send({name:`test`}) 
 				.expect(404);
 		})
 

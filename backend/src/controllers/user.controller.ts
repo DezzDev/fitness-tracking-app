@@ -95,11 +95,21 @@ export const listUsers = asyncHandler(async (req: Request, res: Response): Promi
  */
 export const updateUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 	const id = extractId(req.validatedParams as UserIdParam);
-	const data: UpdateUserInput = req.body;
+	const data = req.validatedBody as UpdateUserInput;
+	const user = req.user; // del middleware de auth
 
-	const user = await userService.update(id, data);
+	if (!user) {
+		throw createAppError('User not authenticated', 401);
+	}
 
-	ResponseHandler.success(res, user, 'User updated successfully');
+	// si el usuario no es admin y no intenta actualizar su propio perfil, error
+	if (user.role !== 'admin' && user.userId !== id) {
+		throw createAppError('You are not authorized to update this user', 403);
+	}
+
+	const userUpdated = await userService.update(id, data);
+
+	ResponseHandler.success(res, userUpdated, 'User updated successfully');
 });
 
 /**

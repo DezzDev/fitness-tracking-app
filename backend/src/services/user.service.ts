@@ -57,7 +57,7 @@ export const userService = {
 			const user = await userRepository.create(input, passwordHash);
 
 			// 4. Generar token
-			const token = generateToken({userId: user.id, email: user.email, role: user.role});
+			const token = generateToken({userId: user.id, email: user.email, role: user.role},{expiresIn: '1d'});
 
 			// 5. Retornar usuario sanitizado y token
 			return {
