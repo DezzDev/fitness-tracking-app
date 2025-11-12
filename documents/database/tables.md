@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS exercises (
   description TEXT,
   difficulty TEXT CHECK(difficulty IN ('beginner','intermediate','advanced')),
   muscle_group TEXT,
-  type TEXT CHECK(type IN ('strength','endurance','skill','explosive)),
+  type TEXT CHECK(type IN ('strength','endurance','skill','explosive')),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
