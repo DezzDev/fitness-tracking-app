@@ -37,18 +37,31 @@ CREATE TABLE IF NOT EXISTS workouts (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Esta tabla simplemente indica que un entrenamiento incluye cierto ejercicio.
+-- order_index es el orden en el que se ejecuta el ejercicio en el entrenamiento.
 -- 4. Workout_Exercises
 CREATE TABLE IF NOT EXISTS workout_exercises (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   workout_id INTEGER NOT NULL,
   exercise_id INTEGER NOT NULL,
-  sets INTEGER NOT NULL DEFAULT 1,
-  reps INTEGER,
-  duration_seconds INTEGER,
-  rest_seconds INTEGER,
+  order_index INTEGER DEFAULT 0, 
   FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE,
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
+
+-- Guardamos la información detallada de cada set
+CREATE TABLE IF NOT EXISTS workout_sets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  workout_exercise_id INTEGER NOT NULL,
+  set_number INTEGER NOT NULL, -- 1, 2, 3, ...
+  reps INTEGER,
+  duration_seconds INTEGER,
+  rest_seconds INTEGER,
+  weight REAL,
+  notes TEXT,
+  FOREIGN KEY (workout_exercise_id) REFERENCES workout_exercises(id) ON DELETE CASCADE
+);
+
 
 -- 5. Progress Logs
 CREATE TABLE IF NOT EXISTS progress_logs (
