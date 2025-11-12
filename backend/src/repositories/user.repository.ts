@@ -2,7 +2,7 @@
 import { execute, executeWithRetry } from "@/config/database";
 import { User, UserCreateData, UserUpdateData, UserRow } from "@/types";
 import logger from "@/utils/logger";
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid"
 
 
 
@@ -119,14 +119,15 @@ const queries = {
 			RETURNING *
 			`,
 		args: (id: string, password_hash: string) => [ password_hash, id ]
-	}, 
+	},
 
-	deleteMockUsers:{
+	deleteMockUsers: {
 		sql: `
 			DELETE FROM users
-			WHERE email like 'mocked-%'
+			WHERE email LIKE 'mocked-%'
+   		OR (email LIKE 'mocked-%' AND is_active = 0);
 		`,
-		args:()=>[]
+		args: () => []
 	}
 
 };

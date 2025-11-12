@@ -29,6 +29,7 @@ export const moduleNameMapper = {
 export const setupFilesAfterEnv = [ '<rootDir>/src/test-utils/setup.ts' ];
 export const testTimeout = 10000;
 export const verbose = true;
+export const globalTeardown = '<rootDir>/jest.teardown.ts';
 // export const transform={
 // 	 '^.+\\.ts$': [
 //       'ts-jest',

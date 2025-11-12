@@ -5,7 +5,7 @@ import express, { Application } from 'express';
 import userRoutes from '../../routes/user.routes';
 import { errorHandler, notFoundHandler } from '../../middlewares/error.middleware';
 import { validateLoginData, validateRegisterData, invalidRegisterData } from '../../test-utils/fixtures';
-import { beforeAll, jest, it, describe, expect, beforeEach, afterAll } from '@jest/globals';
+import { beforeAll, jest, it, describe, expect } from '@jest/globals';
 import { connectDatabase } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
 import { clearTestDatabase, mockedRandomId, wait } from "../../test-utils/helpers";
