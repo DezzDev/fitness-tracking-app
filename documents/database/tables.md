@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS exercises (
 CREATE TABLE IF NOT EXISTS workouts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
-  title TEXT,
+  title TEXT NOT NULL,
   notes TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS workout_exercises (
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
--- Guardamos la información detallada de cada set
-CREATE TABLE IF NOT EXISTS workout_sets (
+-- Guardamos la información detallada de cada set del ejercicio de un entrenamiento
+CREATE TABLE IF NOT EXISTS workout_exercise_sets (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   workout_exercise_id INTEGER NOT NULL,
   set_number INTEGER NOT NULL, -- 1, 2, 3, ...
@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS workout_sets (
   rest_seconds INTEGER,
   weight REAL,
   notes TEXT,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (workout_exercise_id) REFERENCES workout_exercises(id) ON DELETE CASCADE
 );
 

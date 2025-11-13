@@ -7,18 +7,18 @@ const profile_image_default = 'http://localhost:3000/public/images/default-avata
 const BaseUserSchema = z.object({
 	email: z
 		.string({error:'Email is required'})
-		.min(1, { message: 'Email is required' })
-		.regex(z.regexes.email, { message: 'Invalid email address' })
+		.min(1, { error: 'Email is required' })
+		.regex(z.regexes.email, { error: 'Invalid email address' })
 		.toLowerCase()
 		.trim(),
 	
 	password: z
 		.string()
-		.min(8, { message: 'Password must be at least 8 characters long' })
-		.max(64, { message: 'Password must be at most 64 characters long' })
-		.regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter' })
-		.regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
-		.regex(/[0-9]/, { message: 'Password must contain at least one number' }),
+		.min(8, { error: 'Password must be at least 8 characters long' })
+		.max(64, { error: 'Password must be at most 64 characters long' })
+		.regex(/[a-z]/, { error: 'Password must contain at least one lowercase letter' })
+		.regex(/[A-Z]/, { error: 'Password must contain at least one uppercase letter' })
+		.regex(/[0-9]/, { error: 'Password must contain at least one number' }),
 				
 });
 
@@ -29,10 +29,10 @@ const BaseUserSchema = z.object({
 // Schema para registro (extiende el base)
 export const RegisterSchema = BaseUserSchema.extend({
   name: z.string().min(2).max(50).trim(),
-  age: z.number().int().min(15,{message:'Age must be at least 15 years old'}).max(120,{message:'Invalid age'}),
+  age: z.number().int().min(15,{error:'Age must be at least 15 years old'}).max(120,{message:'Invalid age'}),
   role: z.enum(['user', 'admin']).default('user'),
 	profile_image: z.string().optional().default(profile_image_default),
-	acceptTerms: z.boolean().refine(val => val === true, { message: 'You must accept the terms and conditions' }),
+	acceptTerms: z.boolean().refine((val: boolean) => val === true, { error: 'You must accept the terms and conditions' }),
 });
 
 // Schema para login (pick solo campos necesarios)
@@ -71,7 +71,7 @@ export const PaginationSchema = z.object({
 
 // Schema para cambio de contraseña
 export const ChangePasswordSchema = z.object({
-	oldPassword: z.string().min(1, 'Current password is required'),
+	oldPassword: z.string().min(1, { error: 'Current password is required' }),
 	newPassword: BaseUserSchema.shape.password,
 });
 
