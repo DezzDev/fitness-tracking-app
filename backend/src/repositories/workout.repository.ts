@@ -10,9 +10,11 @@ import {
 	WorkoutRow,
 	WorkoutExerciseRow,
 	WorkoutExerciseSetRow,
-	WorkoutFilters
+	WorkoutFilters,
+	WorkoutWithExercises
 } from '@/types/index';
 import { v4 as uuidv4 } from "uuid";
+import { set, uuid } from 'zod';
 
 // ============================================
 // MAPPERS
@@ -226,9 +228,9 @@ const queries = {
 			WHERE id = ? ADN user_id = ?
 			RETURNING *
 		`,
-		args: (id: string, userId: string, data: Partial<WorkoutUpdateData>) =>{
+		args: (id: string, userId: string, data: Partial<WorkoutUpdateData>) => {
 			const values = Object.values(data);
-			return [...values, id, userId]
+			return [ ...values, id, userId ]
 		}
 	},
 
@@ -236,12 +238,219 @@ const queries = {
 	// elimina todos los ejercicios de un entrenamiento
 	deleteWorkoutExercises: {
 		sql: `DELETE FROM workout_exercises WHERE workout_id = ?`,
-		args: (workoutId: string) => [workoutId]
+		args: (workoutId: string) => [ workoutId ]
 	},
 
 	// eliminar workout (cascade eliminará exercises y sets asociados)
 	deleteWorkout: {
 		sql: `DELETE FROM workouts WHERE id = ? AND user_id = ?`,
-		args: (id: string, userId: string) => [id, userId]
+		args: (id: string, userId: string) => [ id, userId ]
 	}
 };
+
+// ============================================
+// REPOSITORY
+// ============================================
+
+export const workoutRepository = {
+	/**
+	 * Crear workout con ejercicios y sets (transacción simulada con batch)
+	 */
+
+	create: async (data: WorkoutCreateData): Promise<WorkoutWithExercises> => {
+		const workoutId = uuidv4();
+
+		// 1. Crear workout
+		const workoutResult = await executeWithRetry((client) =>
+			client.execute({
+				sql: queries.createWorkout.sql,
+				args: queries.createWorkout.args(workoutId, data.userId, data.title, data.notes || null)
+			}))
+
+		if (workoutResult.rows.length === 0) {
+			throw new Error('Failed to create workout');
+		}
+
+		const workout = mapRowToWorkout(workoutResult.rows[ 0 ] as unknown as WorkoutRow);
+
+		// 2. Crear workout exercises (ejercicios del entrenamiento) y sus sets
+		const allQueries: Array<{ sql: string; args: any[] }> = []
+
+		for (const exercise of data.exercises) {
+			const workoutExerciseId = uuidv4();
+
+			// query para crear workout exercise
+			allQueries.push({
+				sql: queries.createWorkoutExercise.sql,
+				args: queries.createWorkoutExercise.args(
+					workoutExerciseId,
+					workout.id, // también podría usarse workoutId
+					exercise.exerciseId,
+					exercise.orderIndex
+				)
+			});
+
+			// queries para crear sets
+			for (const set of exercise.sets) {
+				const setId = uuidv4();
+				allQueries.push({
+					sql: queries.createWorkoutExerciseSet.sql,
+					args: queries.createWorkoutExerciseSet.args(
+						setId,
+						workoutExerciseId,
+						set.setNumber,
+						set.reps || null,
+						set.durationSeconds || null,
+						set.restSeconds || null,
+						set.weight || null,
+						set.notes || null
+					)
+				})
+			}
+		}
+
+		// ejecutar todas las queries en batch
+		await batch(allQueries);
+
+		// 3. Obtener workout completo con ejercicios y sets
+		const completeWorkout = await workoutRepository.findById(workoutId, data.userId);
+
+		if (!completeWorkout) {
+			throw new Error('Failed to retrieve created workout');
+		}
+
+		return completeWorkout;
+
+	},
+
+	/**
+	 * Buscar workout por ID con ejercicios y sets
+	 */
+	findById: async (id: string, userId: string): Promise<WorkoutWithExercises | null> => {
+		// 1. Buscar workout
+		const workoutResult = await execute({
+			sql: queries.findById.sql,
+			args: queries.findById.args(id, userId),
+		});
+
+		if (workoutResult.rows.length === 0) return null;
+
+		const workout = mapRowToWorkout(workoutResult.rows[ 0 ] as unknown as WorkoutRow);
+
+		// 2. Buscar workout exercises (todos los ejercicios del entrenamiento)
+		const exercisesResult = await execute({
+			sql: queries.findWorkoutExercises.sql,
+			args: queries.findWorkoutExercises.args(id)
+		})
+
+		// 3. Para cada exercise, buscar sus sets
+		const exercises: WorkoutExercise[] = await Promise.all(
+			exercisesResult.rows.map(async (row) => {
+				const exercise = mapRowToWorkoutExercise(row as unknown as WorkoutExerciseRow);
+
+				const setResult = await execute({
+					sql: queries.findWorkoutExerciseSets.sql,
+					args: queries.findWorkoutExerciseSets.args(exercise.id)
+				});
+
+				const sets = setResult.rows.map((setRow) =>
+					mapRowToWorkoutExerciseSet(setRow as unknown as WorkoutExerciseSetRow)
+				);
+
+				return {
+					...exercise,
+					sets
+				}
+			})
+		)
+
+		return {
+			...workout,
+			exercises
+		}
+
+	},
+
+	/**
+	* Listar workouts con filtros y paginación
+	*/
+	findAll: async (
+		filters: WorkoutFilters,
+		page: number = 1,
+		limit: number = 10
+	): Promise<WorkoutWithExercises[]> => {
+		const offset = (page - 1) * limit;
+
+		const workoutResult = await execute({
+			sql: queries.findAll.sql(filters),
+			args: queries.findAll.args(filters, limit, offset)
+		})
+
+		if (workoutResult.rows.length === 0) return []
+
+		// obtener cada workout completo con ejercicios y sets
+		const workouts = await Promise.all(
+			workoutResult.rows.map(async (row) => {
+				const workout = mapRowToWorkout(row as unknown as WorkoutRow);
+				const completeWorkout = await workoutRepository.findById(workout.id, workout.userId)
+				return completeWorkout;
+			})
+		);
+
+		return workouts.filter((w) => w !== null)
+
+	},
+
+	/**
+	 * Contar workouts con filtros
+	 */
+	count: async (filters:WorkoutFilters): Promise<number> =>{
+		const result = await execute({
+			sql: queries.count.sql(filters),
+			args: queries.count.args(filters)
+		})
+
+		if (!result.rows?.[0]){
+			throw new Error('Count query returned empty result');
+		}
+
+		const {total} = result.rows[0] as unknown as {total:number};
+
+		if (typeof total !== 'number' || total < 0){
+			throw new Error('Invalid count value: ' + total);
+		}
+
+		return total;
+	},
+
+	/**
+	 * Actualizar workout
+	 */
+
+	update: async (
+		id: string,
+		userId:string,
+		data: WorkoutUpdateData
+	):Promise<WorkoutWithExercises> => {
+		// 1. Actualizar datos básicos si hay cambios
+		if (data.title || data.notes !== undefined){
+			const updateData : any = {};
+			if(data.title) updateData.title = data.title;
+			if(data.notes !== undefined) updateData.notes = data.notes || null;
+
+			const fields = Object.keys(updateData);
+
+			if (fields.length > 0) {
+				await executeWithRetry((client) =>
+					client.execute({
+						sql: queries.updateWorkout.sql(fields),
+						args: queries.updateWorkout.args(id, userId, updateData),
+					})
+				);
+			}
+			
+		}
+
+
+	}
+}
