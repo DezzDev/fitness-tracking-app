@@ -94,7 +94,7 @@ export type WorkoutRow = {
 	user_id: string;
 	title: string;
 	notes: string | null;
-	create_at: Date; // quizá debería ser string?
+	create_at: string;
 }
 
 export type WorkoutExerciseRow ={
@@ -119,7 +119,7 @@ export type WorkoutExerciseSetRow = {
 	rest_seconds: number | null;
 	weight: number | null;
 	notes: string | null;
-	created_at: Date; // quizá debería ser string?
+	created_at: string;
 }
 
 // ============================================

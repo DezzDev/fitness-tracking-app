@@ -12,4 +12,24 @@ export { ErrorCodes } from './common/error.types';
 export type {DatabaseConfig, QueryResult, TransactionFn} from './common/database.types';
 
 // Re-export types entities
-export type {User, UserCreateData, UserRole, UserRow, UserUpdateData} from './entities/user.types';
+export type {
+	User, 
+	UserCreateData, 
+	UserRole, 
+	UserRow, 
+	UserUpdateData
+} from './entities/user.types';
+export type{
+	Workout, 
+	WorkoutWithExercises, 
+	WorkoutExercise, 
+	WorkoutExerciseSet, 
+	WorkoutExerciseSetCreateData, 
+	WorkoutExerciseCreateData, 
+	WorkoutCreateData, 
+	WorkoutUpdateData, 
+	WorkoutRow, 
+	WorkoutExerciseRow, 
+	WorkoutExerciseSetRow,
+	WorkoutFilters
+} from './entities/workout.types';
