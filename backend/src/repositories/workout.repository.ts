@@ -228,7 +228,7 @@ const queries = {
 			WHERE id = ? ADN user_id = ?
 			RETURNING *
 		`,
-		args: (id: string, userId: string, data: Partial<WorkoutUpdateData>) => {
+		args: (id: string, userId: string, data: Partial<Omit<WorkoutUpdateData, 'exercises'>>) => {
 			const values = Object.values(data);
 			return [ ...values, id, userId ]
 		}
@@ -255,6 +255,8 @@ const queries = {
 export const workoutRepository = {
 	/**
 	 * Crear workout con ejercicios y sets (transacción simulada con batch)
+	 * @data datos del workout a crear (userId, title, notes, ejercicios)
+	 * @returns workout completo con ejercicios y sets
 	 */
 
 	create: async (data: WorkoutCreateData): Promise<WorkoutWithExercises> => {
@@ -325,6 +327,9 @@ export const workoutRepository = {
 
 	/**
 	 * Buscar workout por ID con ejercicios y sets
+	 * @id id del workout
+	 * @userId id del usuario
+	 * @returns workout completo con ejercicios y sets
 	 */
 	findById: async (id: string, userId: string): Promise<WorkoutWithExercises | null> => {
 		// 1. Buscar workout
@@ -373,6 +378,10 @@ export const workoutRepository = {
 
 	/**
 	* Listar workouts con filtros y paginación
+	* @filters filtros para buscar workouts (userId, fecha de inicio, fecha de fin, título de búsqueda)
+	* @page página actual
+	* @limit número de resultados por página
+	* @returns lista de workouts con ejercicios y sets
 	*/
 	findAll: async (
 		filters: WorkoutFilters,
@@ -403,6 +412,8 @@ export const workoutRepository = {
 
 	/**
 	 * Contar workouts con filtros
+	 * @filters filtros para buscar workouts (userId, fecha de inicio, fecha de fin, título de búsqueda)
+	 * @returns número de workouts
 	 */
 	count: async (filters:WorkoutFilters): Promise<number> =>{
 		const result = await execute({
@@ -425,6 +436,10 @@ export const workoutRepository = {
 
 	/**
 	 * Actualizar workout
+	 * @id id del workout
+	 * @userId id del usuario
+	 * @data datos del workout a actualizar (title, notes, ejercicios)
+	 * @returns workout completo con ejercicios y sets
 	 */
 
 	update: async (
@@ -434,23 +449,101 @@ export const workoutRepository = {
 	):Promise<WorkoutWithExercises> => {
 		// 1. Actualizar datos básicos si hay cambios
 		if (data.title || data.notes !== undefined){
-			const updateData : any = {};
-			if(data.title) updateData.title = data.title;
-			if(data.notes !== undefined) updateData.notes = data.notes || null;
+			const updateWorkout: Partial<Omit<WorkoutUpdateData, 'exercises'>> = {};
+			if (data.title) updateWorkout.title = data.title;
+			if (data.notes !== undefined) updateWorkout.notes = data.notes || undefined;
 
-			const fields = Object.keys(updateData);
+			const fields = Object.keys(updateWorkout);
 
 			if (fields.length > 0) {
 				await executeWithRetry((client) =>
 					client.execute({
 						sql: queries.updateWorkout.sql(fields),
-						args: queries.updateWorkout.args(id, userId, updateData),
+						args: queries.updateWorkout.args(id, userId, updateWorkout),
 					})
 				);
-			}
-			
+			}			
 		}
 
+		// 2. Si hay ejercicios nuevos, reemplazar todos
+		if(data.exercises){
+			// Eliminar ejercicios existentes
+			await executeWithRetry((client)=>
+				client.execute({
+					sql: queries.deleteWorkoutExercises.sql,
+					args: queries.deleteWorkoutExercises.args(id)
+				})
+			);
 
+			// Crear nuevos ejercicios y sets
+			const allQueries: Array<{sql: string; args: any[]}> = [];
+
+			for (const exercise of data.exercises){
+				const workoutExerciseId = uuidv4();
+
+				allQueries.push({
+					sql: queries.createWorkoutExercise.sql,
+					args: queries.createWorkoutExercise.args(
+						workoutExerciseId,
+						id,
+						exercise.exerciseId,
+						exercise.orderIndex
+					)
+				});
+
+				for(const set of exercise.sets){
+					const setId = uuidv4();
+					allQueries.push({
+						sql: queries.createWorkoutExerciseSet.sql,
+						args: queries.createWorkoutExerciseSet.args(
+							setId,
+							workoutExerciseId,
+							set.setNumber,
+							set.reps || null,
+							set.durationSeconds || null,
+							set.restSeconds || null,
+							set.weight || null,
+							set.notes || null
+						),
+					})
+				}
+			}
+			await batch(allQueries);
+		}
+
+		// 3. Retornar workout actualizado
+		const updatedWorkout = await workoutRepository.findById(id, userId);
+
+		if(!updatedWorkout){
+			throw new Error('Workout not found after update');
+		}
+
+		return updatedWorkout;
+	},
+
+	/**
+	 * Eliminar workout (cascade elimina exercises y sets)
+	 * @workoutId id del workout
+	 * @userId id del usuario
+	 * @returns void
+	 */
+	delete: async(workoutId:string, userId: string): Promise<void>=>{
+		await executeWithRetry((client)=>
+			client.execute({
+				sql: queries.deleteWorkout.sql,
+				args: queries.deleteWorkout.args(workoutId, userId)
+			})
+		)
+	},
+
+	/**
+	 * Verificar si workout pertenece a usuario
+	 * @workoutId id del workout
+	 * @userId id del usuario
+	 * @returns true si pertenece, false si no
+	 */
+	belongsToUser: async (workoutId: string, userId: string): Promise<boolean> =>{
+		const workout = await workoutRepository.findById(workoutId, userId);
+		return workout !== null;
 	}
 }
