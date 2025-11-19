@@ -2,7 +2,6 @@
 import { workoutRepository } from "@/repositories/workout.repository";
 import { createAppError } from "@/middlewares/error.middleware";
 import {
-	Workout,
 	WorkoutWithExercises,
 	WorkoutCreateData,
 	WorkoutUpdateData,
@@ -214,7 +213,7 @@ export const workoutService = {
 	 /**
 		* Obtener estadísticas de workouts del usuario
 		* @param userId id del usuario
-		* @param filters filtros para buscar workouts (startDate, endDate, search)
+		* @param filters filtros para buscar workouts (startDate, endDate)
 		* @returns Promise {
 		* 	totalWorkouts: number,
 		* 	totalExercises: number,
