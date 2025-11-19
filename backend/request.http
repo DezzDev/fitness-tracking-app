@@ -1,6 +1,6 @@
 
 @id = ec5335ca-35c3-4efb-9db9-87da62622730
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYzUzMzVjYS0zNWMzLTRlZmItOWRiOS04N2RhNjI2MjI3MzAiLCJlbWFpbCI6ImRhbmllbEBlbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjEyMTM2MDgsImV4cCI6MTc2MTgxODQwOCwiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.maH-898zG58LPPAvvGE0-Dr4ssjdft0oteWaVGUzG0k
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5YzVhZWQxNy1hYjhjLTRmYTUtYjI4Yi1mYjU5MTA2MTlhNDMiLCJlbWFpbCI6ImFsZWphbmRyb0BlbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MzU2MTk5NywiZXhwIjoxNzY0MTY2Nzk3LCJhdWQiOiJmaXRuZXNzLXRyYWNrZXItdXNlcnMiLCJpc3MiOiJmaXRuZXNzLXRyYWNrZXItYXBwIn0.I7dnCbI6dSeUrMZXfsYKqANAnM_x2W8maOsinGyUliA
 @baseUrl = http://localhost:4000/api
 
 
@@ -29,7 +29,7 @@ content-type: application/json
 
 ### POST /users/login
 # login user user
-@alejandro_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5YzVhZWQxNy1hYjhjLTRmYTUtYjI4Yi1mYjU5MTA2MTlhNDMiLCJlbWFpbCI6ImFsZWphbmRyb0BlbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MTIyMzgzNCwiZXhwIjoxNzYxODI4NjM0LCJhdWQiOiJmaXRuZXNzLXRyYWNrZXItdXNlcnMiLCJpc3MiOiJmaXRuZXNzLXRyYWNrZXItYXBwIn0.nWT0XG_ouD_HO0u6MZ1UGAjd38o6Q5RpnVVbW_-IJsI
+@alejandro_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5YzVhZWQxNy1hYjhjLTRmYTUtYjI4Yi1mYjU5MTA2MTlhNDMiLCJlbWFpbCI6ImFsZWphbmRyb0BlbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MzU2MTk5NywiZXhwIjoxNzY0MTY2Nzk3LCJhdWQiOiJmaXRuZXNzLXRyYWNrZXItdXNlcnMiLCJpc3MiOiJmaXRuZXNzLXRyYWNrZXItYXBwIn0.I7dnCbI6dSeUrMZXfsYKqANAnM_x2W8maOsinGyUliA
 POST {{baseUrl}}/users/login HTTP/1.1
 content-type: application/json
 
@@ -89,5 +89,35 @@ Accept: application/json
 DELETE {{baseUrl}}/users/hardDelete/394db242-5e3c-48db-8d0b-6762f0a3dce5 HTTP/1.1
 Authorization: Bearer {{token}}
 Accept: application/json
+
+# // ============================================
+# // WORKOUT ROUTES
+# // ============================================
+
+### POST /workouts
+POST {{baseUrl}}/workouts HTTP/1.1
+Authorization: Bearer {{alejandro_token}}
+content-type: application/json
+
+{
+	"title": "Test Workout",
+	"notes": "Test Workout",
+	"exercises": [
+		{
+			"exerciseId": "1",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10,
+					"durationSeconds": 30,
+					"restSeconds": 30,
+					"weight": 100,
+					"notes": "Test Set"
+				}
+			]
+		}
+	]
+}
 
 

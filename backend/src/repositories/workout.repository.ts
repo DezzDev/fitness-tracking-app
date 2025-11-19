@@ -58,7 +58,7 @@ const queries = {
 	// crear workout
 	createWorkout: {
 		sql: `
-			INSERT INTO workouts (id, user_id, title, notes, create_at)
+			INSERT INTO workouts (id, user_id, title, notes, created_at)
 			VALUES (?, ?, ?, ?, datetime('now'))
 			RETURNING *
 		`,
