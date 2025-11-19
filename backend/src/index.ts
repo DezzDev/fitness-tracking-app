@@ -11,6 +11,7 @@ import { errorHandler, notFoundHandler } from "@/middlewares/error.middleware";
 // IMPORTAR RUTAS
 // ============================================
 import userRoutes from "@/routes/user.routes";
+import workoutRoutes from "@/routes/workout.routes";
 
 // ============================================
 // CONFIGURACIÓN
@@ -66,6 +67,7 @@ app.get('/health', (_req, res) => {
 // ============================================
 
 app.use('/api/users', userRoutes);
+app.use('/api/workouts', workoutRoutes);
 
 // ============================================
 // ERROR HANDLERS
@@ -73,6 +75,10 @@ app.use('/api/users', userRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
+
+// ============================================
+// SERVIDOR
+// ============================================
 
 async function startServer() {
 	try {

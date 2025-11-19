@@ -4,7 +4,6 @@ import { asyncHandler, createAppError } from "@/middlewares/error.middleware";
 import { ResponseHandler } from "@/utils/response";
 import { workoutService } from "@/services/workout.service";
 import { CreateWorkoutInput, UpdateWorkoutInput } from "@/schemas/workout.schema";
-import { get } from "http";
 
 // ============================================
 // HELPERS
