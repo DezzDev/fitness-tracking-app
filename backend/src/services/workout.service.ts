@@ -39,7 +39,7 @@ const validateWorkoutOwnership = async (
  * @returns workout con ejercicios sin campos  sensibles
 */
 const sanitizeWorkout = (workout: WorkoutWithExercises): WorkoutWithExercises => {
-	// Por ahora no hat campos sensibles, pero mantener patrón
+	// Por ahora no hay campos sensibles, pero mantener patrón
 	return workout;
 }
 
@@ -260,7 +260,7 @@ export const workoutService = {
 				0
 			);
 
-			const dates = workouts.map((w) => w.createAt).sort((a,b)=> a.getTime() - b.getTime())
+			const dates = workouts.map((w) => w.createdAt).sort((a,b)=> a.getTime() - b.getTime())
 
 			return {
 				totalWorkouts: workouts.length,

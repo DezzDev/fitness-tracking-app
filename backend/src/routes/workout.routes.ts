@@ -43,6 +43,16 @@ router.post(
 )
 
 /**
+ * GET /workouts
+ * Listar workouts del usuario con filtros
+ */
+router.get(
+	'/',
+	validateQuery(WorkoutFiltersSchema),
+	workoutController.listWorkouts
+)
+
+/**
  * GET /workouts/:id
  * Obtener workout específico
  */

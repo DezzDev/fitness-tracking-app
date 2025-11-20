@@ -11,7 +11,7 @@ export type Workout = {
 	userId: string;
 	title: string;
 	notes?: string;
-	createAt: Date;
+	createdAt: Date;
 };
 
 export type WorkoutWithExercises = Workout & {
@@ -25,7 +25,7 @@ export type WorkoutWithExercises = Workout & {
 export type WorkoutExercise = {
 	id: string;
 	workoutId: string;
-	exerciseId: string;
+	exerciseId: number;
 	orderIndex: number;
 	// datos del set ejercicio (joined)
 	sets: WorkoutExerciseSet[];
@@ -67,7 +67,7 @@ export type WorkoutExerciseSetCreateData = {
 }
 
 export type WorkoutExerciseCreateData = {
-	exerciseId: string;
+	exerciseId: number;
 	orderIndex: number;
 	sets: WorkoutExerciseSetCreateData[];
 }
@@ -94,13 +94,13 @@ export type WorkoutRow = {
 	user_id: string;
 	title: string;
 	notes: string | null;
-	create_at: string;
+	created_at: string;
 }
 
 export type WorkoutExerciseRow = {
 	id: string;
 	workout_id: string;
-	exercise_id: string;
+	exercise_id: number;
 	order_index: number;
 	// Joined from exercises table
 	exercise_name?: string;

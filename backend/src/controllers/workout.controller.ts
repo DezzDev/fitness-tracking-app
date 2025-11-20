@@ -81,10 +81,10 @@ export const listWorkouts = asyncHandler(
 		// Los filtros ya vienen validados por el middleware 
 		const {page, limit, startDate, endDate, search} = req.query as any;
 
-		const filters = {
-			startDate,
-			endDate,
-			searchTerm: search,
+		const filters ={
+			startDate: startDate ? new Date(startDate) : undefined,
+			endDate: endDate ? new Date(endDate) : undefined,
+			searchTerm: search
 		}
 
 		const result = await workoutService.findAll(

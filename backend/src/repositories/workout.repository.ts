@@ -22,7 +22,7 @@ const mapRowToWorkout = (row: WorkoutRow): Workout => ({
 	userId: row.user_id,
 	title: row.title,
 	notes: row.notes || undefined,
-	createAt: new Date(row.create_at),
+	createdAt: new Date(row.created_at),
 })
 
 const mapRowToWorkoutExercise = (row: WorkoutExerciseRow): Omit<WorkoutExercise, 'sets'> => ({
@@ -74,7 +74,7 @@ const queries = {
 			VALUES (?, ?, ?, ?)
 			RETURNING *
 		`,
-		args: (id: string, workoutId: string, exerciseId: string, orderIndex: number) => [
+		args: (id: string, workoutId: string, exerciseId: number, orderIndex: number) => [
 			id, workoutId, exerciseId, orderIndex
 		]
 	},
@@ -153,7 +153,7 @@ const queries = {
 				sql += `AND (title LIKE ? OR notes LIKE ?)`;
 			}
 
-			sql += `ORDER BY create_at DESC LIMIT ? OFFSET ?`;
+			sql += `ORDER BY created_at DESC LIMIT ? OFFSET ?`;
 			return sql;
 		},
 		args: (filters: WorkoutFilters, limit: number, offset: number) => {
@@ -269,6 +269,7 @@ export const workoutRepository = {
 		if (workoutResult.rows.length === 0) {
 			throw new Error('Failed to create workout');
 		}
+		console.log('workout created')
 
 		const workout = mapRowToWorkout(workoutResult.rows[ 0 ] as unknown as WorkoutRow);
 

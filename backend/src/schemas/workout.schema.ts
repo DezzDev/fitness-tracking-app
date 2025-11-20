@@ -59,7 +59,7 @@ export const WorkoutExerciseSetSchema = z.object({
 // ============================================
 
 export const WorkoutExerciseSchema = z.object({
-	exerciseId: z.string({ error: 'Invalid exercise ID format' }),
+	exerciseId: z.number({ error: 'Exercise ID is required' }),
 
 	orderIndex: z
 		.number({ error: 'Order index is required' })

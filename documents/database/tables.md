@@ -2,7 +2,7 @@
 -- SCHEMA: Tablas principales
 -- =====================================
 
--- 1. Users
+-- Users
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL CHECK(email LIKE '%@%.__%'),
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Exercises
+-- Exercises
 CREATE TABLE IF NOT EXISTS exercises (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -27,10 +27,10 @@ CREATE TABLE IF NOT EXISTS exercises (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Workouts
+-- Workouts
 CREATE TABLE IF NOT EXISTS workouts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
   title TEXT NOT NULL,
   notes TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -39,10 +39,10 @@ CREATE TABLE IF NOT EXISTS workouts (
 
 -- Esta tabla simplemente indica que un entrenamiento incluye cierto ejercicio.
 -- order_index es el orden en el que se ejecuta el ejercicio en el entrenamiento.
--- 4. Workout_Exercises
+-- Workout_Exercises
 CREATE TABLE IF NOT EXISTS workout_exercises (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  workout_id INTEGER NOT NULL,
+  id TEXT PRIMARY KEY,
+  workout_id TEXT NOT NULL,
   exercise_id INTEGER NOT NULL,
   order_index INTEGER DEFAULT 0, 
   FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE,
@@ -50,21 +50,22 @@ CREATE TABLE IF NOT EXISTS workout_exercises (
 );
 
 -- Guardamos la información detallada de cada set del ejercicio de un entrenamiento
+-- Workout_Exercise_Sets
 CREATE TABLE IF NOT EXISTS workout_exercise_sets (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  workout_exercise_id INTEGER NOT NULL,
+  id TEXT PRIMARY KEY,
+  workout_exercise_id TEXT NOT NULL,
   set_number INTEGER NOT NULL, -- 1, 2, 3, ...
   reps INTEGER,
   duration_seconds INTEGER,
   rest_seconds INTEGER,
   weight REAL,
   notes TEXT,
-	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (workout_exercise_id) REFERENCES workout_exercises(id) ON DELETE CASCADE
 );
 
 
--- 5. Progress Logs
+-- Progress Logs
 CREATE TABLE IF NOT EXISTS progress_logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
@@ -80,13 +81,13 @@ CREATE TABLE IF NOT EXISTS progress_logs (
 -- SCHEMA: Tags y Goals/PRs
 -- =====================================
 
--- 6. Tags
+-- Tags
 CREATE TABLE IF NOT EXISTS tags (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT UNIQUE NOT NULL
 );
 
--- 7. Exercise_Tags
+-- Exercise_Tags
 CREATE TABLE IF NOT EXISTS exercise_tags (
   exercise_id INTEGER NOT NULL,
   tag_id INTEGER NOT NULL,
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS exercise_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
--- 8. User Goals
+-- User Goals
 CREATE TABLE IF NOT EXISTS user_goals (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
@@ -110,7 +111,7 @@ CREATE TABLE IF NOT EXISTS user_goals (
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
--- 9. Personal Records
+-- Personal Records
 CREATE TABLE IF NOT EXISTS personal_records (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,

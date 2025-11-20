@@ -100,11 +100,11 @@ Authorization: Bearer {{alejandro_token}}
 content-type: application/json
 
 {
-	"title": "Test Workout",
+	"title": "pecho",
 	"notes": "Test Workout",
 	"exercises": [
 		{
-			"exerciseId": "1",
+			"exerciseId": 2,
 			"orderIndex": 0,
 			"sets": [
 				{
@@ -114,10 +114,58 @@ content-type: application/json
 					"restSeconds": 30,
 					"weight": 100,
 					"notes": "Test Set"
+				},
+				{
+					"setNumber": 2,
+					"reps": 10,
+					"durationSeconds": 30,
+					"restSeconds": 30,
+					"weight": 100,
+					"notes": "Test Set"
+				}
+			]
+		},
+		{
+			"exerciseId": 4,
+			"orderIndex": 1,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10,
+					"restSeconds": 30,
+					"notes": "Test Set"
+				},
+				{
+					"setNumber": 2,
+					"reps": 10,
+					"restSeconds": 30,
+					"notes": "Test Set"
 				}
 			]
 		}
 	]
 }
+
+### Listar workouts del usuario
+GET {{baseUrl}}/workouts HTTP/1.1
+Authorization: Bearer {{alejandro_token}}
+Accept: application/json
+
+#### Con paginación
+GET {{baseUrl}}/workouts?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{alejandro_token}}
+Accept: application/json
+
+
+### Con filtros de fecha
+GET {{baseUrl}}/workouts?startDate=2025-01-01T00:00:00Z&endDate=2025-12-31T23:59:59Z HTTP/1.1
+Authorization: Bearer {{alejandro_token}}
+Accept: application/json
+
+### Con búsqueda
+GET {{baseUrl}}/workouts?search=pecho HTTP/1.1
+Authorization: Bearer {{alejandro_token}}
+Accept: application/json
+
 
 
