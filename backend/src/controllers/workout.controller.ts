@@ -107,6 +107,8 @@ export const updateWorkout = asyncHandler(
 		const userId = getUserId(req);
 		const workoutId = getWorkoutId(req.params);
 		const data = req.validatedBody as UpdateWorkoutInput;
+		
+		console.log({daniel:data})
 
 		const workout = await workoutService.update(workoutId, userId, data);
 

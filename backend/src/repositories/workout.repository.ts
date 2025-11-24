@@ -222,7 +222,7 @@ const queries = {
 		sql: (fields: string[]) => `
 			UPDATE workouts
 			SET ${fields.map((f) => `${f} = ?`).join(', ')}
-			WHERE id = ? ADN user_id = ?
+			WHERE id = ? AND user_id = ?
 			RETURNING *
 		`,
 		args: (id: string, userId: string, data: Partial<Omit<WorkoutUpdateData, 'exercises'>>) => {
