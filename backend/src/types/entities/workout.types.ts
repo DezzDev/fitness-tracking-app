@@ -67,7 +67,7 @@ export type WorkoutExerciseSetCreateData = {
 }
 
 export type WorkoutExerciseCreateData = {
-	exerciseId: number;
+	exerciseId: string;
 	orderIndex: number;
 	sets: WorkoutExerciseSetCreateData[];
 }

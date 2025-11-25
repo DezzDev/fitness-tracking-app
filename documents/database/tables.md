@@ -4,7 +4,7 @@
 
 -- Users
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL CHECK(email LIKE '%@%.__%'),
   name TEXT NOT NULL,
   age INTEGER NOT NULL CHECK(age BETWEEN 15 AND 120),
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Exercises
 CREATE TABLE IF NOT EXISTS exercises (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
   difficulty TEXT CHECK(difficulty IN ('beginner','intermediate','advanced')),
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS workouts (
 CREATE TABLE IF NOT EXISTS workout_exercises (
   id TEXT PRIMARY KEY,
   workout_id TEXT NOT NULL,
-  exercise_id INTEGER NOT NULL,
+  exercise_id TEXT NOT NULL,
   order_index INTEGER DEFAULT 0, 
   FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE,
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
@@ -67,8 +67,8 @@ CREATE TABLE IF NOT EXISTS workout_exercise_sets (
 
 -- Progress Logs
 CREATE TABLE IF NOT EXISTS progress_logs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
   log_date DATE NOT NULL,
   body_weight REAL,
   body_fat_percent REAL,
@@ -83,14 +83,14 @@ CREATE TABLE IF NOT EXISTS progress_logs (
 
 -- Tags
 CREATE TABLE IF NOT EXISTS tags (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY,
   name TEXT UNIQUE NOT NULL
 );
 
 -- Exercise_Tags
 CREATE TABLE IF NOT EXISTS exercise_tags (
-  exercise_id INTEGER NOT NULL,
-  tag_id INTEGER NOT NULL,
+  exercise_id TEXT NOT NULL,
+  tag_id TEXT NOT NULL,
   PRIMARY KEY (exercise_id, tag_id),
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE,
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
@@ -98,9 +98,9 @@ CREATE TABLE IF NOT EXISTS exercise_tags (
 
 -- User Goals
 CREATE TABLE IF NOT EXISTS user_goals (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  exercise_id INTEGER NOT NULL,
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
   target_reps INTEGER,
   target_duration_seconds INTEGER,
   target_weight REAL,
@@ -113,9 +113,9 @@ CREATE TABLE IF NOT EXISTS user_goals (
 
 -- Personal Records
 CREATE TABLE IF NOT EXISTS personal_records (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  exercise_id INTEGER NOT NULL,
+  id TEXT PRIMARY KEY ,
+  user_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
   max_reps INTEGER,
   max_duration_seconds INTEGER,
   max_weight REAL,

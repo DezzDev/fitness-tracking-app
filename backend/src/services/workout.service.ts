@@ -65,7 +65,7 @@ export const workoutService = {
 			};
 
 			const workout = await workoutRepository.create(createData);
-
+			
 			return sanitizeWorkout(workout);
 
 		} catch (error) {

@@ -19,6 +19,8 @@ export type {
 	UserRow, 
 	UserUpdateData
 } from './entities/user.types';
+
+// Re-export types workout
 export type{
 	Workout, 
 	WorkoutWithExercises, 
@@ -33,3 +35,19 @@ export type{
 	WorkoutExerciseSetRow,
 	WorkoutFilters
 } from './entities/workout.types';
+
+// Re-export types exercise
+export type {
+	Exercise,
+	ExerciseWithTags,
+	Tag,
+	ExerciseDifficulty,
+	ExerciseType,
+	ExerciseCreateData,
+	ExerciseUpdateData,
+	ExerciseRow,
+	TagRow,
+	ExerciseTagRow,
+	ExerciseFilters,
+	ExerciseStats,
+} from './entities/exercise.types';

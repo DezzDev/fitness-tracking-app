@@ -1,0 +1,1 @@
+- Validación adicional (verificar que exerciseId existe antes de crear workout)
