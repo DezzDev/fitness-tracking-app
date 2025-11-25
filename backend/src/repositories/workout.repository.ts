@@ -74,7 +74,7 @@ const queries = {
 			VALUES (?, ?, ?, ?)
 			RETURNING *
 		`,
-		args: (id: string, workoutId: string, exerciseId: number, orderIndex: number) => [
+		args: (id: string, workoutId: string, exerciseId: string, orderIndex: number) => [
 			id, workoutId, exerciseId, orderIndex
 		]
 	},
