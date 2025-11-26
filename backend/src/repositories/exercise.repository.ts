@@ -231,6 +231,12 @@ const queries = {
 		args: (exerciseId: string) => [ exerciseId ]
 	},
 
+	// Eliminar exercise
+	deleteExercise: {
+		sql: 'DELETE FROM exercises WHERE id = ?',
+		args: (id: string) => [ id ],
+	},
+
 	// Verificar si exercise está en uso 
 	isExerciseInUse: {
 		sql: 'SELECT COUNT(*) as count FROM workout_exercises WHERE exercise_id = ?',
@@ -279,6 +285,55 @@ const tagQueries = {
 // ============================================
 
 export const exerciseRepository = {
+
+	/**
+	* Crear exercise con tags
+	*/
+	create: async (data: ExerciseCreateData): Promise<ExerciseWithTags> => {
+		const exerciseId = uuidv4();
+
+		// 1. Crear exercise
+		const exerciseResult = await executeWithRetry((client) =>
+			client.execute({
+				sql: queries.createExercise.sql,
+				args: queries.createExercise.args(
+					exerciseId,
+					data.name,
+					data.description || null,
+					data.difficulty || null,
+					data.muscleGroup || null,
+					data.type || null
+				),
+			})
+		);
+
+		if (exerciseResult.rows.length === 0) {
+			throw new Error('Failed to create exercise');
+		}
+
+		const exercise = mapRowToExercise(exerciseResult.rows[ 0 ] as unknown as ExerciseRow);
+
+		// 2. Crear relaciones con tags si hay
+		if (data.tagIds && data.tagIds.length > 0) {
+			const tagQueries = data.tagIds.map((tagId) => ({
+				sql: queries.createExerciseTag.sql,
+				args: queries.createExerciseTag.args(exerciseId, tagId),
+			}));
+
+			await batch(tagQueries);
+		}
+
+		// 3. Obtener tags
+		const tags = data.tagIds ? await exerciseRepository.getTags(exerciseId) : [];
+
+		return {
+			...exercise,
+			tags,
+		};
+	},
+
+
+
 	/**
 	 * Buscar exercise por ID con tags
 	 * @param exerciseId id del exercise
@@ -447,6 +502,18 @@ export const exerciseRepository = {
 		}
 
 		return updatedExercise;
+	},
+
+	/**
+	* Eliminar exercise
+	*/
+	delete: async (id: string): Promise<void> => {
+		await executeWithRetry((client) =>
+			client.execute({
+				sql: queries.deleteExercise.sql,
+				args: queries.deleteExercise.args(id),
+			})
+		);
 	},
 
 	/**
