@@ -1,5 +1,5 @@
 // src/repositories/exercise.repository.ts
-import {execute, executeWithRetry, batch } from '@/config/database'
+import { execute, executeWithRetry, batch } from '@/config/database'
 import {
 	Exercise,
 	ExerciseWithTags,
@@ -10,7 +10,7 @@ import {
 	TagRow,
 	ExerciseFilters
 } from '@/types';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 // ============================================
 // MAPPERS 
@@ -26,7 +26,7 @@ const mapRowToExercise = (row: ExerciseRow): Exercise => ({
 	createdAt: new Date(row.created_at),
 });
 
-const mapRowToTag = (row: TagRow):Tag =>({
+const mapRowToTag = (row: TagRow): Tag => ({
 	id: row.id,
 	name: row.name,
 })
@@ -37,41 +37,41 @@ const mapRowToTag = (row: TagRow):Tag =>({
 
 const queries = {
 	// Crear exercise
-	createExercise : {
+	createExercise: {
 		sql: `
 			INSERT INTO exercises (id, name, description, difficulty, muscle_group, type, created_at)
 			VALUES (?, ?, ?, ?, ?, ?, datetime('now))
 			RETURNING *
 		`,
 		args: (
-			id:string,
+			id: string,
 			name: string,
 			description: string | null,
 			difficulty: string | null,
 			muscle_group: string | null,
 			type: string | null
-		) => [id, name, description, difficulty, muscle_group, type]		
+		) => [ id, name, description, difficulty, muscle_group, type ]
 	},
 
 	// Crear relación exercise-tag
-	createExerciseTag:{
+	createExerciseTag: {
 		sql: `
 			INSERT INTO exercise_tags (exercise_id, tag_id)
 			VALUES (?, ?)
 		`,
-		args: (exerciseId: string, tagId: string) => [exerciseId, tagId]
+		args: (exerciseId: string, tagId: string) => [ exerciseId, tagId ]
 	},
-	
+
 	// Buscar exercise por ID
 	findById: {
 		sql: `SELECT * FROM exercises WHERE id = ?`,
-		args: (id: string) => [id]
+		args: (id: string) => [ id ]
 	},
 
 	// Buscar exercise por Nombre
 	findByName: {
-		sql : `SELECT * FROM exercises WHERE LOWER(name) = LOWER(?)`,
-		args: (name: string) => [name]
+		sql: `SELECT * FROM exercises WHERE LOWER(name) = LOWER(?)`,
+		args: (name: string) => [ name ]
 	},
 
 	// Buscar tags de un exercise
@@ -82,38 +82,38 @@ const queries = {
 			WHERE et.exercise_id = ?
 			ORDER BY t.name ASC 
 		`,
-		args: (exerciseId: string) => [exerciseId]
+		args: (exerciseId: string) => [ exerciseId ]
 	},
 
 	// Listar exercises con filtros
-	findAll:{
+	findAll: {
 		sql: (filters: ExerciseFilters) => {
 			let sql = 'SELECT DISTINCT e.* FROM exercises e';
 
 			// Join con tags si se filtra por tag
-			if(filters.tagIDs && filters.tagIDs.length > 0){
-				sql +=' INNER JOIN exercise_tags et ON e.id = et.exercise_id';
+			if (filters.tagIDs && filters.tagIDs.length > 0) {
+				sql += ' INNER JOIN exercise_tags et ON e.id = et.exercise_id';
 			}
 
 			sql += ` WHERE 1=1`;
 
-			if(filters.difficulty){
+			if (filters.difficulty) {
 				sql += ' AND e.difficulty = ?';
 			}
 
-			if(filters.muscleGroup){
+			if (filters.muscleGroup) {
 				sql += ' AND e.muscle_group = ?';
 			}
 
-			if(filters.type){
+			if (filters.type) {
 				sql += ' AND e.type = ?';
 			}
 
-			if(filters.tagIDs && filters.tagIDs.length > 0){
+			if (filters.tagIDs && filters.tagIDs.length > 0) {
 				sql += ` AND et.tag_id IN (${filters.tagIDs.map(() => '?').join(',')})`;
 			}
 
-			if(filters.searchTerm){
+			if (filters.searchTerm) {
 				sql += ' AND (e.name LIKE ? OR e.description LIKE ?)'
 			}
 
@@ -121,22 +121,22 @@ const queries = {
 
 			return sql;
 		},
-		args: (filters: ExerciseFilters, limit:number, offset: number)=>{
-			const args: any[] =[];
+		args: (filters: ExerciseFilters, limit: number, offset: number) => {
+			const args: any[] = [];
 
-			if(filters.difficulty){
+			if (filters.difficulty) {
 				args.push(filters.difficulty);
 			}
-			if(filters.muscleGroup){
+			if (filters.muscleGroup) {
 				args.push(filters.muscleGroup);
 			}
-			if(filters.type){
+			if (filters.type) {
 				args.push(filters.type);
 			}
-			if(filters.tagIDs && filters.tagIDs.length > 0){
+			if (filters.tagIDs && filters.tagIDs.length > 0) {
 				args.push(...filters.tagIDs);
-			}	
-			if(filters.searchTerm){
+			}
+			if (filters.searchTerm) {
 				const searchPattern = `%${filters.searchTerm}%`
 				args.push(searchPattern, searchPattern,)
 			}
@@ -147,54 +147,54 @@ const queries = {
 	},
 
 	// contar exercises
-	count : {
-		sql:(filters:ExerciseFilters)=>{
+	count: {
+		sql: (filters: ExerciseFilters) => {
 			let sql = 'SELECT COUNT(DISTINCT e.id) as total FROM exercises e';
 
-			if(filters.tagIDs && filters.tagIDs.length > 0){
+			if (filters.tagIDs && filters.tagIDs.length > 0) {
 				sql += ' INNER JOIN exercise_tags et ON e.id = et.exercise_id';
 			}
 
 			sql += ` WHERE 1=1`;
 
-			if(filters.difficulty){
+			if (filters.difficulty) {
 				sql += ' AND e.difficulty = ?';
 			}
 
-			if(filters.muscleGroup){
+			if (filters.muscleGroup) {
 				sql += ' AND e.muscle_group = ?';
 			}
 
-			if(filters.type){
+			if (filters.type) {
 				sql += ' AND e.type = ?';
 			}
 
-			if(filters.tagIDs && filters.tagIDs.length > 0){
+			if (filters.tagIDs && filters.tagIDs.length > 0) {
 				sql += ` AND et.tag_id IN (${filters.tagIDs.map(() => '?').join(',')})`;
 			}
 
-			if(filters.searchTerm){
+			if (filters.searchTerm) {
 				sql += ' AND (e.name LIKE ? OR e.description LIKE ?)'
 			}
 
 			return sql;
 		},
-		args: (filters: ExerciseFilters)=>{
+		args: (filters: ExerciseFilters) => {
 			const args: any[] = [];
 
-			if(filters.difficulty){
+			if (filters.difficulty) {
 				args.push(filters.difficulty);
 			}
-			if(filters.muscleGroup){
+			if (filters.muscleGroup) {
 				args.push(filters.muscleGroup);
 			}
-			if(filters.type){
+			if (filters.type) {
 				args.push(filters.type);
 			}
-			if(filters.tagIDs && filters.tagIDs.length > 0){
+			if (filters.tagIDs && filters.tagIDs.length > 0) {
 				args.push(...filters.tagIDs);
-			}	
-			if(filters.searchTerm){
+			}
+			if (filters.searchTerm) {
 				const searchPattern = `%${filters.searchTerm}%`
 				args.push(searchPattern, searchPattern,)
 			}
@@ -211,15 +211,16 @@ const queries = {
 			WHERE id = ?
 			RETURNING *
 		`,
-		args:(id: string, data: ExerciseUpdateData) => {
+		args: (id: string, data: Omit<ExerciseUpdateData, 'tagIds'>) => {
 			const values = Object.entries(data)
-				.filter(([key])=> key !== 'tagIDs')
-				.map(([key, value])=>{
+				.filter(([ key ]) => key !== 'tagIds')
+				.map(([ key, value ]) => {
 					// convertir camelCase a snake_case
-					if(key === 'muscleGroup') return value || null;
+					if (key === 'muscleGroup') return value || null;
 					return value || null;
 				});
-				return [...values, id]
+				
+			return [ ...values, id ]
 		}
 	},
 
@@ -232,7 +233,7 @@ const queries = {
 	// Verificar si exercise está en uso 
 	isExerciseInUse: {
 		sql: 'SELECT COUNT(*) as count FROM workout_exercises WHERE exercise_id = ?',
-		args: (exerciseId: string) => [exerciseId]
+		args: (exerciseId: string) => [ exerciseId ]
 	}
 }
 
@@ -271,3 +272,208 @@ const tagQueries = {
 		args: (tagId: string) => [ tagId ],
 	},
 };
+
+// ============================================
+// EXERCISE REPOSITORY
+// ============================================
+
+export const exerciseRepository = {
+	/**
+	 * Buscar exercise por ID con tags
+	 * @param exerciseId id del exercise
+	 * @returns exercise completo con tags
+	 */
+	findById: async (exerciseId: string): Promise<ExerciseWithTags | null> => {
+		const result = await execute({
+			sql: queries.findById.sql,
+			args: queries.findById.args(exerciseId)
+		})
+
+		if (result.rows.length === 0) return null;
+
+		const exercise = mapRowToExercise(result.rows[ 0 ] as unknown as ExerciseRow);
+
+		// obtener tags
+		const tags = await exerciseRepository.getTags(exerciseId);
+
+		return {
+			...exercise,
+			tags
+		}
+	},
+
+	/**
+	 * Buscar exercise por nombre
+	 * @param name del exercise
+	 * @returns exercise 
+	 */
+	findByName: async (name: string): Promise<Exercise | null> => {
+		const result = await execute({
+			sql: queries.findByName.sql,
+			args: queries.findByName.args(name)
+		})
+
+		if (result.rows.length === 0) return null;
+
+		const exercise = mapRowToExercise(result.rows[ 0 ] as unknown as ExerciseRow);
+		return exercise;
+	},
+
+	/**
+	 * Obtener tags de un exercise
+	 * @param exerciseId id del exercise
+	 * @returns tags del exercise
+	 */
+	getTags: async (exerciseId: string): Promise<Tag[]> => {
+		const result = await execute({
+			sql: queries.findExerciseTags.sql,
+			args: queries.findExerciseTags.args(exerciseId)
+		})
+
+		return result.rows.map(r => mapRowToTag(r as unknown as TagRow));
+	},
+
+	/**
+	 * Listar exercises con filtros
+	 * @param filters filtros para buscar exercises (difficulty, muscleGroup, type, tagIDs, searchTerm)
+	 * @param page página actual
+	 * @param limit número de resultados por página
+	 * @returns lista de exercises con tags
+	 */
+	findAll: async (
+		filters: ExerciseFilters,
+		page: number = 1,
+		limit: number = 10
+	): Promise<ExerciseWithTags[]> => {
+
+		const offset = (page - 1) * limit;
+
+		const result = await execute({
+			sql: queries.findAll.sql(filters),
+			args: queries.findAll.args(filters, limit, offset)
+		})
+
+		if (result.rows.length === 0) return [];
+
+		// obtener cada exercise con sus tags
+		const exercisesWithTags = await Promise.all(
+			result.rows.map(async (r) => {
+				const exercise = mapRowToExercise(r as unknown as ExerciseRow);
+				const tags = await exerciseRepository.getTags(exercise.id);
+				return { ...exercise, tags };
+			})
+		)
+		return exercisesWithTags;
+	},
+
+	/**
+	 * Contar exercises
+	 * @param filters filtros para buscar exercises (difficulty, muscleGroup, type, tagIDs, searchTerm)
+	 * @returns número de exercises
+	 */
+	count: async (filters: ExerciseFilters): Promise<number> => {
+		const result = await execute({
+			sql: queries.count.sql(filters),
+			args: queries.count.args(filters)
+		});
+
+		if (!result.rows[ 0 ]) {
+			throw new Error('Count query returned empty result');
+		}
+
+		const { total } = result.rows[ 0 ] as unknown as { total: number };
+
+		if (typeof total !== 'number' || total < 0) {
+			throw new Error('Invalid count value: ' + total);
+		}
+
+		return total;
+	},
+
+	/**
+	 * Actualizar exercise
+	 * @param exerciseId id del exercise
+	 * @data datos del exercise a actualizar (name, description, difficulty, muscleGroup, type, tagIds)
+	 * @returns exercise completo con tags
+	 */
+	update: async (exerciseId: string, data: ExerciseUpdateData): Promise<ExerciseWithTags> => {
+		
+		// Actualizar datos básicos (sin tags)
+		const updateData: any = {};
+		if (data.name) updateData.name = data.name;
+		if(data.description !== undefined) updateData.description = data.description || null;
+		if(data.difficulty !== undefined) updateData.difficulty = data.difficulty || null;
+		if(data.muscleGroup !== undefined) updateData.muscle_group = data.muscleGroup || null;
+		if(data.type !== undefined) updateData.type = data.type || null;
+
+		const fields = Object.keys(updateData);
+
+		if(fields.length > 0) {
+			await executeWithRetry((client)=>
+				client.execute({
+					sql: queries.updateExercise.sql(fields),
+					args: queries.updateExercise.args(exerciseId, updateData)
+				})
+			)
+		}
+
+		// Actualizar tags si se proporcionan
+		if(data.tagIds !== undefined){
+			// Eliminar tags existentes
+			await executeWithRetry((client) =>
+				client.execute({
+					sql:queries.deleteExerciseTag.sql,
+					args: queries.deleteExerciseTag.args(exerciseId)
+				})
+			);
+
+			// Crear nuevos tags
+			if (data.tagIds.length > 0){
+				const tagQueries= data.tagIds.map((tagId) =>({
+					sql: queries.createExerciseTag.sql,
+					args: queries.createExerciseTag.args(exerciseId, tagId)
+				}));
+
+				await batch(tagQueries);
+			}
+		}
+
+		// Retornar exercise actualizado
+		const updatedExercise = await exerciseRepository.findById(exerciseId);
+
+		if(!updatedExercise){
+			throw new Error('Exercise not found after update');
+		}
+
+		return updatedExercise;
+	},
+
+	/**
+	 * Verificar si exercise esta en uso
+	 * @param exerciseId id del exercise
+	 * @returns true si esta en uso, false si no
+	 */
+	isInUse: async (exerciseId: string): Promise<boolean> =>{
+		const result= await execute({
+			sql: queries.isExerciseInUse.sql,
+			args: queries.isExerciseInUse.args(exerciseId)
+		});
+		
+		const{count} = result.rows[0] as unknown as {count:number};;
+		return count > 0
+	},
+
+	/**
+	 * Verificar si existe por nombre
+	 * @param name nombre del exercise
+	 * @returns true si existe, false si no
+	 */
+	existsByName: async(name:string): Promise<boolean> =>{
+		const exercise = await exerciseRepository.findByName(name);
+		return exercise !== null;
+	}
+
+
+
+
+}
