@@ -11,6 +11,7 @@ import {
 	ExerciseFilters
 } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import ta from 'zod/v4/locales/ta.js';
 
 // ============================================
 // MAPPERS 
@@ -472,8 +473,32 @@ export const exerciseRepository = {
 		const exercise = await exerciseRepository.findByName(name);
 		return exercise !== null;
 	}
+}
 
+// ============================================
+// TAG REPOSITORY
+// ============================================
 
+export const tagRepository = {
+	/**
+	 * Crear tag
+	 * @param name nombre del tag
+	 * @returns tag
+	 */
+	create: async (name:string):Promise<Tag> =>{
+		const id = uuidv4();
 
+		const result = await executeWithRetry((client) =>
+			client.execute({
+				sql:tagQueries.create.sql,
+				args: tagQueries.create.args(id, name)
+			})			
+		);
 
+		if(result.rows.length === 0 ){
+			throw new Error('Failed to create tag')
+		}
+
+		return mapRowToTag(result.rows[0] as unknown as TagRow);
+	}
 }
