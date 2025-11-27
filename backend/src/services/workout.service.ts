@@ -51,7 +51,7 @@ export const workoutService = {
 	/**
 	 * Crear workout
 	 * @param userId id del usuario
-	 * @input datos del workout a crear (title, notes, ejercicios)
+	 * @param input datos del workout a crear (title, notes, ejercicios)
 	 * @returns Promise<WorkoutWithExercises>
 	 */
 	create: async (userId: string, input: CreateWorkoutInput): Promise<WorkoutWithExercises> => {

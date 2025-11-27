@@ -3,7 +3,6 @@ import { exerciseRepository, tagRepository } from "@/repositories/exercise.repos
 import { createAppError } from "@/middlewares/error.middleware";
 import { handleServiceError } from "@/utils/error.utils";
 import {
-	Exercise,
 	ExerciseWithTags,
 	Tag,
 	ExerciseCreateData,
