@@ -11,7 +11,6 @@ import {
 	ExerciseFilters
 } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import ta from 'zod/v4/locales/ta.js';
 
 // ============================================
 // MAPPERS 
@@ -220,7 +219,7 @@ const queries = {
 					if (key === 'muscleGroup') return value || null;
 					return value || null;
 				});
-				
+
 			return [ ...values, id ]
 		}
 	},
@@ -453,19 +452,19 @@ export const exerciseRepository = {
 	 * @returns exercise completo con tags
 	 */
 	update: async (exerciseId: string, data: ExerciseUpdateData): Promise<ExerciseWithTags> => {
-		
+
 		// Actualizar datos básicos (sin tags)
 		const updateData: any = {};
 		if (data.name) updateData.name = data.name;
-		if(data.description !== undefined) updateData.description = data.description || null;
-		if(data.difficulty !== undefined) updateData.difficulty = data.difficulty || null;
-		if(data.muscleGroup !== undefined) updateData.muscle_group = data.muscleGroup || null;
-		if(data.type !== undefined) updateData.type = data.type || null;
+		if (data.description !== undefined) updateData.description = data.description || null;
+		if (data.difficulty !== undefined) updateData.difficulty = data.difficulty || null;
+		if (data.muscleGroup !== undefined) updateData.muscle_group = data.muscleGroup || null;
+		if (data.type !== undefined) updateData.type = data.type || null;
 
 		const fields = Object.keys(updateData);
 
-		if(fields.length > 0) {
-			await executeWithRetry((client)=>
+		if (fields.length > 0) {
+			await executeWithRetry((client) =>
 				client.execute({
 					sql: queries.updateExercise.sql(fields),
 					args: queries.updateExercise.args(exerciseId, updateData)
@@ -474,18 +473,18 @@ export const exerciseRepository = {
 		}
 
 		// Actualizar tags si se proporcionan
-		if(data.tagIds !== undefined){
+		if (data.tagIds !== undefined) {
 			// Eliminar tags existentes
 			await executeWithRetry((client) =>
 				client.execute({
-					sql:queries.deleteExerciseTag.sql,
+					sql: queries.deleteExerciseTag.sql,
 					args: queries.deleteExerciseTag.args(exerciseId)
 				})
 			);
 
 			// Crear nuevos tags
-			if (data.tagIds.length > 0){
-				const tagQueries= data.tagIds.map((tagId) =>({
+			if (data.tagIds.length > 0) {
+				const tagQueries = data.tagIds.map((tagId) => ({
 					sql: queries.createExerciseTag.sql,
 					args: queries.createExerciseTag.args(exerciseId, tagId)
 				}));
@@ -497,7 +496,7 @@ export const exerciseRepository = {
 		// Retornar exercise actualizado
 		const updatedExercise = await exerciseRepository.findById(exerciseId);
 
-		if(!updatedExercise){
+		if (!updatedExercise) {
 			throw new Error('Exercise not found after update');
 		}
 
@@ -521,13 +520,13 @@ export const exerciseRepository = {
 	 * @param exerciseId id del exercise
 	 * @returns true si esta en uso, false si no
 	 */
-	isInUse: async (exerciseId: string): Promise<boolean> =>{
-		const result= await execute({
+	isInUse: async (exerciseId: string): Promise<boolean> => {
+		const result = await execute({
 			sql: queries.isExerciseInUse.sql,
 			args: queries.isExerciseInUse.args(exerciseId)
 		});
-		
-		const{count} = result.rows[0] as unknown as {count:number};;
+
+		const { count } = result.rows[ 0 ] as unknown as { count: number };;
 		return count > 0
 	},
 
@@ -536,7 +535,7 @@ export const exerciseRepository = {
 	 * @param name nombre del exercise
 	 * @returns true si existe, false si no
 	 */
-	existsByName: async(name:string): Promise<boolean> =>{
+	existsByName: async (name: string): Promise<boolean> => {
 		const exercise = await exerciseRepository.findByName(name);
 		return exercise !== null;
 	}
@@ -552,20 +551,103 @@ export const tagRepository = {
 	 * @param name nombre del tag
 	 * @returns tag
 	 */
-	create: async (name:string):Promise<Tag> =>{
+	create: async (name: string): Promise<Tag> => {
 		const id = uuidv4();
 
 		const result = await executeWithRetry((client) =>
 			client.execute({
-				sql:tagQueries.create.sql,
+				sql: tagQueries.create.sql,
 				args: tagQueries.create.args(id, name)
-			})			
+			})
 		);
 
-		if(result.rows.length === 0 ){
+		if (result.rows.length === 0) {
 			throw new Error('Failed to create tag')
 		}
 
-		return mapRowToTag(result.rows[0] as unknown as TagRow);
+		return mapRowToTag(result.rows[ 0 ] as unknown as TagRow);
+	},
+
+	/**
+	 * Buscar tag por ID
+	 * @param id id del tag
+	 * @returns tag
+	 */
+	findById: async (id: string): Promise<Tag | null> => {
+		const result = await execute({
+			sql: tagQueries.findById.sql,
+			args: tagQueries.findById.args(id)
+		})
+
+		if (result.rows.length === 0) return null;
+
+		return mapRowToTag(result.rows[ 0 ] as unknown as TagRow);
+	},
+
+	/**
+	 * Buscar tag por nombre
+	 * @param name nombre del tag
+	 * @returns tag
+	 */
+	findByName: async (name: string): Promise<Tag | null> => {
+		const result = await execute({
+			sql: tagQueries.findByName.sql,
+			args: tagQueries.findByName.args(name)
+		})
+
+		if (result.rows.length === 0) return null;
+
+		return mapRowToTag(result.rows[ 0 ] as unknown as TagRow);
+	},
+
+	/**
+	 * Listar todos los tags
+	 * @returns lista de tags
+	 */
+	findAll: async (): Promise<Tag[]> => {
+		const result = await execute({
+			sql: tagQueries.findAll.sql,
+			args: tagQueries.findAll.args()
+		})
+
+		return result.rows.map(r => mapRowToTag(r as unknown as TagRow));
+	},
+
+	/**
+	 * Eliminar tag
+	 * @param id id del tag
+	 * @returns void
+	 */
+	delete: async (id:string):Promise<void> =>{
+		await executeWithRetry((client)=>
+			client.execute({
+				sql: tagQueries.delete.sql,
+				args: tagQueries.delete.args(id)
+			})
+		)
+	},
+
+	/**
+	 * Verificar si tag esta en uso
+	 * @param id id del tag
+	 * @returns true si esta en uso, false si no
+	 */
+	isInUse: async (id:string):Promise<boolean> =>{
+		const result = await execute({
+			sql: tagQueries.isTagInUse.sql,
+			args: tagQueries.isTagInUse.args(id)
+		})
+		const {count} = result.rows[0] as unknown as {count:number};
+		return count > 0
+	},
+
+	/**
+	 * Verifica si existe por nombre
+	 * @param name nombre del tag
+	 * @returns true si existe, false si no
+	 */
+	existsByName: async(name:string):Promise<boolean> =>{
+		const tag = await tagRepository.findByName(name);
+		return tag !== null;
 	}
 }
