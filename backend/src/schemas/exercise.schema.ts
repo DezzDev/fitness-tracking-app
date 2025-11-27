@@ -45,7 +45,7 @@ export const CreateExerciseSchema = z.object({
 
 	type: ExerciseTypeEnum.optional(),
 
-	tagIDs: z
+	tagIds: z
 		.array(z.uuidv4('Invalid tag ID format'))
 		.max(20, {error: 'Cannot have more than 20 tags'})
 		.optional(),
@@ -61,7 +61,7 @@ export const UpdateExerciseSchema = z.object({
 	difficulty: CreateExerciseSchema.shape.difficulty.optional(),
 	muscleGroup: CreateExerciseSchema.shape.muscleGroup.optional(),
 	type: CreateExerciseSchema.shape.type.optional(),
-	tagIDs: CreateExerciseSchema.shape.tagIDs.optional(),
+	tagIds: CreateExerciseSchema.shape.tagIds.optional(),
 }).strict(); // No permite campos adicionales
 
 // ============================================

@@ -286,7 +286,9 @@ const tagQueries = {
 export const exerciseRepository = {
 
 	/**
-	* Crear exercise con tags
+	* Crear exercise con tags (si se proporcionan)
+	* @param data información del exercise, puede incluir tags
+	* @returns exercise completo con tags
 	*/
 	create: async (data: ExerciseCreateData): Promise<ExerciseWithTags> => {
 		const exerciseId = uuidv4();
