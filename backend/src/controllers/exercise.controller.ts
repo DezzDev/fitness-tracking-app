@@ -9,7 +9,6 @@ import {
 	UpdateExerciseInput,
 	CreateTagInput
 } from '@/schemas/exercise.schema';
-import { markAsUncloneable } from 'worker_threads';
 
 // ============================================
 //  HELPERS 
