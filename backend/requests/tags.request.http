@@ -7,5 +7,40 @@ content-type: application/json
 
 {
 	"email": "alejandro7@email.com",
-	"password": "Zapata38"
+	"password": "Zapata39"
+}
+
+###
+### crear workout usando el token
+POST {{baseUrl}}/workouts HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{login.response.body.data.token}}
+
+{
+	"title": "Pull day",
+	"description": "Trabajo de pull day",
+	"exercises": [
+		{
+			"exerciseId": "658805c3-58d9-4a85-befb-fe373d1495bd",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10,
+					"durationSeconds": 30,
+					"restSeconds": 30,
+					"weight": 100,
+					"notes": "Test Set"
+				},
+				{
+					"setNumber": 2,
+					"reps": 10,
+					"durationSeconds": 30,
+					"restSeconds": 30,
+					"weight": 100,
+					"notes": "Test Set"
+				}
+			]
+		},
+	]
 }

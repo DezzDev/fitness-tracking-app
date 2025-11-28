@@ -1,7 +1,7 @@
 
 @id = ec5335ca-35c3-4efb-9db9-87da62622730
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjN2E0NjFjYy04MGU0LTRkZjQtODQ5My1lZWI5Njk2NWRiYTQiLCJlbWFpbCI6ImRhbmllbEBlbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjQwNjY5MDgsImV4cCI6MTc2NDE1MzMwOCwiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.Bq_U0Qt7DSFJ3DcPWKozpRi1n7P_D4C9UFqQTcAzU9Y
-@userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiNTU1M2VlMi01YWY5LTQ4NmQtOTA2Zi1lYTA2YjgxMjE0ZTQiLCJlbWFpbCI6ImFsZWphbmRybzdAZW1haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjQwNjY3NDQsImV4cCI6MTc2NDE1MzE0NCwiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.j_TsgxdSrh1IgoRBKSVLTwTGtXsBSwNEucyOUdrE-4I
+@userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiNTU1M2VlMi01YWY5LTQ4NmQtOTA2Zi1lYTA2YjgxMjE0ZTQiLCJlbWFpbCI6ImFsZWphbmRybzdAZW1haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjQzMzgxMTksImV4cCI6MTc2NDk0MjkxOSwiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.sI3026IEK5j-3uzZm7Cph-VCIa4iha4lHY1RoCl41GA
 @baseUrl = http://localhost:4000/api
 
 
@@ -51,7 +51,7 @@ content-type: application/json
 
 {
 	"email": "alejandro7@email.com",
-	"password": "Zapata38"
+	"password": "Zapata39"
 }
 
 ### POST /users/login
@@ -84,7 +84,7 @@ Authorization: Bearer {{userToken}}
 content-type: application/json
 
 {
-	"oldPassword": "Zapata38",
+	"oldPassword": "Zapata39",
 	"newPassword": "Zapata39"
 }
 
