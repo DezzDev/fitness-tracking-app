@@ -1,7 +1,7 @@
 // src/controllers/exercise.controller.ts
 import { Request, Response } from 'express';
 import { createAppError } from '@/middlewares/error.middleware';
-import { exerciseService  } from '@/services/exercise.service';
+import { exerciseService, tagService  } from '@/services/exercise.service';
 import { asyncHandler } from '@/middlewares/error.middleware';
 import { ResponseHandler } from '@/utils/response';
 import {
@@ -148,5 +148,63 @@ export const getExerciseStats = asyncHandler(
 		const stats = await exerciseService.getStats();
 
 		ResponseHandler.success(res, stats);
+	}
+)
+
+// ============================================
+// TAG CONTROLLERS
+// ============================================
+
+/**
+ * POST /tags
+ * Crear nueva etiqueta
+ */
+export const createTag = asyncHandler(
+	async (req: Request, res: Response): Promise<undefined> => {
+		const data = req.validatedBody as CreateTagInput;
+
+		const tag = await tagService.create(data);
+
+		ResponseHandler.created(res, tag, 'Tag created successfully');	
+	}
+);
+
+/**
+ * GET /tags/:id
+ * Obtener etiqueta por ID
+ */
+export const getTag = asyncHandler(
+	async(req:Request, res:Response): Promise<undefined> =>{
+		const tagId = extractTagId(req.params);
+
+		const tag = await tagService.findById(tagId);
+
+		ResponseHandler.success(res, tag);
+	}
+);
+
+/**
+ * GET /tags
+ * Listar todos los tags
+ */
+export const listTags = asyncHandler(
+	async(_:Request, res:Response): Promise<undefined> => {
+		const tags = await tagService.findAll();
+
+		ResponseHandler.success(res, tags);
+	}
+);
+
+/**
+ * DELETE /tags/:id
+ * Eliminar etiqueta
+ */
+export const deleteTag = asyncHandler(
+	async(req:Request, res: Response): Promise<undefined> =>{
+		const tagId = extractTagId(req.params);
+
+		await tagService.delete(tagId);
+
+		ResponseHandler.noContent(res);
 	}
 )
