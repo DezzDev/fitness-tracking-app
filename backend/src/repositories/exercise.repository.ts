@@ -40,7 +40,7 @@ const queries = {
 	createExercise: {
 		sql: `
 			INSERT INTO exercises (id, name, description, difficulty, muscle_group, type, created_at)
-			VALUES (?, ?, ?, ?, ?, ?, datetime('now))
+			VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
 			RETURNING *
 		`,
 		args: (

@@ -1,46 +1,32 @@
 
 @baseUrl = http://localhost:4000/api
 ### Login
-# @name login
+### POST /users/login - Admin (capturar token)
+# @name adminToken
 POST {{baseUrl}}/users/login HTTP/1.1
 content-type: application/json
 
 {
-	"email": "alejandro7@email.com",
-	"password": "Zapata39"
+	"email": "daniel@email.com",
+	"password": "Zapata38"
 }
 
 ###
-### crear workout usando el token
-POST {{baseUrl}}/workouts HTTP/1.1
+#=========================================
+# TAG ROUTES
+#=========================================
+
+### POST /tags - Crear tag (admin)
+POST {{baseUrl}}/tags HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
 content-type: application/json
-Authorization: Bearer {{login.response.body.data.token}}
 
 {
-	"title": "Pull day",
-	"description": "Trabajo de pull day",
-	"exercises": [
-		{
-			"exerciseId": "658805c3-58d9-4a85-befb-fe373d1495bd",
-			"orderIndex": 0,
-			"sets": [
-				{
-					"setNumber": 1,
-					"reps": 10,
-					"durationSeconds": 30,
-					"restSeconds": 30,
-					"weight": 100,
-					"notes": "Test Set"
-				},
-				{
-					"setNumber": 2,
-					"reps": 10,
-					"durationSeconds": 30,
-					"restSeconds": 30,
-					"weight": 100,
-					"notes": "Test Set"
-				}
-			]
-		},
-	]
+	"name": "test"
 }
+
+### GET /tags
+GET {{baseUrl}}/tags HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+Accept: application/json
+

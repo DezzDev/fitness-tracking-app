@@ -1,0 +1,62 @@
+@baseUrl = http://localhost:4000/api
+@tagId = 80106e0b-4a5e-4a61-b30f-6627adb476e7
+
+
+### POST /users/login - Admin (capturar token)
+# @name adminToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+#=========================================
+# EXERCISE ROUTES
+#=========================================
+
+### POST /exercises - Crear nuevo ejercicio (admin)
+# @name exerciseId
+POST {{baseUrl}}/exercises HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "test exercise 2",
+	"description": "test description",
+	"difficulty": "intermediate",
+	"muscle_group": "test muscle group",
+	"type": "strength"
+}
+
+### GET /exercises - Listar todos los ejercicios
+GET {{baseUrl}}/exercises HTTP/1.1
+
+### GET /exercises - Listar ejercicios con filtros
+GET {{baseUrl}}/exercises?difficulty=beginner HTTP/1.1
+
+### GET /exercises/ - Listar ejercicios con paginación
+GET {{baseUrl}}/exercises?page=1&limit=5 HTTP/1.1
+
+### GET /exercises - Combinar filtros
+GET {{baseUrl}}/exercises?difficulty=intermediate&type=strength HTTP/1.1
+
+### GET /exercises/:id - Obtener ejercicio por ID
+GET {{baseUrl}}/exercises/{{exerciseId.response.body.data.id}} HTTP/1.1
+
+### GET /exercises/stats - Obtener estadísticas de los ejercicios
+GET {{baseUrl}}/exercises/stats HTTP/1.1
+
+### PATCH /exercises/:id - Actualizar ejercicio (admin)
+PATCH {{baseUrl}}/exercises/{{exerciseId.response.body.data.id}} HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"description": "test description updated"	
+}
+
+### DELETE /exercises/:id - Eliminar ejercicio (admin)
+DELETE {{baseUrl}}/exercises/{{exerciseId.response.body.data.id}} HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}

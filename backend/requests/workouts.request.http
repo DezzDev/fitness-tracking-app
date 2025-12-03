@@ -1,9 +1,14 @@
 @baseUrl = http://localhost:4000/api
-@tokenUser = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiNTU1M2VlMi01YWY5LTQ4NmQtOTA2Zi1lYTA2YjgxMjE0ZTQiLCJlbWFpbCI6ImFsZWphbmRybzdAZW1haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjQwNjcxMjMsImV4cCI6MTc2NDY3MTkyMywiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.fj0-PeXKyPMFiiVyuyjzmcEAzBHUXnmhyBLTYVLhmTY
-@tokenAdmin =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjN2E0NjFjYy04MGU0LTRkZjQtODQ5My1lZWI5Njk2NWRiYTQiLCJlbWFpbCI6ImRhbmllbEBlbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjQwNjcxNTUsImV4cCI6MTc2NDY3MTk1NSwiYXVkIjoiZml0bmVzcy10cmFja2VyLXVzZXJzIiwiaXNzIjoiZml0bmVzcy10cmFja2VyLWFwcCJ9.lUH9Dpx-_qPdopKEMxmpbdyuHP04zm0yJm0ysa0VUU0
+
+# Variables de tokens capturados automáticamente
+# Ejecuta primero los logins en user.request.http para obtener estos tokens
 @workoutId = 4f6a8530-ec10-421d-b188-ff1bab04f807
-### POST /users/login
-# login user user
+
+# ============================================
+# LOGIN ROUTES
+# ============================================
+### POST /users/login - Usuario regular (capturar token)
+# @name userToken
 POST {{baseUrl}}/users/login HTTP/1.1
 content-type: application/json
 
@@ -12,23 +17,14 @@ content-type: application/json
 	"password": "Zapata39"
 }
 
-### POST /users/login
-# login user admin
-POST {{baseUrl}}/users/login HTTP/1.1
-content-type: application/json
-
-{
-	"email": "daniel@email.com",
-	"password": "Zapata38"
-}
-
-# // ============================================
-# // WORKOUT ROUTES
-# // ============================================
+# ============================================
+# WORKOUT ROUTES
+# ============================================
 
 ### POST /workouts
+# @name userToken
 POST {{baseUrl}}/workouts HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 
 {
@@ -80,34 +76,34 @@ content-type: application/json
 
 ### Listar workouts del usuario
 GET {{baseUrl}}/workouts HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 Accept: application/json
 
 #### Con paginación
 GET {{baseUrl}}/workouts?page=1&limit=10 HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 Accept: application/json
 
 
 ### Con filtros de fecha
 GET {{baseUrl}}/workouts?startDate=2025-01-01T00:00:00Z&endDate=2025-12-31T23:59:59Z HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 Accept: application/json
 
 ### Con búsqueda
 GET {{baseUrl}}/workouts?search=pecho HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 Accept: application/json
 
 ### Get workout/:id
 # get workout by id
 GET {{baseUrl}}/workouts/{{workoutId}} HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 Accept: application/json
 
 ### PATCH /workouts/:id
 PATCH {{baseUrl}}/workouts/{{workoutId}} HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 
 {
@@ -116,11 +112,11 @@ content-type: application/json
 
 ### DELETE /workouts/:id
 DELETE {{baseUrl}}/workouts/{{workoutId}} HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /workouts/stats
 GET {{baseUrl}}/workouts/stats HTTP/1.1
-Authorization: Bearer {{tokenUser}}
+Authorization: Bearer {{userToken.response.body.data.token}}
 Accept: application/json
 
 
