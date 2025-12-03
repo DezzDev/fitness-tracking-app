@@ -59,7 +59,7 @@ export const WorkoutExerciseSetSchema = z.object({
 // ============================================
 
 export const WorkoutExerciseSchema = z.object({
-	exerciseId: z.string({ error: 'Exercise ID is required' }),
+	exerciseId: z.uuid({ error: 'Exercise ID is required' }),
 
 	orderIndex: z
 		.number({ error: 'Order index is required' })
@@ -124,7 +124,7 @@ export const UpdateWorkoutSchema = z.object({
 // ============================================
 
 export const WorkoutIdSchema = z.object({
-	id: z.string({ error: 'Invalid workout ID format' })
+	id: z.uuid({ error: 'Invalid workout ID format' })
 })
 
 // ============================================

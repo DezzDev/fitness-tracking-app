@@ -25,7 +25,7 @@ export type WorkoutWithExercises = Workout & {
 export type WorkoutExercise = {
 	id: string;
 	workoutId: string;
-	exerciseId: number;
+	exerciseId: string;
 	orderIndex: number;
 	// datos del set ejercicio (joined)
 	sets: WorkoutExerciseSet[];
@@ -100,7 +100,7 @@ export type WorkoutRow = {
 export type WorkoutExerciseRow = {
 	id: string;
 	workout_id: string;
-	exercise_id: number;
+	exercise_id: string;
 	order_index: number;
 	// Joined from exercises table
 	exercise_name?: string;
