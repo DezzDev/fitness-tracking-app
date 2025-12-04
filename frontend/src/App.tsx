@@ -1,15 +1,19 @@
-
-import {Button} from "@/components/ui/button"
+// src/App.tsx
+import {RouterProvider} from "react-router-dom";
+import {QueryClientProvider} from "@tanstack/react-query";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import {queryClient} from "@/lib/queryClient";
+import {router} from "@/routes";
 
 function App() {
  
 
   return (
-    <>
-      <div className="flex min-h-svh flex-col items-center justify-center">
-				<Button>Hello World</Button>
-			</div>
-    </>
+    <QueryClientProvider client= {queryClient}>
+			<RouterProvider router= {router} />
+			<ReactQueryDevtools initialIsOpen={false} />
+
+		</QueryClientProvider>
   )
 }
 
