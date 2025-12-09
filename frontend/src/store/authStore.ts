@@ -12,7 +12,15 @@ interface AuthState {
 
 	// Actions
 	login: (email: string, password: string) => Promise<void>;
-	register: (data: { email: string, password: string, name: string, age: number, acceptTerms: boolean }) => Promise<void>;
+	register: (data: { 
+		email: string, 
+		password: string, 
+		name: string, 
+		age: number, 
+		acceptTerms: boolean, 
+		role?: ('user' | 'admin'),
+		profile_image?:string 
+	}) => Promise<void>;
 	logout: () => void;
 	loadUser: () => void;
 	clearError: () => void;

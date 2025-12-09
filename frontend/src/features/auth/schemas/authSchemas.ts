@@ -38,7 +38,7 @@ export const registerSchema = baseUserSchema.extend({
 	age: z.number().int('Age must be a number').min(15, { error: 'Age must be at least 15 years old' }).max(120, { message: 'Invalid age' }),
 	acceptTerms: z.boolean().refine((val: boolean) => val === true, { error: 'You must accept the terms and conditions' }),
 	confirmPassword: z.string().min(1, { error: 'Confirm password is required' }),
-	role: z.enum([ 'user', 'admin' ]).default('user'),
+	role: z.enum([ 'user', 'admin' ]),
 	profile_image: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword,{
 	error: 'Passwords do not match',
@@ -47,3 +47,4 @@ export const registerSchema = baseUserSchema.extend({
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type RegisterFormValues = z.input<typeof registerSchema>;
