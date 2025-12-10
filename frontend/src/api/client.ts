@@ -60,9 +60,9 @@ export interface PaginatedResponse<T>{
 }
 
 // Helper para manejar errores de API
-export const handleApiError = (error: unknown): string => {
+export const handleApiError = (error: unknown, messageManual:string = 'Error desconocido'): string => {
 	if(axios.isAxiosError(error)){
-		return error.response?.data?.message || error.message || 'Error desconocido';
+		return error.response?.data?.message || error.message || messageManual;
 	}
 	return 'Error de conexión';
 }

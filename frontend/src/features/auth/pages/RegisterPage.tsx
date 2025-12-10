@@ -51,8 +51,10 @@ function RegisterPage() {
 	const onSubmit = async (data: RegisterFormData) => {
 		setIsLoading(true);
 		clearError();
+		console.log("before register")
 
 		try {
+			console.log("try enter")
 			await registerUser({
 				email: data.email,
 				password: data.password,
@@ -62,6 +64,8 @@ function RegisterPage() {
 				role: data.role,
 				profile_image: data.profile_image
 			});
+
+			console.log("after register")
 			navigate('/dashboard');
 
 		} catch (error) {
@@ -79,7 +83,7 @@ function RegisterPage() {
 			title="Crea tu cuenta"
 			subtitle="Comienza tu transformación hoy"
 		>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+			<form onSubmit={handleSubmit(onSubmit, (errors) => { console.log('validation errors', errors); })} className="space-y-4" autoComplete="off">
 				{/* Error alert */}
 				{error && (
 					<Alert variant="destructive">
@@ -90,7 +94,7 @@ function RegisterPage() {
 				{/* Name */}
 				<div className="space-y-2">
 					<Label htmlFor="name">Nombre completo</Label>
-					<Input 
+					<Input
 						id="name"
 						type="text"
 						placeholder="Nombre"
@@ -106,24 +110,24 @@ function RegisterPage() {
 				{/* Email */}
 				<div className="space-y-2">
 					<Label htmlFor="email">Email</Label>
-					<Input 
-						id= "email"
+					<Input
+						id="email"
 						type="email"
 						placeholder="tu@email.com"
-						autoComplete= "email"
+						autoComplete="email"
 						disabled={isLoading}
 						{...register('email')}
 					/>
 					{errors.email && (
 						<p className="text-sm text-red-600">{errors.email.message}</p>
 					)}
-					
+
 				</div>
 
 				{/* Age */}
 				<div className="space-y-2">
 					<Label htmlFor="age">Edad</Label>
-					<Input 
+					<Input
 						id="age"
 						type="number"
 						placeholder="25"
@@ -141,7 +145,7 @@ function RegisterPage() {
 				<div>
 					<Label htmlFor="password">Contraseña</Label>
 					<div className="relative">
-						<Input 
+						<Input
 							id="password"
 							type={showPassword ? 'text' : 'password'}
 							placeholder="***********"
@@ -151,7 +155,7 @@ function RegisterPage() {
 						/>
 						<button
 							type="button"
-							onClick={()=> setShowPassword(!showPassword)}
+							onClick={() => setShowPassword(!showPassword)}
 							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
 							disabled={isLoading}
 						>
@@ -162,19 +166,19 @@ function RegisterPage() {
 					{/* Password Strength Indicators */}
 					{password && (
 						<div className="space-y-1 text-xs">
-							<PasswordRequirement 
+							<PasswordRequirement
 								met={passwordValidations.length}
 								text="Al menos 8 caracteres"
 							/>
-							<PasswordRequirement 
+							<PasswordRequirement
 								met={passwordValidations.uppercase}
 								text="Una letra mayúscula"
 							/>
-							<PasswordRequirement 
+							<PasswordRequirement
 								met={passwordValidations.lowercase}
 								text="Una letra minúscula"
 							/>
-							<PasswordRequirement 
+							<PasswordRequirement
 								met={passwordValidations.number}
 								text="Un número"
 							/>
@@ -186,10 +190,10 @@ function RegisterPage() {
 				</div>
 
 				{/* Confirm Password */}
-				<div  className="space-y-2">
+				<div className="space-y-2">
 					<Label htmlFor="confirmPassword">Confirmar contraseña</Label>
 					<div className="relative">
-						<Input 
+						<Input
 							id="confirmPassword"
 							type={showConfirmPassword ? 'text' : 'password'}
 							placeholder="***********"
@@ -199,7 +203,7 @@ function RegisterPage() {
 						/>
 						<button
 							type="button"
-							onClick={()=>setShowConfirmPassword(!showConfirmPassword)}
+							onClick={() => setShowConfirmPassword(!showConfirmPassword)}
 							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
 							disabled={isLoading}
 						>
@@ -214,23 +218,29 @@ function RegisterPage() {
 				</div>
 
 				{/* Terms */}
-				<div className="flex items-start gap-2">
-					<input 
-						type="checkbox" 
-						id="terms"
-						className="w-4 h-4 mt-1 rounded border-gray-300"
-						required
-					/>
-					<label htmlFor="terms" className="text-sm text-gray-600">
-						Acepto los{" "}
-						<Link to={"/terms"} className="text-blue-600 hover:underline">
-							Términos y condiciones
-						</Link>{" "}
-						y la {" "}
-						<Link to="/privacy" className="text-blue-600 hover:underline">
-							Política de Privacidad
-						</Link>
-					</label>
+				<div className="flex">
+					<div className="flex  gap-2 items-center">
+						<input
+							type="checkbox"
+							id="terms"
+							className="w-4 h-4 rounded border-gray-300"
+							{...register('acceptTerms')}
+						/>
+						<label htmlFor="terms" className="text-sm text-gray-600">
+							Acepto los{" "}
+							<Link to={"/terms"} className="text-blue-600 hover:underline">
+								Términos y condiciones
+							</Link>{" "}
+							y la {" "}
+							<Link to="/privacy" className="text-blue-600 hover:underline">
+								Política de Privacidad
+							</Link>
+						</label>
+
+					</div>
+					{/* {errors.acceptTerms && (
+						<p className="text-sm text-red-600 mt-1">{errors.acceptTerms.message}</p>
+					)} */}
 				</div>
 
 				{/* Submit Button */}
@@ -245,7 +255,7 @@ function RegisterPage() {
 							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							Creando cuenta...
 						</>
-					):(
+					) : (
 						"Crear cuenta"
 					)}
 				</Button>
@@ -253,7 +263,7 @@ function RegisterPage() {
 				{/* Login Link */}
 				<p className="text-center text-sm text-gray-600">
 					¿Ya tienes una cuenta?{" "}
-					<Link 
+					<Link
 						to={"/login"}
 						className="font-medium text-blue-600 hover:text-blue-700"
 					>
@@ -266,12 +276,12 @@ function RegisterPage() {
 }
 
 // Componente auxiliar para mostrar requisitos de contraseña
-function PasswordRequirement({met,text}: {met:boolean, text:string}) {
+function PasswordRequirement({ met, text }: { met: boolean, text: string }) {
 	return (
 		<div className={`flex items-center gap-2 ${met ? 'text-green-600' : 'text-gray-500'}`}>
 			{met ? (
 				<CheckCircle2 size={14} />
-			):(
+			) : (
 				<XCircle size={14} />
 			)}
 			<span>{text}</span>
