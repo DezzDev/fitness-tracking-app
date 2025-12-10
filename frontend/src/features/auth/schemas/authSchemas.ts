@@ -34,8 +34,16 @@ export const loginSchema = baseUserSchema.pick({
  * Schema para Register
  */
 export const registerSchema = baseUserSchema.extend({
-	name: z.string().min(2).max(50).trim(),
-	age: z.number().int('Age must be a number').min(15, { error: 'Age must be at least 15 years old' }).max(120, { message: 'Invalid age' }),
+	name: z
+		.string()
+		.min(2, 'El nombre debe tener al menos 2 caracteres')
+		.max(50, 'El nombre no puede tener más de 50 caracteres')
+		.trim(),
+	age: z
+		.number('La edad debe de ser un número')
+		.int('La edad debe de ser un número entero')
+		.min(15, 'Debes tener al menos 15 años')
+		.max(120, 'Edad inválida'),
 	acceptTerms: z.boolean().refine((val: boolean) => val === true, { error: 'You must accept the terms and conditions' }),
 	confirmPassword: z.string().min(1, { error: 'Confirm password is required' }),
 	role: z.enum([ 'user', 'admin' ]),
@@ -47,4 +55,4 @@ export const registerSchema = baseUserSchema.extend({
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
-export type RegisterFormValues = z.input<typeof registerSchema>;
+// export type RegisterFormValues = z.input<typeof registerSchema>;

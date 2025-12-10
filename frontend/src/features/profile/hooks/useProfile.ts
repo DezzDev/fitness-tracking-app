@@ -4,7 +4,6 @@ import { queryKeys } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 import { handleApiError } from '@/api/client';
-import axios from 'axios';
 
 /**
  * Hook para obtener el perfil del usuario
