@@ -8,7 +8,7 @@ export interface UpdateUserData {
 }
 
 export interface ChangePasswordData {
-	currentPassword: string;
+	oldPassword: string;
 	newPassword: string;
 }
 

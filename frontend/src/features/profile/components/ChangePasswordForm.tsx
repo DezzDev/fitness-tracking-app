@@ -76,7 +76,7 @@ export default function ChangePasswordForm(){
 	const onSubmit = (data: ChangePasswordFormData) => {
 		changePassword(
 			{
-				currentPassword: data.currentPassword,
+				oldPassword: data.currentPassword,
 				newPassword: data.newPassword
 			},
 			{
@@ -211,7 +211,7 @@ export default function ChangePasswordForm(){
 						}
 					</div>
 
-					{/* Boton */}
+					{/* Botón */}
 					<div className='pt-4'>
 						<Button type='submit' disabled={isPending}>
 							{isPending ? (

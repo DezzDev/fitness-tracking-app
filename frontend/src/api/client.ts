@@ -32,24 +32,44 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
 	(response) => response,
 	async (error: AxiosError) => {
-		//  Si el token expiró, redirigir al login
-		if (error.response?.status === 401) {
-			localStorage.removeItem('authToken');
-			localStorage.removeItem('user');
-			window.location.href = '/login';
+		const originalRequest = error.config;
+
+		// Solo cerrar sesión en 401 si es un error de autenticación
+		// No cerrar sesión si es un error de validación (contraseña incorrecta, etc)
+		if (error.response?.status === 401 && originalRequest) {
+
+			// Rutas que no deben cerrar sesión automáticamente en 401
+			const noLogoutRoutes = [
+				'/users/me/password',
+				'/users/login',
+				'/users/register',
+				'/user/forgot-password',
+				'/user/reset-password',
+			];
+
+			const shouldNotLogout = noLogoutRoutes.some(route =>
+				originalRequest.url?.includes(route)
+			);
+
+			// Solo cerrar sesión si no es una de las rutas excluidas
+			if (!shouldNotLogout) {
+				localStorage.removeItem('authToken');
+				localStorage.removeItem('user');
+				window.location.href = '/login';
+			}
 		}
 		return Promise.reject(error);
 	}
 );
 
 // Tipos para respuestas estandarizadas
-export interface ApiResponse<T =unknown>{
+export interface ApiResponse<T = unknown> {
 	data?: T;
 	message?: string;
 	error?: string;
 }
 
-export interface PaginatedResponse<T>{
+export interface PaginatedResponse<T> {
 	data: T[];
 	pagination: {
 		page: number;
@@ -60,9 +80,10 @@ export interface PaginatedResponse<T>{
 }
 
 // Helper para manejar errores de API
-export const handleApiError = (error: unknown, messageManual:string = 'Error desconocido'): string => {
-	if(axios.isAxiosError(error)){
-		return error.response?.data?.message || error.message || messageManual;
+export const handleApiError = (error: unknown, messageManual: string = 'Error desconocido'): string => {
+	if (axios.isAxiosError(error)) {
+		console.log({error})
+		return error.response?.data?.error || error.message || messageManual;
 	}
 	return 'Error de conexión';
 }
