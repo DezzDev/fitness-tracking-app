@@ -9,6 +9,7 @@ import {
 } from "@/types";
 import { CreateWorkoutInput, UpdateWorkoutInput } from "@/schemas/workout.schema";
 import { handleServiceError } from "@/utils/error.utils";
+import { WorkoutStats } from "@/types/entities/workout.types";
 
 // ============================================
 // HELPER FUNCTIONS
@@ -227,15 +228,7 @@ export const workoutService = {
 	 getStats: async(
 		userId: string,
 		filters: Partial<WorkoutFilters> = {}
-	 ): Promise<{
-		totalWorkouts: number,
-		totalExercises: number,
-		averageExercisesPerWorkout: number,
-		dateRange: {
-			earliest?: Date,
-			latest?: Date
-		}
-	 }> => {
+	 ): Promise<WorkoutStats> => {
 		try{
 			const completeFilters: WorkoutFilters = {
 				userId,

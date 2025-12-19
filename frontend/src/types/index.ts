@@ -61,7 +61,7 @@ export interface ExerciseWithTags extends Exercise {
 // WORKOUT TYPES
 // =================================
 
-export interface WorkoutExerciseSet{
+export interface WorkoutExerciseSet {
 	id: string;
 	workoutExerciseId: string;
 	setNumber: number;
@@ -73,7 +73,7 @@ export interface WorkoutExerciseSet{
 	createdAt: Date;
 }
 
-export interface WorkoutExercise{
+export interface WorkoutExercise {
 	id: string;
 	workoutId: string;
 	exerciseId: string;
@@ -82,7 +82,7 @@ export interface WorkoutExercise{
 	sets: WorkoutExerciseSet[];
 }
 
-export interface Workout{
+export interface Workout {
 	id: string;
 	userId: string;
 	title: string;
@@ -100,8 +100,18 @@ export interface CreateWorkoutData {
 	exercises: {
 		exerciseId: string;
 		orderIndex: number;
-		sets: Omit<WorkoutExerciseSet, 'id'| 'workoutExerciseId' | 'createdAt'>[]
+		sets: Omit<WorkoutExerciseSet, 'id' | 'workoutExerciseId' | 'createdAt'>[]
 	}[];
+}
+
+export interface WorkoutStats {
+	totalWorkouts: number,
+	totalExercises: number,
+	averageExercisesPerWorkout: number,
+	dateRange: {
+		earliest?: Date,
+		latest?: Date
+	}
 }
 
 // =================================
@@ -129,14 +139,14 @@ export interface UserGoal {
 	createdAt: Date;
 }
 
-export interface PersonalRecord{
+export interface PersonalRecord {
 	id: string;
 	userId: string;
 	exerciseId: string;
 	maxReps?: number;
 	maxDurationSeconds?: number;
 	maxWeight?: number;
-	achievedAt: Date; 
+	achievedAt: Date;
 }
 
 // =================================
@@ -157,13 +167,13 @@ export interface PaginationParams {
 	limit?: number;
 }
 
-export interface WorkoutFilters extends PaginationParams{
+export interface WorkoutFilters extends PaginationParams {
 	startDate?: Date;
 	endDate?: Date;
 	searchTerm?: string;
 }
 
-export interface ExerciseFilters extends PaginationParams{
+export interface ExerciseFilters extends PaginationParams {
 	difficulty?: ExerciseDifficulty;
 	muscleGroup?: string;
 	type?: ExerciseType;

@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:4000/api
+@baseUrl = http://localhost:3000/api
 
 # Variables de tokens capturados automáticamente
 # Ejecuta primero los logins en user.request.http para obtener estos tokens
@@ -22,7 +22,6 @@ content-type: application/json
 # ============================================
 
 ### POST /workouts
-# @name userToken
 POST {{baseUrl}}/workouts HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json

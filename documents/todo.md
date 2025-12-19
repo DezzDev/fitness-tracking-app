@@ -1,2 +1,3 @@
 - Validación adicional (verificar que exerciseId existe antes de crear workout)
 - Eliminar limite de edad
+- Implementar en el backend upload de imágenes

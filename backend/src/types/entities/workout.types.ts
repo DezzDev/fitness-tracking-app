@@ -134,11 +134,13 @@ export type WorkoutFilters = {
 };
 
 export type WorkoutStats = {
-	totalWorkouts: number;
-	totalExercises: number;
-	mostUsedExercises: {
-		exerciseId: string;
-		exerciseName: string;
-		count: number;
-	}[]
+	totalWorkouts: number,
+	totalExercises: number,
+	averageExercisesPerWorkout: number,
+	dateRange: {
+		earliest?: Date,
+		latest?: Date
+	}
 }
+
+
