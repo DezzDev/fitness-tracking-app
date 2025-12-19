@@ -63,7 +63,7 @@ export const workoutsApi = {
 	 * @returns Workout con ejercicios actualizado
 	 */
 	updateWorkout: async (
-		id: number,
+		id: string,
 		data: Partial<CreateWorkoutData>
 	): Promise<WorkoutWithExercises> => {
 		const response = await apiClient.patch<ApiResponse<WorkoutWithExercises>>(

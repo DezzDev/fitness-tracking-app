@@ -104,6 +104,8 @@ export interface CreateWorkoutData {
 	}[];
 }
 
+export type UpdateWorkoutData = Partial<CreateWorkoutData>;
+
 export interface WorkoutStats {
 	totalWorkouts: number,
 	totalExercises: number,
