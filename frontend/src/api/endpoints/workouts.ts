@@ -13,7 +13,7 @@ export const workoutsApi = {
 	/**
 	 * Listar workouts con filtros
 	 * @param filters Filtros para filtrar los resultados
-	 * @returns Datos de los workouts
+	 * @returns Workouts
 	 */
 	listWorkouts: async (filters?: WorkoutFilters): Promise<PaginatedResponse<Workout>> => {
 		const params = new URLSearchParams();
@@ -34,7 +34,7 @@ export const workoutsApi = {
 	/**
 	 * Obtener workout por ID con ejercicios completos
 	 * @param id ID del workout
-	 * @returns Datos del workout con ejercicios completos
+	 * @returns Workout con ejercicios
 	 */
 	getWorkout: async (id: string): Promise<WorkoutWithExercises> => {
 		const response = await apiClient.get<ApiResponse<WorkoutWithExercises>>(
@@ -46,7 +46,7 @@ export const workoutsApi = {
 	/**
 	 * Crear nuevo workout
 	 * @param data Datos para crear el workout
-	 * @returns Datos del workout creado
+	 * @returns Workout con ejercicios
 	 */
 	createWorkout: async (data: CreateWorkoutData): Promise<WorkoutWithExercises> => {
 		const response = await apiClient.post<ApiResponse<WorkoutWithExercises>>(
@@ -58,6 +58,9 @@ export const workoutsApi = {
 
 	/** 
 	 * Actualizar workout
+	 * @param id ID del workout
+	 * @param data Datos para actualizar el workout
+	 * @returns Workout con ejercicios actualizado
 	 */
 	updateWorkout: async (
 		id: number,
@@ -72,6 +75,7 @@ export const workoutsApi = {
 
 	/**
 	 * Eliminar workout
+	 * @param id ID del workout
 	 */
 	deleteWorkout: async (id: string): Promise<void> => {
 		await apiClient.delete(`/workouts/${id}`);
@@ -79,6 +83,8 @@ export const workoutsApi = {
 
 	/**
 	 * Obtener estadísticas de workouts
+	 * @param filters Filtros para las estadísticas
+	 * @returns Estadísticas de workouts
 	 */
 	getWorkoutStats: async (filters?: WorkoutFilters): Promise<WorkoutStats> => {
 		const params = new URLSearchParams();
