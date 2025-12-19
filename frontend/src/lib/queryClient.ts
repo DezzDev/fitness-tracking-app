@@ -33,24 +33,24 @@ export const queryKeys = {
 
 	// Workouts
 	workouts: (filters?: unknown) => ['workouts', filters] as const,
-	workout: (id: number) => ['workout', id] as const,
+	workout: (id: string) => ['workout', id] as const,
 	workoutStats: (filters?: unknown) => ['workoutStats', filters] as const,
 
 	// Exercises
 	exercises: (filters?: unknown) => ['exercises', filters] as const,
-	exercise: (id: number) => ['exercise', id] as const,
+	exercise: (id: string) => ['exercise', id] as const,
 	exerciseStats: ['exerciseStats'] as const,
 
 	// Tags
 	tags: ['tags'] as const,
-	tag: (id: number) => ['tag', id] as const,
+	tag: (id: string) => ['tag', id] as const,
 
 	// Progress
-	progressLogs: (userId?: number) => ['progressLogs', userId] as const,
+	progressLogs: (userId?: string) => ['progressLogs', userId] as const,
 
 	// Goals
-	userGoals: (userId?: number) => ['userGoals', userId] as const,
+	userGoals: (userId?: string) => ['userGoals', userId] as const,
 
 	// Personal Records
-	personalRecords: (userId?: number) => ['personalRecords', userId] as const,
+	personalRecords: (userId?: string) => ['personalRecords', userId] as const,
 }
