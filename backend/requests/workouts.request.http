@@ -22,6 +22,7 @@ content-type: application/json
 # ============================================
 
 ### POST /workouts
+# create workout
 POST {{baseUrl}}/workouts HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json

@@ -2,8 +2,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Search, Calendar, Filter, Loader2 } from "lucide-react"
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +20,7 @@ export default function WorkoutsPage() {
 	})
 
 	const {data, isLoading, isError}= useWorkouts(filters);
+	console.log(data);
 
 	const handleSearch = (searchTerm: string) => {
 		setFilters((prev) => ({...prev, searchTerm, page:1}))
@@ -93,7 +92,7 @@ export default function WorkoutsPage() {
 				<Card className="p-12 text-center">
 					<p className="text-gray-500">Error al cargar entrenamientos</p>
 				</Card>
-			): !data?.data || data.data.length === 0 ? (
+			): !data?.data.workouts || data.data.workouts.length === 0 ? (
 				<Card className="p-12 text-center">
 					<div className="max-w-sm mx-auto space-y-4">
 						<div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
@@ -119,8 +118,35 @@ export default function WorkoutsPage() {
 				<>
 					{/* Grid de workouts */}
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-						{data.data.map}
+						{data.data.workouts.map((workout)=>(
+							<WorkoutCard key={workout.id} workout={workout} />
+						))}
 					</div>
+
+					{/* Paginación */}
+					{data.pagination && data.pagination.totalPages > 1 && (
+						<div className="flex items-center justify-center gap-2 mt-8">
+							<Button
+								variant="outline"
+								onClick={()=> handlePageChange(data.pagination.page - 1)}
+								disabled={data.pagination.page <= 1}
+							>
+								Anterior
+							</Button>
+
+							<span className="text-sm text-gray-600">
+								Página {data.pagination.page} de {data.pagination.totalPages}
+							</span>
+
+							<Button
+								variant={"outline"}
+								onClick={() => handlePageChange(data.pagination.page + 1)}
+								disabled={data.pagination.page === data.pagination.totalPages}
+							>
+								Siguiente
+							</Button>
+						</div>
+					)}
 				</>
 			)}
 		</div>
