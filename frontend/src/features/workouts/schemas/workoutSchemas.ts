@@ -1,12 +1,9 @@
-// ============================================
-// src/schemas/workout.schema.ts
-// ============================================
-
+// src/features/workouts/schemas/workoutSchemas.ts
 import { z } from 'zod';
 
-// ============================================
-// WORKOUT EXERCISE SET SCHEMA
-// ============================================
+/**
+ *  Schema para un set individual
+ */
 
 export const WorkoutExerciseSetSchema = z.object({
 	setNumber: z
@@ -42,7 +39,7 @@ export const WorkoutExerciseSetSchema = z.object({
 		.max(1000, { error: 'Weight cannot exceed 1000' })
 		.optional(),
 
-	notes: z.string().max(500, 'Notes cannot exceed 500 characters').trim().optional(),
+	notes: z.string().max(1000, 'Notes cannot exceed 1000 characters').trim().optional(),
 })
 	.refine(
 		(data) => {
@@ -54,10 +51,9 @@ export const WorkoutExerciseSetSchema = z.object({
 		}
 	)
 
-// ============================================
-// WORKOUT EXERCISE SCHEMA
-// ============================================
-
+/**
+ * Schema para un ejercicio en el workout
+ */
 export const WorkoutExerciseSchema = z.object({
 	exerciseId: z.uuid({ error: 'Exercise ID is required' }),
 
@@ -81,10 +77,9 @@ export const WorkoutExerciseSchema = z.object({
 		)
 })
 
-// ============================================
-// CREATE WORKOUT SCHEMA
-// ============================================
-
+/**
+ * Schema para crear un nuevo workout
+ */
 export const CreateWorkoutSchema = z.object({
 	title: z
 		.string({ error: 'Must be a string' })
@@ -108,54 +103,6 @@ export const CreateWorkoutSchema = z.object({
 		)
 })
 
-// ============================================
-// UPDATE WORKOUT SCHEMA
-// ============================================
-
-export const UpdateWorkoutSchema = z.object({
-	title: CreateWorkoutSchema.shape.title.optional(),
-	notes: CreateWorkoutSchema.shape.notes.optional(),
-	exercises: CreateWorkoutSchema.shape.exercises.optional(),
-}).strict(); // No permite campos adicionales
-
-// ============================================
-// WORKOUT ID PARAM SCHEMA
-// ============================================
-
-export const WorkoutIdSchema = z.object({
-	id: z.uuid({ error: 'Invalid workout ID format' })
-})
-
-// ============================================
-// WORKOUT FILTERS SCHEMA (QUERY PARAMS)
-// ============================================
-
-export const WorkoutFiltersSchema = z.object({
-	page: z.string().default('1').transform(Number).pipe(z.number().int().min(1)),
-
-	limit: z.string().default('10').transform(Number).pipe(z.number().int().min(1).max(100)),
-
-	startDate: z
-		.iso.datetime()
-		.transform((val)=>new Date(val))
-		.optional(),
-	
-	endDate: z
-		.iso.datetime()
-		.transform((val)=>new Date(val))
-		.optional(),
-	
-	search: z.string().max(100).trim().optional(),
-
-})
-
-// ============================================
-// INFERRED TYPES
-// ============================================
-
-export type CreateWorkoutInput = z.infer<typeof CreateWorkoutSchema>;
-export type UpdateWorkoutInput = z.infer<typeof UpdateWorkoutSchema>;
-export type WorkoutIdParam = z.infer<typeof WorkoutIdSchema>;
-export type WorkoutFiltersInput = z.infer<typeof WorkoutFiltersSchema>;
-export type WorkoutExerciseSetInput = z.infer<typeof WorkoutExerciseSetSchema>;
-export type WorkoutExerciseInput = z.infer<typeof WorkoutExerciseSchema>;
+export type WorkoutExerciseSetFormData = z.infer<typeof WorkoutExerciseSetSchema>
+export type WorkoutExerciseFormData = z.infer<typeof WorkoutExerciseSchema>
+export type CreateWorkoutFormData = z.infer<typeof CreateWorkoutSchema>
