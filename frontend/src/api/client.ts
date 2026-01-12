@@ -70,7 +70,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 export interface PaginatedResponse<T> {
-	data:{ workouts: T[] };
+	data:T[];
 	pagination: {
 		page: number;
 		limit: number;
