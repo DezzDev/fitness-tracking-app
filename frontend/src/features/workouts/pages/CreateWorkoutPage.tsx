@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import ExerciseSelector from '../components/ExerciseSelector';
 
 export default function CreateWorkoutPage() {
 	const navigate = useNavigate();
@@ -186,7 +187,7 @@ export default function CreateWorkoutPage() {
 										</Button>
 									</div>
 
-									{/* Series de ejercicio */}
+									{/* Series de ejercicio (sets) */}
 									<SetList control={control} exerciseIndex={index} />
 								</div>
 							))}

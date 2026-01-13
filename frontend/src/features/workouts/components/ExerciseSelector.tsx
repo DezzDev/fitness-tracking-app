@@ -1,9 +1,11 @@
 // src/features/workouts/components/ExerciseSelector.tsx
 import { useState } from "react";
 import { useExercises } from "../hooks/useExercise";
-import { Search } from "lucide-react";
+import { Check, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface ExerciseSelectorProps {
 	onSelectExercise: (exerciseId: string) => void;
@@ -59,15 +61,94 @@ export default function ExerciseSelector({
 						)}
 					</div>
 				) : (
-					exercises.map((exercise)=>{
+					exercises.map((exercise) => {
 						const isSelected = selectedExerciseIds.includes(exercise.id)
 
-						return(
-							
+						return (
+							<div
+								key={exercise.id}
+								className="p-4 hover:bg-gray-50 transition-colors"
+							>
+								<div className="flex items-start justify-between gap-4">
+									<div className="flex-1 min-w-0">
+										<h4 className="font-medium text-gray-900 truncate">
+											{exercise.name}
+										</h4>
+
+										{exercise.description && (
+											<p className="text-sm text-gray-500 mt-1 line-clamp-1">
+												{exercise.description}
+											</p>
+										)}
+
+										<div className="flex items-center gap-2 mt-2">
+											{exercise.difficulty && (
+												<Badge
+													variant={'outline'}
+													className={`text-xs ${exercise.difficulty === 'beginner'
+														? 'border-green-500 text-green-700'
+														: exercise.difficulty === 'intermediate'
+															? 'border-yellow-500 text-yellow-700'
+															: 'border-red-500 text-red-700'
+														}`}
+												>
+													{
+														exercise.difficulty === 'beginner'
+															? 'Principiante'
+															: exercise.difficulty === 'intermediate'
+																? 'Intermedio'
+																: 'Avanzado'
+													}
+												</Badge>
+											)}
+
+											{exercise.muscleGroup && (
+												<Badge variant={'secondary'} className="text-xs">
+													{exercise.muscleGroup}
+												</Badge>
+											)}
+
+											{exercise.type && (
+												<Badge variant={'outline'} className="text-xs">
+													{
+														exercise.type === 'strength'
+															? 'Fuerza'
+															: exercise.type === 'endurance'
+																? 'Resistencia'
+																: exercise.type === 'skill'
+																	? 'Habilidad'
+																	: 'Explosivo'
+													}
+												</Badge>
+											)}
+										</div>
+									</div>
+
+									<Button
+										type="button"
+										size="sm"
+										variant={isSelected ? 'secondary' : 'default'}
+										onClick={() => onSelectExercise(exercise.id)}
+										disabled={isSelected}
+									>
+										{isSelected ? (
+											<>
+												<Check className='h-4 w-4 mr-2' />
+												Agregado
+											</>
+										) : (
+											<>
+												<Plus className="h-4 w-4 mr-2" />
+												Agregar
+											</>
+										)}
+
+									</Button>
+								</div>
+							</div>
 						)
 					})
-				)
-				}
+				)}
 			</div>
 		</div>
 	)

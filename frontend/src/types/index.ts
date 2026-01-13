@@ -41,7 +41,7 @@ export interface AuthResponse {
 // =================================
 
 export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'advanced';
-export type ExerciseType = 'strength' | 'endurance' | 'skull' | 'explosive';
+export type ExerciseType = 'strength' | 'endurance' | 'skill' | 'explosive';
 
 export interface Exercise {
 	id: string;
