@@ -23,7 +23,7 @@ export default function ExerciseSelector({
 		limit: 50 // Mostrar más ejercicios
 	})
 
-	const exercises = data?.data || [];
+	const exercises = data?.data?.items || [];
 
 	return (
 		<div className="space-y-4">

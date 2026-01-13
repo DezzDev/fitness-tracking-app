@@ -67,16 +67,20 @@ export interface ApiResponse<T = unknown> {
 	data?: T;
 	message?: string;
 	error?: string;
+	success?: boolean;
+	timestamp?: string;
 }
 
 export interface PaginatedResponse<T> {
-	data:T[];
-	pagination: {
-		page: number;
-		limit: number;
-		total: number;
-		totalPages: number;
-	};
+	success: boolean
+	message: string
+	data: {
+		items: T[]
+		total: number
+		page: number
+		totalPages: number
+	}
+	timestamp: string
 }
 
 // Helper para manejar errores de API

@@ -8,12 +8,24 @@ import type {
 	WorkoutStats
 } from "@/types";
 
+type WorkoutListResponse = {
+	success: boolean
+	message: string
+	data: {
+		workouts: Workout[]
+		total: number
+		page: number
+		totalPages: number
+	}
+	timestamp: string
+}
+
 export const workoutsApi = {
 
 	/**
 	 * Listar workouts con filtros
 	 * @param filters Filtros para filtrar los resultados
-	 * @returns Workouts
+	 * @returns Workouts, total, page, totalPages
 	 */
 	listWorkouts: async (filters?: WorkoutFilters): Promise<PaginatedResponse<Workout>> => {
 		const params = new URLSearchParams();
@@ -24,11 +36,24 @@ export const workoutsApi = {
 		if (filters?.endDate) params.append('endDate', filters.endDate.toISOString());
 		if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
-		const response = await apiClient.get<PaginatedResponse<Workout>>(
+		const response = await apiClient.get<WorkoutListResponse>(
 			`/workouts?${params.toString()}`
 		);
 
-		return response.data;
+		const {success, message, data, timestamp} = response.data;
+
+
+		return {
+			success,
+			message,
+			timestamp,
+			data: {
+				items: data.workouts,
+				total: data.total,
+				page: data.page,
+				totalPages: data.totalPages
+			}
+		};
 	},
 
 	/**

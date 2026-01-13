@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:4000/api
+@baseUrl = http://localhost:3000/api
 @tagId = 80106e0b-4a5e-4a61-b30f-6627adb476e7
 
 

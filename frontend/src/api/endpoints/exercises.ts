@@ -1,6 +1,18 @@
 import {apiClient, type ApiResponse, type PaginatedResponse} from '../client';
 import type { Exercise, ExerciseFilters } from '@/types';
 
+type ExerciseListResponse = {
+	success: boolean
+	message: string
+	data: {
+		exercises: Exercise[]
+		total: number
+		page: number
+		totalPages: number
+	}
+	timestamp: string
+}
+
 export const exercisesApi = {
 	/**
 	 * Listar ejercicios con filtros
@@ -17,11 +29,23 @@ export const exercisesApi = {
 		if(filters?.type) params.append('type', filters.type);
 		if(filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
-		const response = await apiClient.get<PaginatedResponse<Exercise>>(
+		const response = await apiClient.get<ExerciseListResponse>(
 			`/exercises?${params.toString()}`
 		);
 
-		return response.data;
+		const {success, message, data, timestamp} = response.data;
+
+		return {
+			success,
+			message,
+			timestamp,
+			data: {
+				items: data.exercises,
+				total: data.total,
+				page: data.page,
+				totalPages: data.totalPages
+			}
+		};
 	},
 
 	/**

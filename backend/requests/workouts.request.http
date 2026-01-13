@@ -13,8 +13,8 @@ POST {{baseUrl}}/users/login HTTP/1.1
 content-type: application/json
 
 {
-	"email": "alejandro7@email.com",
-	"password": "Zapata39"
+	"email": "daniel@email.com",
+	"password": "Zapata38"
 }
 
 # ============================================
