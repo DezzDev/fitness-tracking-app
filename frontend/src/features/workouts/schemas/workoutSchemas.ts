@@ -15,14 +15,14 @@ export const WorkoutExerciseSetSchema = z.object({
 	reps: z
 		.number()
 		.int({ error: 'Reps must be an integer' })
-		.min(1, { error: 'Reps must be at least 1' })
+		.min(0, 'Reps cannot be negative')
 		.max(1000, { error: 'Reps cannot exceed 1000' })
 		.optional(),
 
 	durationSeconds: z
 		.number()
 		.int({ error: 'Duration must be an integer' })
-		.min(1, { error: 'Duration must be at least 1 second' })
+		.min(0, { error: 'Duration cannot be negative' })
 		.max(7200, { error: 'Duration cannot exceed 2 hours' })
 		.optional(),
 
@@ -41,15 +41,6 @@ export const WorkoutExerciseSetSchema = z.object({
 
 	notes: z.string().max(1000, 'Notes cannot exceed 1000 characters').trim().optional(),
 })
-	.refine(
-		(data) => {
-			// al menos debe tener reps o durationSeconds
-			return data.reps !== undefined || data.durationSeconds !== undefined;
-		},
-		{
-			error: 'Each set must have either reps or durationSeconds'
-		}
-	)
 
 /**
  * Schema para un ejercicio en el workout
