@@ -6,9 +6,10 @@ import { useDeleteWorkout, useWorkout } from "../hooks/useWorkouts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Clock, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Dumbbell, Pencil, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Separator } from "@/components/ui/separator";
 
 
 
@@ -21,6 +22,7 @@ export default function WorkoutDetailPage() {
 	const { data: workout, isLoading, isError } = useWorkout(workoutId);
 	const { mutate: deleteWorkout, isPending: isDeleting } = useDeleteWorkout();
 	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false)
+	console.log({workout})
 
 	const handleDelete = () => {
 		if (workoutId === undefined) return
@@ -125,6 +127,43 @@ export default function WorkoutDetailPage() {
 						</CardContent>
 					</Card>
 				)}
+
+				{/* Ejercicios */}
+				<Card>
+					<CardHeader>
+						<CardTitle>
+							Ejercicios ({workout.exercises?.length || 0})
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{!workout.exercises || workout.exercises.length === 0 ? (
+							<div className="text-center py-8 text-gray-500">
+								<Dumbbell className='h-12 w-12 mx-auto mb-3 opacity-50' />
+								<p>No hay ejercicios registrados</p>
+							</div>
+						): (
+							<div className="space-y">
+								{workout.exercises.map((WorkoutExercise, index) => (
+									<div key={WorkoutExercise.id}>
+										{index > 0 && <Separator className="my-6" />
+										}
+										{/* Ejercicio */}
+										<div className="space-y-4">
+											<div className="flex items-start justify-between">
+												<div>
+													<h3 className="font-semibold text-lg">
+														{index + 1}. {WorkoutExercise.exercise.name}
+													</h3>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								))}
+							</div>
+						)}
+					</CardContent>
+				</Card>
 
 			</div>
 		</>

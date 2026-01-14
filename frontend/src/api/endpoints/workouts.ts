@@ -65,6 +65,14 @@ export const workoutsApi = {
 		const response = await apiClient.get<ApiResponse<WorkoutWithExercises>>(
 			`/workouts/${id}`
 		);
+		const workoutWithExercises = {
+			id: response.data.data?.id,
+			userId: response.data.data?.userId,
+			title: response.data.data?.title,
+			notes: response.data.data?.notes,
+			createdAt: response.data.data?.createdAt,
+			exercises: response.data.data?.exercises.map()
+		}
 		return response.data.data!;
 	},
 
