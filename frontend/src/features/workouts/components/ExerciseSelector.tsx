@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 interface ExerciseSelectorProps {
-	onSelectExercise: (exerciseId: string) => void;
+	onSelectExercise: (exerciseId: string, exerciseName: string) => void;
 	selectedExerciseIds?: string[];
 }
 
@@ -128,7 +128,7 @@ export default function ExerciseSelector({
 										type="button"
 										size="sm"
 										variant={isSelected ? 'secondary' : 'default'}
-										onClick={() => onSelectExercise(exercise.id)}
+										onClick={() => onSelectExercise(exercise.id, exercise.name)}
 										disabled={isSelected}
 									>
 										{isSelected ? (

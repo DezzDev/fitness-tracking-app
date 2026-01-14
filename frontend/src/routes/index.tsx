@@ -13,6 +13,8 @@ import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
 import WorkoutsPage from '@/features/workouts/pages/WorkoutsPage';
+import CreateWorkoutPage from "@/features/workouts/pages/CreateWorkoutPage";
+import EditWorkoutPage from "@/features/workouts/pages/EditWorkoutPage";
 import WorkoutDetailPage from '@/features/workouts/pages/WorkoutDetailPage';
 import ExercisesPage from '@/features/exercises/pages/ExercisesPage';
 import ProfilePage from '@/features/profile/pages/ProfilePage';
@@ -60,8 +62,16 @@ export const router = createBrowserRouter([
 								element: <WorkoutsPage />
 							},
 							{
-								path: 'workout/:id',
+								path: 'workouts/new',
+								element: <CreateWorkoutPage />
+							},
+							{
+								path: 'workouts/:id',
 								element: <WorkoutDetailPage />
+							},
+							{
+								path: 'workouts/:id/edit',
+								element: <EditWorkoutPage />
 							},
 							{
 								path: 'exercises',

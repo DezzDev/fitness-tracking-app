@@ -16,8 +16,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import ExerciseSelector from '../components/ExerciseSelector';
+import SetList from '../components/SetList';
+import { useState } from 'react';
 
 export default function CreateWorkoutPage() {
+
+	// guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
+	const [ exerciseNames, setExerciseNames ] = useState<Record<string, string>>({});
+
 	const navigate = useNavigate();
 	const { mutate: createWorkout, isPending } = useCreateWorkout();
 
@@ -59,7 +65,14 @@ export default function CreateWorkoutPage() {
 		})
 	}
 
-	const handleAddExercise = (exerciseId: string) => {
+	const handleAddExercise = (exerciseId: string, exerciseName: string) => {
+
+		setExerciseNames((prev) => ({
+			...prev,
+			[ exerciseId ]: exerciseName,
+		}));
+
+
 		append({
 			exerciseId,
 			orderIndex: fields.length,
@@ -68,6 +81,7 @@ export default function CreateWorkoutPage() {
 					setNumber: 1,
 					reps: 10,
 					weight: 0,
+					durationSeconds:0,
 					restSeconds: 60
 				}
 			]
@@ -172,7 +186,8 @@ export default function CreateWorkoutPage() {
 										<div className='flex-1'>
 											<h4 className='font-medium'>Ejercicio #{index + 1}</h4>
 											<p className="text-sm text-gray-500">
-												ID : {field.exerciseId}
+
+												{exerciseNames[ field.exerciseId ]}
 											</p>
 										</div>
 
