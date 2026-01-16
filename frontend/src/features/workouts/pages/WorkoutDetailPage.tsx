@@ -6,10 +6,12 @@ import { useDeleteWorkout, useWorkout } from "../hooks/useWorkouts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Clock, Dumbbell, Pencil, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Calendar, Clock, Dumbbell, Pencil, Repeat, Trash2, Weight } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 
 
@@ -143,8 +145,8 @@ export default function WorkoutDetailPage() {
 							</div>
 						): (
 							<div className="space-y">
-								{workout.exercises.map((WorkoutExercise, index) => (
-									<div key={WorkoutExercise.id}>
+								{workout.exercises.map((workoutExercise, index) => (
+									<div key={workoutExercise.id}>
 										{index > 0 && <Separator className="my-6" />
 										}
 										{/* Ejercicio */}
@@ -152,11 +154,90 @@ export default function WorkoutDetailPage() {
 											<div className="flex items-start justify-between">
 												<div>
 													<h3 className="font-semibold text-lg">
-														{index + 1}. {WorkoutExercise.exercise.name}
+														{index + 1}. {workoutExercise.exerciseName}
 													</h3>
 
+													{workoutExercise.exerciseDescription && (
+														<p className="text-sm text-gray-600 mt-1">
+															{workoutExercise.exerciseDescription}
+														</p>
+													)}
+
+													<div className="flex items-center gap-2 mt-2">
+														{workoutExercise.difficulty && (
+															<Badge className="text-xs" variant={'outline'}>
+																{workoutExercise.difficulty}
+															</Badge>
+														)}
+														{workoutExercise.muscleGroup && (
+															<Badge className="text-xs" variant={'secondary'}>
+																{workoutExercise.muscleGroup}
+															</Badge>
+														)}
+													</div>
 												</div>
 											</div>
+
+											{/* Series (sets) */}
+											{workoutExercise.sets && workoutExercise.sets.length > 0 && (
+												<div className="space-y-2">
+													<h4 className="text sm font-medium text-gray-700">
+														Series ({workoutExercise.sets.length})
+													</h4>
+
+													<div className="space-y-2">
+														{workoutExercise.sets.map(set => (
+															<div 
+																className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg"
+																key={set.setNumber}	
+															>
+																<Badge className="shrink-0" variant={'default'}>
+																	Serie {set.setNumber}
+																</Badge>
+
+																<div className="flex items-center gap-4 flex-wrap text-sm">
+																	{set.reps !== null && set.reps !== undefined && (
+																		<div className="flex items-center gap-1">
+																			<Repeat className="h-4 w-4 text-gray-500" />
+																			<span className="font-medium">{set.reps}</span>
+																			<span className="text-gray-500">reps</span>
+																		</div>
+																	)}
+
+																	{set.weight !== null && set.weight !== undefined && set.weight > 0 && (
+																		<div className="flex items-center gap-1">
+																			<Weight className="h-4 w-4 text-gray-500" />
+																			<span className="font-medium">{set.weight}</span>
+																			<span className="text-gray-500">kg</span>
+																		</div>
+																	)}
+
+																	{set.durationSeconds !== null && set.durationSeconds !== undefined && set.durationSeconds > 0 && (
+																		<div className="flex items-center gap-1">
+																			<Clock className="h-4 w-4 text-gray-500" />
+																			<span className="font-medium">{set.durationSeconds}</span>
+																			<span className="text-gray-500">seg</span>
+																		</div>
+																	)}
+
+																	{set.restSeconds !== null && set.restSeconds !== undefined && set.restSeconds > 0 && (
+																		<div className="flex items-center gap-1 text-gray-500">
+																			<span>↓</span>
+																			<span>{set.restSeconds}s descanso</span>
+																		</div>
+																	)}
+																</div>
+
+																{set.notes && (
+																	<p className="text-sm text-gray-600 ml-auto">
+																		{set.notes}
+																	</p>
+																)}
+															</div>
+														))}
+													</div>
+												</div>
+											)}
 										</div>
 									</div>
 								))}
@@ -164,8 +245,50 @@ export default function WorkoutDetailPage() {
 						)}
 					</CardContent>
 				</Card>
-
 			</div>
+
+			{/* Dialog de confirmación de eliminación */}
+			<Dialog
+				open={showDeleteDialog}
+				onOpenChange={setShowDeleteDialog}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle className="flex items-center gap-2 text-red-600">
+							<AlertTriangle className="h-5 w-5"/>
+							¿Eliminar entrenamiento?
+						</DialogTitle>
+						<DialogDescription>
+							<p className="mb-3">
+								Estás a punto de eliminar el entrenamiento:
+							</p>
+							<p className="font-semibold text-gray-900 mb-3">
+								"{workout.title}"
+							</p>
+							<p className="text-sm">
+								Esta acción no se puede deshacer. Se eliminarán todos los ejercicios y series asociados.
+							</p>
+						</DialogDescription>
+					</DialogHeader>
+
+					<DialogFooter>
+						<Button
+							variant={'outline'}
+							onClick={()=> setShowDeleteDialog(false)}
+							disabled={isDeleting}
+						>
+							Cancelar
+						</Button>
+						<Button
+							variant={'destructive'}
+							onClick={handleDelete}
+							disabled={isDeleting}
+						>
+							{isDeleting ? 'Eliminando...' : 'Eliminar'}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</>
 	)
 }

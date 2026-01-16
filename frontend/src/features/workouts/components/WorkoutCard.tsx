@@ -30,16 +30,17 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { Workout } from "@/types";
+import type { WorkoutWithExercises } from "@/types";
 import { useDeleteWorkout } from "../hooks/useWorkouts";
 
 interface WorkoutCardProps {
-	workout: Workout;
+	workout: WorkoutWithExercises;
 }
 
 export default function WorkoutCard({ workout }: WorkoutCardProps) {
 	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
 	const { mutate: deleteWorkout, isPending } = useDeleteWorkout();
+	console.log({workout})
 
 	const handleDelete = () => {
 		deleteWorkout(workout.id, {
@@ -123,7 +124,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 					<div className="flex items-center justify-between pt-3 border-t">
 						<div className="flex items-center gap-2 text-sm text-gray-500">
 							<Dumbbell className="h-4 w-4" />
-							<span>0 ejercicios</span>
+							<span>{workout.exercises.length || 0}</span>
 						</div>
 
 						<Badge variant="outline" className="text-xs">

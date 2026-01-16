@@ -1,18 +1,18 @@
 // src/api/endpoints/workouts.ts
 import { apiClient, type ApiResponse, type PaginatedResponse } from "@/api/client";
 import type {
-	Workout,
+	
 	WorkoutWithExercises,
 	CreateWorkoutData,
 	WorkoutFilters,
 	WorkoutStats
 } from "@/types";
 
-type WorkoutListResponse = {
+type WorkoutsWithExercisesResponse = {
 	success: boolean
 	message: string
 	data: {
-		workouts: Workout[]
+		workouts: WorkoutWithExercises[]
 		total: number
 		page: number
 		totalPages: number
@@ -27,7 +27,7 @@ export const workoutsApi = {
 	 * @param filters Filtros para filtrar los resultados
 	 * @returns Workouts, total, page, totalPages
 	 */
-	listWorkouts: async (filters?: WorkoutFilters): Promise<PaginatedResponse<Workout>> => {
+	listWorkouts: async (filters?: WorkoutFilters): Promise<PaginatedResponse<WorkoutWithExercises>> => {
 		const params = new URLSearchParams();
 
 		if (filters?.page) params.append('page', filters.page.toString());
@@ -36,13 +36,15 @@ export const workoutsApi = {
 		if (filters?.endDate) params.append('endDate', filters.endDate.toISOString());
 		if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
-		const response = await apiClient.get<WorkoutListResponse>(
+		const response = await apiClient.get<WorkoutsWithExercisesResponse>(
 			`/workouts?${params.toString()}`
 		);
 
+		// recuperamos los datos
 		const {success, message, data, timestamp} = response.data;
 
-
+		// remap para cambiar el nombre de workouts a items, 
+		// que es la firma que tenemos en PaginatedResponse
 		return {
 			success,
 			message,
@@ -65,14 +67,7 @@ export const workoutsApi = {
 		const response = await apiClient.get<ApiResponse<WorkoutWithExercises>>(
 			`/workouts/${id}`
 		);
-		const workoutWithExercises = {
-			id: response.data.data?.id,
-			userId: response.data.data?.userId,
-			title: response.data.data?.title,
-			notes: response.data.data?.notes,
-			createdAt: response.data.data?.createdAt,
-			exercises: response.data.data?.exercises.map()
-		}
+		console.log(response.data.data)
 		return response.data.data!;
 	},
 

@@ -106,7 +106,7 @@ export default function WorkoutsPage() {
 								Comienza registrando tu primer entrenamiento
 							</p>
 						</div>
-						<Link to={'/workout/me'}>
+						<Link to={'/workouts/new'}>
 						<Button>
 							<Plus className="mr-2 h-4 w-4" />
 							Crear Entrenamiento

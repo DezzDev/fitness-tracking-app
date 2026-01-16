@@ -68,7 +68,7 @@ export interface WorkoutExerciseSet {
 	reps?: number;
 	durationSeconds?: number;
 	restSeconds?: number;
-	wight?: number;
+	weight?: number;
 	notes?: string;
 	createdAt: Date;
 }
@@ -78,8 +78,15 @@ export interface WorkoutExercise {
 	workoutId: string;
 	exerciseId: string;
 	orderIndex: number;
-	exercise: Exercise;
+	// datos del set ejercicio (joined)
 	sets: WorkoutExerciseSet[];
+	// datos del ejercicio (joined)
+	exerciseName?: string;
+	exerciseDescription?: string;
+	difficulty?: string;
+	muscleGroup?: string;
+	type?: string;
+
 }
 
 export interface Workout {
