@@ -23,9 +23,10 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 		const newSetNumber = fields.length + 1;
 		append({
 			setNumber: newSetNumber,
-			reps: 10,
+			reps: 0,
 			weight: 0,
-			restSeconds: 60
+			durationSeconds: 0,
+			restSeconds: 0
 		})
 	}
 

@@ -79,10 +79,10 @@ export default function CreateWorkoutPage() {
 			sets: [
 				{
 					setNumber: 1,
-					reps: 10,
+					reps: 0,
 					weight: 0,
 					durationSeconds:0,
-					restSeconds: 60
+					restSeconds: 0
 				}
 			]
 		})
