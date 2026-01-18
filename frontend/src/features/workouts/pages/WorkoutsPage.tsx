@@ -15,12 +15,11 @@ import type { WorkoutFilters } from "@/types";
 export default function WorkoutsPage() {
 	const[filters, setFilters] = useState<WorkoutFilters>({
 		page: 1,
-		limit: 12,
+		limit: 10,
 		searchTerm: ''
 	})
 
 	const {data, isLoading, isError}= useWorkouts(filters);
-	console.log(data);
 
 	const handleSearch = (searchTerm: string) => {
 		setFilters((prev) => ({...prev, searchTerm, page:1}))
