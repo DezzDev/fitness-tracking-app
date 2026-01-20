@@ -11,8 +11,6 @@ import WorkoutForm from '../components/WorkoutForm';
 
 export default function CreateWorkoutPage() {
 
-	
-
 	const navigate = useNavigate();
 	const { mutate: createWorkout, isPending } = useCreateWorkout();
 

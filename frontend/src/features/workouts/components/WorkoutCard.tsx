@@ -124,7 +124,11 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 					<div className="flex items-center justify-between pt-3 border-t">
 						<div className="flex items-center gap-2 text-sm text-gray-500">
 							<Dumbbell className="h-4 w-4" />
-							<span>{workout.exercises.length || 0}</span>
+							<span>
+								{workout.exercises.length || 0} ejercicio
+								{workout.exercises.length !== 1 ? 's' : ''}
+
+							</span>
 						</div>
 
 						<Badge variant="outline" className="text-xs">

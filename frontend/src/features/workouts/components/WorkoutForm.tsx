@@ -56,8 +56,18 @@ export default function WorkoutForm({
 	// Cargar datos iniciales si estamos editando un entrenamiento
 	useEffect(() => {
 		if (initialData) {
+			console.log({initialData})
 			setValue('title', initialData.title)
 			setValue('notes', initialData.notes || '')
+
+			// Guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
+			const names: Record<string, string> = {}
+			initialData.exercises.forEach(ex => {
+				if(ex.exerciseName) {
+					names[ex.exerciseId] = ex.exerciseName
+				}
+			})
+			setExerciseNames(names)			
 
 			// Mapear ejercicios con sus series
 			const mappedExercises = initialData.exercises?.map((we) => ({
@@ -65,13 +75,15 @@ export default function WorkoutForm({
 				orderIndex: we.orderIndex,
 				sets: we.sets?.map((s) => ({
 					setNumber: s.setNumber,
-					reps: s.reps || undefined,
-					durationSeconds: s.durationSeconds || undefined,
-					weight: s.weight || undefined,
-					restSeconds: s.restSeconds || undefined,
+					reps: s.reps || 0,
+					durationSeconds: s.durationSeconds || 0,
+					weight: s.weight || 0,
+					restSeconds: s.restSeconds || 0,
 					notes: s.notes || undefined
 				})) || []
 			})) || []
+
+			console.log({ mappedExercises })
 
 			setValue('exercises', mappedExercises)
 		}
