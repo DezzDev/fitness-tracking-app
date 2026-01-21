@@ -47,8 +47,6 @@ export default function WorkoutForm({
 		}
 	})
 
-	console.log({isDirty})
-
 	const { fields, append, remove, move } = useFieldArray({
 		control,
 		name: 'exercises'
@@ -64,9 +62,6 @@ export default function WorkoutForm({
 	// Cargar datos iniciales si estamos editando un entrenamiento
 	useEffect(() => {
 		if (initialData) {
-			console.log({initialData})
-			// setValue('title', initialData.title)
-			// setValue('notes', initialData.notes || '')
 
 			// Guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
 			const names: Record<string, string> = {}
@@ -77,23 +72,6 @@ export default function WorkoutForm({
 			})
 			setExerciseNames(names)			
 
-			// Mapear ejercicios con sus series
-			const mappedExercises = initialData.exercises?.map((we) => ({
-				exerciseId: we.exerciseId,
-				orderIndex: we.orderIndex,
-				sets: we.sets?.map((s) => ({
-					setNumber: s.setNumber,
-					reps: s.reps || 0,
-					durationSeconds: s.durationSeconds || 0,
-					weight: s.weight || 0,
-					restSeconds: s.restSeconds || 0,
-					notes: s.notes || undefined
-				})) || []
-			})) || []
-
-			console.log({ mappedExercises })
-
-			// setValue('exercises', mappedExercises)
 		}
 	}, [ initialData, setValue ]);
 
@@ -121,10 +99,6 @@ export default function WorkoutForm({
 			sets: [
 				{
 					setNumber: 1,
-					reps: 0,
-					weight: 0,
-					restSeconds: 0,
-					durationSeconds: 0,
 				}
 			]
 		})
@@ -289,7 +263,7 @@ export default function WorkoutForm({
 											</Button>
 										</div>
 										{/* Series de ejercicio (sets) */}
-										<SetList control={control} exerciseIndex={index} />
+										<SetList errors={errors} control={control} exerciseIndex={index} />
 									</div>
 								</div>
 							</div>

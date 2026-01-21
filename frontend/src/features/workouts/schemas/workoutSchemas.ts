@@ -15,27 +15,27 @@ export const WorkoutExerciseSetSchema = z.object({
 	reps: z
 		.number()
 		.int({ error: 'Reps must be an integer' })
-		.min(0, 'Reps cannot be negative')
+		.positive('Reps cannot be negative')
 		.max(1000, { error: 'Reps cannot exceed 1000' })
 		.optional(),
 
 	durationSeconds: z
 		.number()
 		.int({ error: 'Duration must be an integer' })
-		.min(0, { error: 'Duration cannot be negative' })
+		.positive('Duration cannot be negative')
 		.max(7200, { error: 'Duration cannot exceed 2 hours' })
 		.optional(),
 
 	restSeconds: z
 		.number()
 		.int({ error: 'Rest time must be an integer' })
-		.min(0, { error: 'Rest time cannot be negative' })
+		.positive('Rest time cannot be negative')
 		.max(3600, { error: 'Rest time cannot exceed 1 hour' })
 		.optional(),
 
 	weight: z
 		.number()
-		.min(0, { error: 'Weight cannot be negative' })
+		.positive('Weight cannot be negative')
 		.max(1000, { error: 'Weight cannot exceed 1000' })
 		.optional(),
 

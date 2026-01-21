@@ -1,5 +1,5 @@
 // src/features/workouts/components/SetsList.tsx
-import { useFieldArray, type Control } from 'react-hook-form';
+import { useFieldArray, type Control, type FieldErrors } from 'react-hook-form';
 import type { CreateWorkoutFormData } from '../schemas/workoutSchemas';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,10 @@ import { Input } from '@/components/ui/input';
 interface SetListProps {
 	control: Control<CreateWorkoutFormData>;
 	exerciseIndex: number;
+	errors: FieldErrors<CreateWorkoutFormData>;
 }
 
-export default function SetList({ control, exerciseIndex }: SetListProps) {
+export default function SetList({ control, exerciseIndex, errors }: SetListProps) {
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: `exercises.${exerciseIndex}.sets`
@@ -91,13 +92,18 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 								<Input
 									id={`exercises.${exerciseIndex}.sets.${setIndex}.reps`}
 									type='number'
-									min={'0'}
+
 									placeholder='0'
 									{...control.register(
 										`exercises.${exerciseIndex}.sets.${setIndex}.reps`,
-										{ valueAsNumber: true }
+										{ setValueAs: v => v === '' ? undefined : Number(v) }
 									)}
 								/>
+								{errors.exercises?.[exerciseIndex]?.sets?.[setIndex]?.reps  && (
+									<p className='text-sm text-red-600'>
+										{errors.exercises?.[exerciseIndex]?.sets?.[setIndex]?.reps.message}
+									</p>
+								)}
 							</div>
 
 							{/* Peso */}
@@ -116,9 +122,14 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 									placeholder='0'
 									{...control.register(
 										`exercises.${exerciseIndex}.sets.${setIndex}.weight`,
-										{ valueAsNumber: true }
+										{ setValueAs: v => v === '' ? undefined : Number(v) }
 									)}
 								/>
+								{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.weight && (
+									<p className='text-sm text-red-600'>
+										{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.weight.message}
+									</p>
+								)}
 							</div>
 
 							{/* Duración */}
@@ -136,9 +147,14 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 									placeholder='0'
 									{...control.register(
 										`exercises.${exerciseIndex}.sets.${setIndex}.durationSeconds`,
-										{ valueAsNumber: true }
+										{ setValueAs: v => v === '' ? undefined : Number(v) }
 									)}
 								/>
+								{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.durationSeconds && (
+									<p className='text-sm text-red-600'>
+										{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.durationSeconds.message}
+									</p>
+								)}
 							</div>
 
 							{/* Descanso */}
@@ -156,9 +172,14 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 									placeholder='60'
 									{...control.register(
 										`exercises.${exerciseIndex}.sets.${setIndex}.restSeconds`,
-										{ valueAsNumber: true }
+										{ setValueAs: v => v === '' ? undefined : Number(v) }
 									)}
 								/>
+								{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.restSeconds && (
+									<p className='text-sm text-red-600'>
+										{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.restSeconds.message}
+									</p>
+								)}
 							</div>
 						</div>
 
@@ -178,6 +199,11 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 									`exercises.${exerciseIndex}.sets.${setIndex}.notes`,
 								)}
 							/>
+							{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.notes && (
+								<p className='text-sm text-red-600'>
+									{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.notes.message}
+								</p>
+							)}
 						</div>
 					</div>
 				))}
