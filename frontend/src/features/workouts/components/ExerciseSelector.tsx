@@ -20,7 +20,7 @@ export default function ExerciseSelector({
 
 	const { data, isLoading } = useExercises({
 		searchTerm,
-		limit: 50 // Mostrar más ejercicios
+		limit: 50 // Cantidad de ejercicios a mostrar en la lista
 	})
 
 	const exercises = data?.data?.items || [];

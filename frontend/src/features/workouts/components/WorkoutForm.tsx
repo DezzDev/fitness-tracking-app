@@ -9,10 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Trash2, Loader2, ArrowUp, ArrowDown } from "lucide-react";
+import { Trash2, Loader2, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ExerciseSelector from "./ExerciseSelector";
 import SetList from "./SetList";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 
 interface WorkoutFormProps {
@@ -35,20 +37,26 @@ export default function WorkoutForm({
 		control,
 		handleSubmit,
 		setValue,
-		formState: { errors }
+		formState: { errors, isDirty }
 	} = useForm<CreateWorkoutFormData>({
 		resolver: zodResolver(CreateWorkoutSchema),
-		defaultValues: {
+		values: initialData ?? {
 			title: '',
 			notes: '',
 			exercises: []
 		}
 	})
 
+	console.log({isDirty})
+
 	const { fields, append, remove, move } = useFieldArray({
 		control,
 		name: 'exercises'
 	})
+
+	// Detectar cambios no guardados
+	const [ hasSubmitted, setHasSubmitted ] = useState(false);
+	const blocker = useUnsavedChanges(isDirty && !hasSubmitted && !isSubmitting);
 
 	// guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
 	const [ exerciseNames, setExerciseNames ] = useState<Record<string, string>>({});
@@ -57,8 +65,8 @@ export default function WorkoutForm({
 	useEffect(() => {
 		if (initialData) {
 			console.log({initialData})
-			setValue('title', initialData.title)
-			setValue('notes', initialData.notes || '')
+			// setValue('title', initialData.title)
+			// setValue('notes', initialData.notes || '')
 
 			// Guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
 			const names: Record<string, string> = {}
@@ -85,11 +93,12 @@ export default function WorkoutForm({
 
 			console.log({ mappedExercises })
 
-			setValue('exercises', mappedExercises)
+			// setValue('exercises', mappedExercises)
 		}
 	}, [ initialData, setValue ]);
 
 	const handleFormSubmit = (data: CreateWorkoutFormData) => {
+		setHasSubmitted(true);
 		onSubmit(data)
 	}
 
@@ -143,6 +152,34 @@ export default function WorkoutForm({
 
 	return (
 		<form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6'>
+			{/* Alerta de navegación bloqueada */}
+			{blocker.state === 'blocked' && (
+				<Alert variant="destructive">
+					<AlertTriangle className="h-4 w-4" />
+					<AlertDescription className="flex items-center justify-between">
+						<span>Tienes cambios sin guardar. ¿Deseas descartarlos?</span>
+						<div className="flex gap-2">
+							<Button
+								type="button"
+								size="sm"
+								variant="outline"
+								onClick={() => blocker.reset?.()}
+							>
+								Cancelar
+							</Button>
+							<Button
+								type="button"
+								size="sm"
+								variant="destructive"
+								onClick={() => blocker.proceed?.()}
+							>
+								Descartar
+							</Button>
+						</div>
+					</AlertDescription>
+				</Alert>
+			)}
+			
 			{/* Información básica */}
 			<Card>
 				<CardHeader>

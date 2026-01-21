@@ -42,11 +42,11 @@ const mapRowToWorkoutExerciseSet = (row: WorkoutExerciseSetRow): WorkoutExercise
 	id: row.id,
 	workoutExerciseId: row.workout_exercise_id,
 	setNumber: row.set_number,
-	reps: row.reps || undefined,
-	durationSeconds: row.duration_seconds || undefined,
-	restSeconds: row.rest_seconds || undefined,
-	weight: row.weight || undefined,
-	notes: row.notes || undefined,
+	reps: row.reps ?? undefined,
+	durationSeconds: row.duration_seconds ?? undefined,
+	restSeconds: row.rest_seconds ?? undefined,
+	weight: row.weight ?? undefined,
+	notes: row.notes ?? undefined,
 	createdAt: new Date(row.created_at),
 })
 
@@ -251,7 +251,7 @@ const queries = {
 
 export const workoutRepository = {
 	/**
-	 * Crear workout con ejercicios y sets (transacción simulada con batch)
+	 * Crear workout con ejercicios y sets (transacción con batch)
 	 * @data datos del workout a crear (userId, title, notes, ejercicios)
 	 * @returns workout completo con ejercicios y sets
 	 */
@@ -299,11 +299,11 @@ export const workoutRepository = {
 						setId,
 						workoutExerciseId,
 						set.setNumber,
-						set.reps || null,
-						set.durationSeconds || null,
-						set.restSeconds || null,
-						set.weight || null,
-						set.notes || null
+						set.reps ?? null,
+						set.durationSeconds ?? null,
+						set.restSeconds ?? null,
+						set.weight ?? null,
+						set.notes ?? null
 					)
 				})
 			}
@@ -356,9 +356,12 @@ export const workoutRepository = {
 					args: queries.findWorkoutExerciseSets.args(exercise.id)
 				});
 
+				console.log({setResult: setResult.rows})
+
 				const sets = setResult.rows.map((setRow) =>
 					mapRowToWorkoutExerciseSet(setRow as unknown as WorkoutExerciseSetRow)
 				);
+				console.log({sets})
 
 				return {
 					...exercise,
@@ -497,11 +500,11 @@ export const workoutRepository = {
 							setId,
 							workoutExerciseId,
 							set.setNumber,
-							set.reps || null,
-							set.durationSeconds || null,
-							set.restSeconds || null,
-							set.weight || null,
-							set.notes || null
+							set.reps ?? null,
+							set.durationSeconds ?? null,
+							set.restSeconds ?? null,
+							set.weight ?? null,
+							set.notes ?? null
 						),
 					})
 				}

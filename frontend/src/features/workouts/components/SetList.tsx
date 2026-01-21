@@ -92,7 +92,7 @@ export default function SetList({ control, exerciseIndex }: SetListProps) {
 									id={`exercises.${exerciseIndex}.sets.${setIndex}.reps`}
 									type='number'
 									min={'0'}
-									placeholder='10'
+									placeholder='0'
 									{...control.register(
 										`exercises.${exerciseIndex}.sets.${setIndex}.reps`,
 										{ valueAsNumber: true }
