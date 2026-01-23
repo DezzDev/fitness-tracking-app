@@ -70,7 +70,9 @@ export function useUpdateWorkout() {
 			queryClient.invalidateQueries({ queryKey: [ 'workouts' ] });
 			queryClient.invalidateQueries({ queryKey: queryKeys.workout(variables.id) })
 
+			
 			toast.success('Workout actualizado con éxito');
+		
 		},
 		onError: (error) => {
 			toast.error(handleApiError(error, 'No se pudo actualizar el workout'));

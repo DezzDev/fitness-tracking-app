@@ -15,6 +15,7 @@ import ExerciseSelector from "./ExerciseSelector";
 import SetList from "./SetList";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import ExerciseInfo from "./ExerciseInfo";
 
 
 interface WorkoutFormProps {
@@ -245,11 +246,8 @@ export default function WorkoutForm({
 									<div className='flex-1 space-y-3' >
 										<div className="flex items start justify-between">
 											<div>
-												<h4 className='font-medium'>{exerciseNames[ field.exerciseId ]}</h4>
-												<p className="text-sm  text-gray-500">
-
-													Ejercicio #{index + 1}
-												</p>
+												{/*  queda por definir cuando implementar la vista compacta */}
+												<ExerciseInfo exerciseId={field.exerciseId} index={index}   />
 											</div>
 
 											<Button

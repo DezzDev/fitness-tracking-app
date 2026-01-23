@@ -12,7 +12,7 @@ import { es } from "date-fns/locale";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
+import ExerciseInfo from "../components/ExerciseInfo";
 
 
 export default function WorkoutDetailPage() {
@@ -152,30 +152,8 @@ export default function WorkoutDetailPage() {
 										{/* Ejercicio */}
 										<div className="space-y-4">
 											<div className="flex items-start justify-between">
-												<div>
-													<h3 className="font-semibold text-lg">
-														{index + 1}. {workoutExercise.exerciseName}
-													</h3>
-
-													{workoutExercise.exerciseDescription && (
-														<p className="text-sm text-gray-600 mt-1">
-															{workoutExercise.exerciseDescription}
-														</p>
-													)}
-
-													<div className="flex items-center gap-2 mt-2">
-														{workoutExercise.difficulty && (
-															<Badge className="text-xs" variant={'outline'}>
-																{workoutExercise.difficulty}
-															</Badge>
-														)}
-														{workoutExercise.muscleGroup && (
-															<Badge className="text-xs" variant={'secondary'}>
-																{workoutExercise.muscleGroup}
-															</Badge>
-														)}
-													</div>
-												</div>
+												<ExerciseInfo exerciseId={workoutExercise.exerciseId} index={index} />
+												
 											</div>
 
 											{/* Series (sets) */}

@@ -1,6 +1,6 @@
 // src/features/workouts/components/ExerciseSelector.tsx
 import { useState } from "react";
-import { useExercises } from "../hooks/useExercise";
+import { useExercises } from "@/features/exercises/hooks/useExercises";
 import { Check, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
