@@ -51,3 +51,15 @@ export type {
 	ExerciseFilters,
 	ExerciseStats,
 } from './entities/exercise.types';
+
+// Re-export types personal record
+export type {
+	PersonalRecord,
+	PersonalRecordWithExercise,
+	PersonalRecordCreateData,
+	PersonalRecordUpdateData,
+	PersonalRecordRow,
+	PersonalRecordWithExerciseRow,
+	PersonalRecordFilters,
+	PersonalRecordStats
+} from './entities/personalRecord.type';
