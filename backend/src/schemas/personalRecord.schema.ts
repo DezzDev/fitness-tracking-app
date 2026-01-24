@@ -37,7 +37,7 @@ const atLeastOneRecordRefine = (data: z.infer<typeof personalRecordValuesSchema>
 
 export const CreatePersonalRecordSchema = personalRecordValuesSchema
 	.extend({
-		exerciseId: z.string('Exercise ID must be a string')
+		exerciseId: z.uuid('Invalid exercise ID format')
 	})
 	.refine(atLeastOneRecordRefine, 'At least one record value must be provided')
 
