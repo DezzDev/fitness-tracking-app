@@ -1,16 +1,13 @@
 // src/repositories/personalRecord.repository.ts
 import { execute } from '@/config/database'
 import {
-	PersonalRecord,
 	PersonalRecordCreateData,
 	PersonalRecordFilters,
-	PersonalRecordRow,
 	PersonalRecordUpdateData,
 	PersonalRecordWithExercise,
 	PersonalRecordWithExerciseRow
 } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
-import id from 'zod/v4/locales/id.js'
 
 
 
@@ -18,29 +15,21 @@ import id from 'zod/v4/locales/id.js'
 // Mappers
 //===========================================
 
-const mapRowToPersonalRecord = (row: PersonalRecordRow): PersonalRecord => ({
-	id: row.id,
-	userId: row.user_id,
-	exerciseId: row.exercise_id,
-	maxReps: row.max_reps || undefined,
-	maxDurationSeconds: row.max_duration_seconds || undefined,
-	maxWeight: row.max_weight || undefined,
-	achievedAt: row.achieved_at,
-})
+
 
 const mapRowToPersonalRecordWithExercise = (row: PersonalRecordWithExerciseRow): PersonalRecordWithExercise => ({
 	id: row.id,
 	userId: row.user_id,
 	exerciseId: row.exercise_id,
-	maxReps: row.max_reps || undefined,
-	maxDurationSeconds: row.max_duration_seconds || undefined,
-	maxWeight: row.max_weight || undefined,
+	maxReps: row.max_reps ?? undefined,
+	maxDurationSeconds: row.max_duration_seconds ?? undefined,
+	maxWeight: row.max_weight ?? undefined,
 	achievedAt: row.achieved_at,
 	exerciseName: row.exercise_name,
-	exerciseDescription: row.exercise_description || undefined,
-	difficulty: row.difficulty || undefined,
-	muscleGroup: row.muscle_group || undefined,
-	type: row.type || undefined,
+	exerciseDescription: row.exercise_description ?? undefined,
+	difficulty: row.difficulty ?? undefined,
+	muscleGroup: row.muscle_group ?? undefined,
+	type: row.type ?? undefined,
 })
 
 //===========================================
@@ -258,7 +247,7 @@ export const personalRecordRepository = {
 	},
 
 	/**
-	 * Buscar PR por ID
+	 * Buscar PR por ID y usuario
 	 * @param id id del personal record
 	 * @param userId id del usuario
 	 * @returns personal record con ejercicio
@@ -280,8 +269,30 @@ export const personalRecordRepository = {
 	},
 
 	/**
+	 * Buscar Pr por userId y exerciseId, devuelve pr con ejercicio
+	 * @param userId id del usuario
+	 * @param exerciseId id del ejercicio
+	 * @returns personal record con ejercicio
+	 */
+	findByUserAndExercise: async (
+		userId: string,
+		exerciseId: string
+	): Promise<PersonalRecordWithExercise | null> => {
+		const result = await execute({
+			sql: queries.findByUserAndExercise.sql,
+			args: queries.findByUserAndExercise.args(userId, exerciseId),
+		});
+
+		if (result.rows.length === 0) return null;
+
+		return mapRowToPersonalRecordWithExercise(
+			result.rows[ 0 ] as unknown as PersonalRecordWithExerciseRow
+		);
+	},
+
+	/**
 	 * Listar PRs con filtro
-	 * @param filters filtros para buscar personal records (userId, ejercicioId, muscleGroup, difficulty, type)
+	 * @param filters filtros para buscar personal records (userId?, exerciseId?, muscleGroup?, difficulty?, type?)
 	 * @param page página actual
 	 * @param limit número de resultados por página
 	 * @returns lista de personal records con ejercicio

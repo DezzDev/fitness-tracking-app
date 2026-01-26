@@ -42,9 +42,7 @@ export const analyzeError = (err: Error): ErrorAnalysis => {
 
 	// Connection errors
 	if (
-		errorMsg.includes('econnrefused') ||
-		errorMsg.includes('connection refused') ||
-		errorMsg.includes('connection lost')
+		errorMsg.includes('connection') 
 	) {
 		return {
 			statusCode: 503,
@@ -85,6 +83,8 @@ export const handleServiceError = (
 	metadata?: Record<string, unknown>
 ): never => {
 
+	logger.error(`userMessage: [${userMessage}], context: ${context} `, { error, ...metadata });
+
 	// si es AppError, propagar sin modificar
 	if (isAppError(error)) {
 		if (error.details) {
@@ -123,7 +123,6 @@ export const handleServiceError = (
 	}
 
 	// Error desconocido
-	logger.error(`[${context}] Unexpected error: `, { error, ...metadata });
 	throw createAppError('An unexpected error occurred', 500, false);
 };
 
