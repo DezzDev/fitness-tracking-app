@@ -14,6 +14,7 @@ import userRoutes from "@/routes/user.routes";
 import workoutRoutes from "@/routes/workout.routes";
 import exerciseRoutes from "@/routes/exercise.routes";
 import tagRoutes from "@/routes/tag.routes";
+import personalRecordRoutes from "@/routes/personalRecord.routes";
 
 // ============================================
 // CONFIGURACIÓN
@@ -72,6 +73,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/personal-records', personalRecordRoutes);
 
 // ============================================
 // ERROR HANDLERS

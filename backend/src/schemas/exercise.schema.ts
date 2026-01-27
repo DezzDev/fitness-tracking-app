@@ -69,7 +69,7 @@ export const UpdateExerciseSchema = z.object({
 // ============================================
 
 export const ExerciseIdSchema = z.object({
-	id: z.uuidv4({ error: 'Invalid exercise ID format' })
+	exerciseId: z.uuid({ error: 'Invalid exercise ID format' })
 })
 
 // ============================================

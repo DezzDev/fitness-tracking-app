@@ -350,9 +350,10 @@ export const personalRecordRepository = {
 		data: PersonalRecordUpdateData
 	):Promise<PersonalRecordWithExercise> => {
 		const updateData : any = {};
-		if (data.maxReps !== undefined) updateData.maxReps = data.maxReps ?? null;
-		if (data.maxDurationSeconds !== undefined) updateData.maxDurationSeconds = data.maxDurationSeconds ?? null;
-		if (data.maxWeight !== undefined) updateData.maxWeight = data.maxWeight ?? null;
+		// Convert camelCase to snake_case
+		if (data.maxReps !== undefined) updateData.max_reps = data.maxReps ?? null;
+		if (data.maxDurationSeconds !== undefined) updateData.max_duration_seconds = data.maxDurationSeconds ?? null;
+		if (data.maxWeight !== undefined) updateData.max_weight = data.maxWeight ?? null;
 
 		const fields = Object.keys(updateData);
 
