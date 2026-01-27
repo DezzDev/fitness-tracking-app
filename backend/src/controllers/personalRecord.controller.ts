@@ -5,7 +5,7 @@ import { asyncHandler } from '../middlewares/error.middleware';
 import { CreatePersonalRecordInput, PersonalRecordFiltersInput, UpdatePersonalRecordInput } from '@/schemas/personalRecord.schema';
 import { personalRecordService } from '@/services/personalRecord.service';
 import { ResponseHandler } from '@/utils/response';
-import { getUser } from './user.controller';
+
 
 //===========================================
 // Helpers
@@ -111,7 +111,7 @@ export const getPersonalRecordByExercise = asyncHandler(
 export const listPersonalRecords = asyncHandler(
 	async(req: Request, res: Response): Promise<undefined> => {
 		const userId = getUserId(req);
-		const {page, limit, exerciseId, muscleGroup, difficulty, type} = req.query as any;
+		const {page, limit, exerciseId, muscleGroup, difficulty, type} = req.query as unknown as PersonalRecordFiltersInput;
 
 		const filters = {
 			exerciseId,
@@ -123,8 +123,8 @@ export const listPersonalRecords = asyncHandler(
 		const result = await personalRecordService.findAll(
 			userId,
 			filters,
-			page ? parseInt(page): 1,
-			limit ? parseInt(limit): 10
+			page ? Number(page): 1,
+			limit ? Number(limit): 10
 		)
 		ResponseHandler.success(res, result);
 	}
