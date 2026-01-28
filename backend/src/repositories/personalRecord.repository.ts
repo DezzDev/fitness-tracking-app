@@ -104,19 +104,23 @@ const queries = {
 			`;
 
 			if (filters.exerciseId) {
+				console.log({exerciseId: "entra"})
 				sql += ' AND pr.exercise_id = ?';
 			}
 			if (filters.muscleGroup) {
+				console.log({ exerciseId: "entra" })
 				sql += ' AND e.muscle_group = ?';
 			}
 			if (filters.difficulty) {
+				console.log({ exerciseId: "entra" })
 				sql += ' AND e.difficulty = ?';
 			}
 			if (filters.type) {
+				console.log({ exerciseId: "entra" })
 				sql += ' AND e.type = ?';
 			}
 
-			sql += ' ORDER BY pr.achieved at DESC LIMIT ? OFFSET ?'
+			sql += ' ORDER BY pr.achieved_at DESC LIMIT ? OFFSET ?'
 
 			return sql;
 		},
@@ -129,6 +133,8 @@ const queries = {
 			if (filters.type) args.push(filters.type);
 
 			args.push(limit, offset);
+
+			console.log({args})
 
 			return args;
 		}
@@ -305,6 +311,7 @@ export const personalRecordRepository = {
 	): Promise<PersonalRecordWithExercise[]> => {
 		const offset = (page -1 ) * limit;
 
+		console.log({filters})
 		const result = await execute({
 			sql:queries.findAll.sql(filters),
 			args: queries.findAll.args(filters, limit, offset)

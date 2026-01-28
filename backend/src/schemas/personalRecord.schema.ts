@@ -54,7 +54,7 @@ export const UpdatePersonalRecordSchema = personalRecordValuesSchema
 // ============================================
 
 export const PersonalRecordIdSchema = z.object({
-	id: z.string('Exercise ID must be a string')
+	id: z.uuid('Invalid personal record ID format')
 })
 
 // ============================================
@@ -74,7 +74,7 @@ export const PersonalRecordFiltersSchema = z.object({
 		.transform(Number)
 		.pipe(z.number().int().min(1).max(100)),
 
-	exerciseId: z.string('Exercise ID must be a string'),
+	exerciseId: z.uuid('Invalid exercise ID format').optional(),
 
 	muscleGroup: z.string().max(50).trim().optional(),
 
