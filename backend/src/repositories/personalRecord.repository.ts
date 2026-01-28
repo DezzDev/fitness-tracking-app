@@ -104,19 +104,20 @@ const queries = {
 			`;
 
 			if (filters.exerciseId) {
-				console.log({exerciseId: "entra"})
+
 				sql += ' AND pr.exercise_id = ?';
 			}
 			if (filters.muscleGroup) {
-				console.log({ exerciseId: "entra" })
+
 				sql += ' AND e.muscle_group = ?';
 			}
 			if (filters.difficulty) {
-				console.log({ exerciseId: "entra" })
+
 				sql += ' AND e.difficulty = ?';
 			}
 			if (filters.type) {
-				console.log({ exerciseId: "entra" })
+
+
 				sql += ' AND e.type = ?';
 			}
 
@@ -134,7 +135,7 @@ const queries = {
 
 			args.push(limit, offset);
 
-			console.log({args})
+
 
 			return args;
 		}
@@ -309,14 +310,13 @@ export const personalRecordRepository = {
 		page: number = 1,
 		limit: number = 10
 	): Promise<PersonalRecordWithExercise[]> => {
-		const offset = (page -1 ) * limit;
+		const offset = (page - 1) * limit;
 
-		console.log({filters})
 		const result = await execute({
-			sql:queries.findAll.sql(filters),
+			sql: queries.findAll.sql(filters),
 			args: queries.findAll.args(filters, limit, offset)
 		})
-		return result.rows.map(row => 
+		return result.rows.map(row =>
 			mapRowToPersonalRecordWithExercise(row as unknown as PersonalRecordWithExerciseRow)
 		)
 	},
@@ -326,19 +326,19 @@ export const personalRecordRepository = {
 	 * @param filters filtros para buscar personal records (userId, ejercicioId, muscleGroup, difficulty, type)
 	 * @returns número de personal records
 	 */
-	count : async (filters:PersonalRecordFilters): Promise<number> =>{
+	count: async (filters: PersonalRecordFilters): Promise<number> => {
 		const result = await execute({
 			sql: queries.count.sql(filters),
 			args: queries.count.args(filters)
 		})
 
-		if(!result.rows?.[0]){
-			throw new Error ('Count query returned empty result');
+		if (!result.rows?.[ 0 ]) {
+			throw new Error('Count query returned empty result');
 		}
 
-		const {total} = result.rows[0] as unknown as {total:number};
+		const { total } = result.rows[ 0 ] as unknown as { total: number };
 
-		if(typeof total !== 'number' || total < 0){
+		if (typeof total !== 'number' || total < 0) {
 			throw new Error('Invalid count value: ' + total);
 		}
 		return total;
@@ -355,8 +355,8 @@ export const personalRecordRepository = {
 		id: string,
 		userId: string,
 		data: PersonalRecordUpdateData
-	):Promise<PersonalRecordWithExercise> => {
-		const updateData : any = {};
+	): Promise<PersonalRecordWithExercise> => {
+		const updateData: any = {};
 		// Convert camelCase to snake_case
 		if (data.maxReps !== undefined) updateData.max_reps = data.maxReps ?? null;
 		if (data.maxDurationSeconds !== undefined) updateData.max_duration_seconds = data.maxDurationSeconds ?? null;
@@ -364,7 +364,7 @@ export const personalRecordRepository = {
 
 		const fields = Object.keys(updateData);
 
-		if(fields.length === 0){
+		if (fields.length === 0) {
 			throw new Error
 		}
 
