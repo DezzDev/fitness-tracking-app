@@ -1,14 +1,6 @@
-import type { CreateWorkoutSessionData, WorkoutSession } from "@/types";
+import type { CreateWorkoutSessionData, WorkoutSession, SessionFilters } from "@/types";
 import { apiClient, type ApiResponse, type PaginatedResponse } from "../client";
 
-export interface SessionFilters {
-	page?: number;
-	limit?: number;
-	startDate?: Date;
-	endDate?: Date;
-	templateId?: string;
-	searchTerm?: string;
-}
 
 export const workoutSessionsApi = {
 	/**

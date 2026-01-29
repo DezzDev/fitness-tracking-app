@@ -142,6 +142,15 @@ export interface CreateWorkoutSessionData {
 	}
 }
 
+export interface SessionFilters {
+	page?: number;
+	limit?: number;
+	startDate?: Date;
+	endDate?: Date;
+	templateId?: string;
+	searchTerm?: string;
+}
+
 // DEPRECATED: Mantener para compatibilidad temporal
 export interface WorkoutExercise {
 	id: string;
