@@ -18,7 +18,7 @@ export const templateKeys = {
 export function useWorkoutTemplates(params?: {
 	page?: number;
 	limit?: number;
-	search?: string;
+	searchTerm?: string;
 }) {
 	return useQuery({
 		queryKey: templateKeys.list(params),
