@@ -1,17 +1,13 @@
 // src/types/index.ts
 
-// Re-export types common
 export type {ApiResponse} from './common/common.types';
 export {NodeEnv, LogLevel} from './common/common.types';
 
-// Re-export types error
 export type {AppError, ErrorCode} from './common/error.types';
 export { ErrorCodes } from './common/error.types';
 
-// Re-export types database
 export type {DatabaseConfig, QueryResult, TransactionFn} from './common/database.types';
 
-// Re-export types entities
 export type {
 	User, 
 	UserCreateData, 
@@ -20,7 +16,6 @@ export type {
 	UserUpdateData
 } from './entities/user.types';
 
-// Re-export types workout
 export type{
 	Workout, 
 	WorkoutWithExercises, 
@@ -36,7 +31,6 @@ export type{
 	WorkoutFilters
 } from './entities/workout.types';
 
-// Re-export types exercise
 export type {
 	Exercise,
 	ExerciseWithTags,
@@ -52,7 +46,6 @@ export type {
 	ExerciseStats,
 } from './entities/exercise.types';
 
-// Re-export types personal record
 export type {
 	PersonalRecord,
 	PersonalRecordWithExercise,
@@ -63,3 +56,31 @@ export type {
 	PersonalRecordFilters,
 	PersonalRecordStats
 } from './entities/personalRecord.type';
+
+export type {
+	WorkoutTemplate,
+	WorkoutTemplateExercise,
+	WorkoutTemplateWithExercises,
+	WorkoutTemplateCreateData,
+	WorkoutTemplateUpdateData,
+	WorkoutTemplateRow,
+	WorkoutTemplateExerciseRow,
+	WorkoutTemplateExerciseCreateData,
+	WorkoutTemplateFilters,
+	TemplateUsageStats
+} from './entities/workoutTemplate.types';
+
+export type {
+	WorkoutSession,
+	WorkoutSessionExercise,
+	WorkoutSessionWithExercises,
+	WorkoutSessionCreateData,
+	WorkoutSessionUpdateData,
+	WorkoutSessionRow,
+	WorkoutSessionExerciseRow,
+	WorkoutSessionExerciseCreateData,
+	WorkoutSessionSet,
+	WorkoutSessionSetCrateData,
+	WorkoutSessionFilters,
+	WorkoutSessionStats
+} from './entities/workoutSession.type';
