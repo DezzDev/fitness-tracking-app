@@ -124,6 +124,73 @@ CREATE TABLE IF NOT EXISTS personal_records (
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
+CREATE TABLE workout_templates (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	deleted_at DATETIME DEFAULT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE workout_template_exercises (
+  id TEXT PRIMARY KEY,
+  template_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
+  order_index INTEGER DEFAULT 0,
+  suggested_sets INTEGER,
+  suggested_reps INTEGER,
+  notes TEXT,
+  FOREIGN KEY (template_id) REFERENCES workout_templates(id) ON DELETE CASCADE,
+  FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
+);
+
+CREATE TABLE template_favorites (
+  user_id TEXT NOT NULL,
+  template_id TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, template_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (template_id) REFERENCES workout_templates(id) ON DELETE CASCADE
+);
+
+CREATE TABLE workout_sessions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  template_id TEXT,
+  title TEXT NOT NULL,
+  notes TEXT,
+  session_date DATETIME NOT NULL,
+  duration_minutes INTEGER,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (template_id) REFERENCES workout_templates(id) ON DELETE SET NULL
+);
+
+CREATE TABLE workout_session_exercises (
+  id TEXT PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
+  order_index INTEGER DEFAULT 0,
+  FOREIGN KEY (session_id) REFERENCES workout_sessions(id) ON DELETE CASCADE,
+  FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
+);
+
+CREATE TABLE workout_session_sets (
+  id TEXT PRIMARY KEY,
+  session_exercise_id TEXT NOT NULL,
+  set_number INTEGER NOT NULL,
+  reps INTEGER,
+  duration_seconds INTEGER,
+  weight REAL,
+  rest_seconds INTEGER,
+  notes TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (session_exercise_id) REFERENCES workout_session_exercises(id) ON DELETE CASCADE
+);
+
 -- =====================================
 -- DATA: Usuarios de prueba
 -- =====================================
