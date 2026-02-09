@@ -4,7 +4,7 @@
 
 export type WorkoutTemplate = {
 	id: string;
-	user_id: string;
+	userId: string;
 	name: string;
 	description?: string;
 	createdAt: Date;
@@ -17,8 +17,8 @@ export type WorkoutTemplateExercise = {
 	templateId: string;
 	exerciseId: string;
 	orderIndex: number;
-	suggestedSets: number;
-	suggestedReps: number;
+	suggestedSets?: number;
+	suggestedReps?: number;
 	notes?: string;
 	// join with exercise
 	exerciseName: string;
@@ -97,6 +97,8 @@ export type WorkoutTemplateFilters = {
 	userId?: string;
 	searchTerm?: string;
 	favoritesOnly?: boolean;
+	startDate?: Date;
+	endDate?: Date;
 }
 
 export type TemplateUsageStats = {

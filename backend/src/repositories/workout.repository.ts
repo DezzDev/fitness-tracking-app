@@ -11,6 +11,7 @@ import {
 	WorkoutFilters,
 	WorkoutWithExercises
 } from '@/types/index';
+import logger from '@/utils/logger';
 import { v4 as uuidv4 } from "uuid";
 
 // ============================================
@@ -269,7 +270,7 @@ export const workoutRepository = {
 		if (workoutResult.rows.length === 0) {
 			throw new Error('Failed to create workout');
 		}
-		console.log('workout created')
+		logger.info('workout created')
 
 		const workout = mapRowToWorkout(workoutResult.rows[ 0 ] as unknown as WorkoutRow);
 
@@ -356,12 +357,9 @@ export const workoutRepository = {
 					args: queries.findWorkoutExerciseSets.args(exercise.id)
 				});
 
-				console.log({setResult: setResult.rows})
-
 				const sets = setResult.rows.map((setRow) =>
 					mapRowToWorkoutExerciseSet(setRow as unknown as WorkoutExerciseSetRow)
 				);
-				console.log({sets})
 
 				return {
 					...exercise,
