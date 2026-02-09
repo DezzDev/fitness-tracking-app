@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:3000/api
+
+# ============================================
+# LOGIN ROUTES
+# ============================================
+### POST /users/login - Usuario regular (capturar token)
+# @name userToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+
+# ============================================
+# WORKOUT TEMPLATE ROUTES
+# ============================================
+### POST /workoutTemplates - Crear nuevo template
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Test Workout Template",
+	"description": "Test Workout Template Description",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"suggestedSets": 1,
+			"suggestedReps": 10,
+			"notes": "Test Exercise"
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 1,
+			"suggestedSets": 1,
+			"suggestedReps": 10,
+			"notes": "Test Exercise"
+		}
+	]
+}
