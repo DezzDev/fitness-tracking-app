@@ -340,7 +340,7 @@ export const workoutTemplateRepository = {
 			row => mapRowToWorkoutTemplateExercise(row as unknown as WorkoutTemplateExerciseRow)
 		)
 
-		// Obtener si el template es favorito
+		// Comprobar si el template es favorito
 		const isFavoriteResult = await execute({
 			sql: queries.isFavorite.sql,
 			args: queries.isFavorite.args(workoutTemplate.userId, workoutTemplate.id)
@@ -365,5 +365,16 @@ export const workoutTemplateRepository = {
 			lastUsedAt: usageStats.lastUsedAt
 
 		}
+	},
+
+	isFavorite: async (userId: string, templateId:string): Promise<boolean> => {
+		const favoriteRow = await execute({
+			sql: queries.isFavorite.sql,
+			args: queries.isFavorite.args(userId, templateId)
+		})
+		const row = favoriteRow.rows[0]
+		const isFavorite = typeof row?.is_favorite === 'number' && row.is_favorite === 1
+
+		return isFavorite
 	}
 }

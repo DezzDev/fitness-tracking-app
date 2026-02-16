@@ -42,3 +42,7 @@ content-type: application/json
 		}
 	]
 }
+
+### Obtener template por id
+GET {{baseUrl}}/workoutTemplates/c8928807-9322-4e74-8d1b-da1a88794144 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}

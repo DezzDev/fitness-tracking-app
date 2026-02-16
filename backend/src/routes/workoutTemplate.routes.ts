@@ -1,7 +1,7 @@
-import { createWorkoutTemplate } from "@/controllers/workoutTemplate.controller";
-import { validateBody } from "@/middlewares/validate.middleware";
+import { createWorkoutTemplate, getWorkoutTemplate } from "@/controllers/workoutTemplate.controller";
+import { validateBody, validateParams } from "@/middlewares/validate.middleware";
 import { Router } from "express";
-import { CreateWorkoutTemplateSchema } from "@/schemas/workoutTemplate.schema";
+import { CreateWorkoutTemplateSchema, WorkoutTemplateIdSchema } from "@/schemas/workoutTemplate.schema";
 import { requireAuth } from "@/middlewares/auth.middleware";
 
 const router: Router = Router();
@@ -11,11 +11,25 @@ const router: Router = Router();
 // ============================================
 router.use(requireAuth);
 
-
+/**
+ * Crear nuevo workout template
+ */
 router.post(
 	'/',
 	validateBody(CreateWorkoutTemplateSchema),
 	createWorkoutTemplate
 );
+
+/**
+ * Obtener template por id
+ */
+router.get(
+	'/:id',
+	validateParams(WorkoutTemplateIdSchema),
+	getWorkoutTemplate,
+
+)
+
+
 
 export default router

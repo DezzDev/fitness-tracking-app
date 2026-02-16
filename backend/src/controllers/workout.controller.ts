@@ -28,12 +28,13 @@ const getUserId = (req:Request): string =>{
  * @param params params del request
  * @returns workoutId
  */
-const getWorkoutId = (params: Record<string, string | undefined>): string => {
-	const {id} = params;
-
-	if(!id){
+const getWorkoutId = (params: Record<string, unknown> | undefined): string => {
+	if(typeof params !== 'object' || !params.id || typeof params.id !== 'string'){
 		throw createAppError('Workout ID not found in request',400);
 	}
+	
+	const {id} = params;
+
 	return id;
 }
 
@@ -62,7 +63,7 @@ export const createWorkout = asyncHandler(
 export const getWorkout = asyncHandler(
 	async(req:Request, res:Response):Promise<undefined> =>{
 		const userId = getUserId(req);
-		const workoutId = getWorkoutId(req.params);
+		const workoutId = getWorkoutId(req.validatedParams);
 
 		const workout = await workoutService.findById(workoutId, userId);
 
@@ -79,7 +80,7 @@ export const listWorkouts = asyncHandler(
 		const userId = getUserId(req);
 
 		// Los filtros ya vienen validados por el middleware 
-		const {page, limit, startDate, endDate, search} = req.query as any;
+		const {page, limit, startDate, endDate, search} = req.validatedQuery as any;
 
 		const filters ={
 			startDate: startDate ? new Date(startDate) : undefined,
@@ -137,7 +138,7 @@ export const getWorkoutStats = asyncHandler(
 	async(req:Request, res:Response):Promise<undefined> =>{
 		const userId = getUserId(req);
 
-		const {startDate, endDate} = req.query as any;
+		const {startDate, endDate} = req.validatedQuery as any;
 
 		const filters = {
 			startDate,
