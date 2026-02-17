@@ -367,6 +367,133 @@ export const workoutTemplateRepository = {
 		}
 	},
 
+	findAll: async (
+		filters: WorkoutTemplateFilters,
+		page: number = 1,
+		limit: number = 10
+	): Promise<WorkoutTemplateWithExercises[]> => {
+		const offset = (page - 1) * limit;
+
+		const result = await execute({
+			sql: queries.findAll.sql(filters),
+			args: queries.findAll.args(filters, limit, offset)
+		})
+
+		const templates: WorkoutTemplateWithExercises[] = [];
+		for (const row of result.rows) {
+			const templateId = String(row.id);
+			const template = await workoutTemplateRepository.findById(templateId);
+			if (template) {
+				templates.push(template);
+			}
+		}
+
+		return templates;
+	},
+
+	count: async (filters: WorkoutTemplateFilters): Promise<number> => {
+		let sql = `SELECT COUNT(*) as count FROM workout_templates wt`;
+		const args: any[] = [ filters.userId ];
+
+		if (filters.favoritesOnly) {
+			sql += ` INNER JOIN template_favorites tf on wt.id = tf.template_id`;
+		}
+
+		sql += ` WHERE wt.user_id = ?`;
+
+		if (filters.startDate) {
+			sql += ` AND wt.created_at >= datetime(?)`;
+			args.push(filters.startDate.toISOString());
+		}
+
+		if (filters.endDate) {
+			sql += ` AND wt.created_at <= datetime(?)`;
+			args.push(filters.endDate.toISOString());
+		}
+
+		if (filters.searchTerm) {
+			sql += ` AND (wt.name LIKE ? OR wt.description LIKE ?)`;
+			const searchPattern = `%${filters.searchTerm}%`;
+			args.push(searchPattern, searchPattern);
+		}
+
+		const result = await execute({
+			sql,
+			args
+		});
+
+		const count = result.rows[ 0 ]?.count;
+		return typeof count === 'number' ? count : Number(count ?? 0);
+	},
+
+	update: async (
+		id: string,
+		userId: string,
+		data: WorkoutTemplateUpdateData
+	): Promise<WorkoutTemplateWithExercises> => {
+		const fields: string[] = [];
+		const updateData: Partial<Omit<WorkoutTemplateUpdateData, 'exercises'>> = {};
+
+		if (typeof data.name !== 'undefined') {
+			fields.push('name');
+			updateData.name = data.name;
+		}
+
+		if (typeof data.description !== 'undefined') {
+			fields.push('description');
+			updateData.description = data.description;
+		}
+
+		if (fields.length > 0) {
+			const updatedTemplateResult = await execute({
+				sql: queries.workoutTemplateUpdate.sql(fields),
+				args: queries.workoutTemplateUpdate.args(id, userId, updateData)
+			});
+
+			if (updatedTemplateResult.rows.length === 0) {
+				throw new Error('Template not found or unauthorized');
+			}
+		}
+
+		if (data.exercises) {
+			await execute({
+				sql: queries.deleteWorkoutTemplateExercises.sql,
+				args: queries.deleteWorkoutTemplateExercises.args(id)
+			});
+
+			const exerciseQueries = data.exercises.map((exercise) => ({
+				sql: queries.createWorkoutTemplateExercise.sql,
+				args: queries.createWorkoutTemplateExercise.args(
+					uuidv4(),
+					id,
+					exercise.exerciseId,
+					exercise.orderIndex,
+					exercise.suggestedSets ?? null,
+					exercise.suggestedReps ?? null,
+					exercise.notes ?? null,
+				)
+			}));
+
+			if (exerciseQueries.length > 0) {
+				await batch(exerciseQueries);
+			}
+		}
+
+		const updatedTemplate = await workoutTemplateRepository.findById(id);
+		if (!updatedTemplate) {
+			throw new Error('Failed to retrieve updated template');
+		}
+
+		return updatedTemplate;
+	},
+
+	delete: async (id: string, userId: string): Promise<void> => {
+		await execute({
+			sql: queries.deleteWorkoutTemplate.sql,
+			args: queries.deleteWorkoutTemplate.args(id, userId)
+		});
+	},
+
 	isFavorite: async (userId: string, templateId:string): Promise<boolean> => {
 		const favoriteRow = await execute({
 			sql: queries.isFavorite.sql,
@@ -376,5 +503,19 @@ export const workoutTemplateRepository = {
 		const isFavorite = typeof row?.is_favorite === 'number' && row.is_favorite === 1
 
 		return isFavorite
+	},
+
+	addFavorite: async (userId: string, templateId: string): Promise<void> => {
+		await execute({
+			sql: queries.addFavorite.sql,
+			args: queries.addFavorite.args(userId, templateId)
+		})
+	},
+
+	removeFavorite: async (userId: string, templateId: string): Promise<void> => {
+		await execute({
+			sql: queries.deleteFavorite.sql,
+			args: queries.deleteFavorite.args(userId, templateId)
+		})
 	}
 }

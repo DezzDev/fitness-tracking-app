@@ -6,8 +6,17 @@
 import { createAppError } from "@/middlewares/error.middleware";
 import { exerciseRepository } from "@/repositories/exercise.repository";
 import { workoutTemplateRepository } from "@/repositories/workoutTemplate.repository";
-import { CreateWorkoutTemplateInput } from "@/schemas/workoutTemplate.schema";
-import { WorkoutTemplateCreateData, WorkoutTemplateWithExercises } from "@/types";
+import {
+	CreateWorkoutTemplateInput,
+	UpdateWorkoutTemplateInput,
+	WorkoutTemplateFiltersInput
+} from "@/schemas/workoutTemplate.schema";
+import {
+	WorkoutTemplateCreateData,
+	WorkoutTemplateFilters,
+	WorkoutTemplateUpdateData,
+	WorkoutTemplateWithExercises
+} from "@/types";
 import { handleServiceError } from "@/utils/error.utils";
 import logger from "@/utils/logger";
 
@@ -135,13 +144,9 @@ export const workoutTemplateService = {
 	 * @param templateId id del template
 	 * @returns Promise<WorkoutTemplateWithExercises>
 	 */
-	findById: async (templateId: string): Promise<WorkoutTemplateWithExercises> => {
+	findById: async (templateId: string, userId: string): Promise<WorkoutTemplateWithExercises> => {
 		try {
-			const workoutTemplate = await workoutTemplateRepository.findById(templateId);
-
-			if (!workoutTemplate) {
-				throw createAppError('Workout template not found', 404);
-			}
+			const workoutTemplate = await validateTemplateOwnerShip(templateId, userId);
 
 			return sanitizeTemplate(workoutTemplate);
 
@@ -150,10 +155,143 @@ export const workoutTemplateService = {
 				error,
 				'WorkoutTemplateService.findById',
 				'Unable to retrieve workout template',
-				{ templateId }
+				{ templateId, userId }
 			)
 		}
 	},
+
+	findAll: async (
+		userId: string,
+		filters: WorkoutTemplateFiltersInput = { page: 1, limit: 10 },
+	): Promise<{
+		templates: WorkoutTemplateWithExercises[],
+		total: number,
+		page: number,
+		totalPages: number,
+	}> => {
+		const page = filters.page < 1 ? 1 : filters.page;
+		const limit = filters.limit < 1 || filters.limit > 100 ? 10 : filters.limit;
+
+		const completeFilters: WorkoutTemplateFilters = {
+			userId,
+			searchTerm: filters.searchTerm,
+			favoritesOnly: filters.favoritesOnly,
+		}
+
+		try {
+			const [ templates, total ] = await Promise.all([
+				workoutTemplateRepository.findAll(completeFilters, page, limit),
+				workoutTemplateRepository.count(completeFilters)
+			]);
+
+			const totalPages = Math.ceil(total / limit);
+
+			return {
+				templates: templates.map(sanitizeTemplate),
+				total,
+				page,
+				totalPages,
+			}
+		} catch (error) {
+			throw handleServiceError(
+				error,
+				'WorkoutTemplateService.findAll',
+				'Unable to retrieve workout templates',
+				{ userId, filters }
+			)
+		}
+	},
+
+	update: async (
+		templateId: string,
+		userId: string,
+		input: UpdateWorkoutTemplateInput,
+	): Promise<WorkoutTemplateWithExercises> => {
+		await validateTemplateOwnerShip(templateId, userId);
+
+		if (input.exercises) {
+			await validateExercisesExist(input.exercises.map(e => e.exerciseId));
+		}
+
+		const updateData: WorkoutTemplateUpdateData = {
+			name: input.name,
+			description: input.description,
+			exercises: input.exercises,
+		}
+
+		try {
+			const updatedTemplate = await workoutTemplateRepository.update(templateId, userId, updateData);
+			return sanitizeTemplate(updatedTemplate);
+		} catch (error) {
+			throw handleServiceError(
+				error,
+				'WorkoutTemplateService.update',
+				'Unable to update workout template',
+				{ templateId, userId, input }
+			)
+		}
+	},
+
+	delete: async (templateId: string, userId: string): Promise<void> => {
+		await validateTemplateOwnerShip(templateId, userId);
+
+		try {
+			await workoutTemplateRepository.delete(templateId, userId);
+		} catch (error) {
+			throw handleServiceError(
+				error,
+				'WorkoutTemplateService.delete',
+				'Unable to delete workout template',
+				{ templateId, userId }
+			)
+		}
+	},
+
+	duplicate: async (templateId: string, userId: string): Promise<WorkoutTemplateWithExercises> => {
+		const template = await validateTemplateOwnerShip(templateId, userId);
+
+		const duplicateData: CreateWorkoutTemplateInput = {
+			name: `${template.name} (Copy)`,
+			description: template.description,
+			exercises: template.exercises.map((exercise) => ({
+				exerciseId: exercise.exerciseId,
+				orderIndex: exercise.orderIndex,
+				suggestedSets: exercise.suggestedSets,
+				suggestedReps: exercise.suggestedReps,
+				notes: exercise.notes,
+			}))
+		}
+
+		return workoutTemplateService.create(userId, duplicateData);
+	},
+
+	toggleFavorite: async (templateId: string, userId: string): Promise<WorkoutTemplateWithExercises> => {
+		await validateTemplateOwnerShip(templateId, userId);
+
+		try {
+			const isFavorite = await workoutTemplateRepository.isFavorite(userId, templateId);
+
+			if (isFavorite) {
+				await workoutTemplateRepository.removeFavorite(userId, templateId);
+			} else {
+				await workoutTemplateRepository.addFavorite(userId, templateId);
+			}
+
+			const updatedTemplate = await workoutTemplateRepository.findById(templateId);
+			if (!updatedTemplate) {
+				throw createAppError('Workout template not found', 404);
+			}
+
+			return sanitizeTemplate(updatedTemplate);
+		} catch (error) {
+			throw handleServiceError(
+				error,
+				'WorkoutTemplateService.toggleFavorite',
+				'Unable to toggle workout template favorite',
+				{ templateId, userId }
+			)
+		}
+	}
 
 
 }
