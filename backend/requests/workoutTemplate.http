@@ -23,8 +23,8 @@ Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 
 {
-	"name": "Test Workout Template",
-	"description": "Test Workout Template Description",
+	"name": "Test Workout Template 2",
+	"description": "Test Workout Template Description 2",
 	"exercises": [
 		{
 			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
@@ -44,5 +44,47 @@ content-type: application/json
 }
 
 ### Obtener template por id
-GET {{baseUrl}}/workoutTemplates/c8928807-9322-4e74-8d1b-da1a88794144 HTTP/1.1
+GET {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### Obtener templates del usuario
+GET {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### Actualizar template
+PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Test Workout Template Updated",
+	"description": "Test Workout Template Description Updated",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"suggestedSets": 1,
+			"suggestedReps": 10,
+			"notes": "Test Exercise"
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 1,
+			"suggestedSets": 1,
+			"suggestedReps": 10,
+			"notes": "Test Exercise"
+		}
+	]
+}
+
+### Eliminar template
+DELETE {{baseUrl}}/workoutTemplates/c8928807-9322-4e74-8d1b-da1a88794044 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### Duplicar template
+POST {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9/duplicate HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### Agregar/Quitar favorito de un template
+PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9/favorite HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
