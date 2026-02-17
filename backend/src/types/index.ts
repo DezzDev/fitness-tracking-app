@@ -80,6 +80,7 @@ export type {
 	WorkoutSessionExerciseRow,
 	WorkoutSessionExerciseCreateData,
 	WorkoutSessionSet,
+	WorkoutSessionSetRow,
 	WorkoutSessionSetCrateData,
 	WorkoutSessionFilters,
 	WorkoutSessionStats
