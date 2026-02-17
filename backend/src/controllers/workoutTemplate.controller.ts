@@ -63,9 +63,10 @@ export const createWorkoutTemplate = asyncHandler(
 export const getWorkoutTemplate = asyncHandler(
 	async(req:Request, res:Response): Promise<undefined> =>{
 
+		const userId = getUserId(req);
 		const templateId = getWorkoutTemplateId(req.validatedParams);
 
-		const workoutTemplate = await workoutTemplateService.findById(templateId);
+		const workoutTemplate = await workoutTemplateService.findById(templateId, userId);
 
 		ResponseHandler.success(res, workoutTemplate, 'Workout template found successfully');
 
