@@ -42,7 +42,7 @@ function LoginPage() {
 		try {
 			await login(data.email, data.password);
 			navigate('/dashboard');
-		} catch (error) {
+		} catch {
 			// El error se maneja en el store
 		} finally {
 			setIsLoading(false);
@@ -94,7 +94,7 @@ function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setShowPassword(!showPassword)}
-							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+							className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
 							disabled={isLoading}
 						>
 							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -111,13 +111,13 @@ function LoginPage() {
 					<label className="flex items-center gap-2 cursor-pointer">
 						<input
 							type="checkbox"
-							className="w-4 h-4 rounded border-gray-300"
+							className="w-4 h-4 rounded border-slate-500/50"
 						/>
-						<span className="text-gray-600">Recordarme</span>
+						<span className="text-slate-300">Recordarme</span>
 					</label>
 					<Link
 						to="/forgot-password"
-						className="text-blue-600 hover:text-blue-700 font-medium"
+						className="text-cyan-300 hover:text-cyan-200 font-medium"
 					>
 						¿Olvidaste tu contraseña?
 					</Link>
@@ -132,7 +132,7 @@ function LoginPage() {
 				>
 					{isLoading ? (
 						<>
-							<Loader2 className="mr-2 h-4 w-4 anime-spin" />
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							Iniciando sesión...
 						</>
 					) : (
@@ -143,10 +143,10 @@ function LoginPage() {
 				{/* Divider */}
 				<div className="relative my-6">
 					<div className="absolute inset-0 flex items-center">
-						<div className="w-full border-t border-gray-300"/>
+						<div className="w-full border-t border-slate-500/50"/>
 					</div>
 					<div className="relative flex justify-center text-sm">
-						<span className="px-4 bg-gray-50 text-gray-500">
+						<span className="px-4 bg-slate-900 text-slate-400">
 							Continua con
 						</span>
 					</div>
@@ -191,11 +191,11 @@ function LoginPage() {
 					</Button>
 				</div>
 				{/* Register Link */}
-				<p className="text-center text-sm text-gray-600">
+				<p className="text-center text-sm text-slate-300">
 					¿No tienes una cuenta?{' '}
 					<Link
 						to="/register"
-						className="font-medium text-blue-600 hover:text-blue-700"
+						className="font-medium text-cyan-300 hover:text-cyan-200"
 					>
 						Regístrate gratis
 					</Link>

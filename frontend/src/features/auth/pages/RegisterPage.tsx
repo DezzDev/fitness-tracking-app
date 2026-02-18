@@ -51,11 +51,9 @@ function RegisterPage() {
 	const onSubmit = async (data: RegisterFormData) => {
 		setIsLoading(true);
 		clearError();
-		console.log("before register")
-
+		
 		try {
-			console.log("try enter")
-			await registerUser({
+						await registerUser({
 				email: data.email,
 				password: data.password,
 				name: data.name,
@@ -65,12 +63,11 @@ function RegisterPage() {
 				profile_image: data.profile_image
 			});
 
-			console.log("after register")
+			
 			navigate('/dashboard');
 
-		} catch (error) {
-			console.log(error)
-			// Error handled by store
+		} catch {
+						// Error handled by store
 		} finally {
 			setIsLoading(false);
 		}
@@ -83,7 +80,7 @@ function RegisterPage() {
 			title="Crea tu cuenta"
 			subtitle="Comienza tu transformación hoy"
 		>
-			<form onSubmit={handleSubmit(onSubmit, (errors) => { console.log('validation errors', errors); })} className="space-y-4" autoComplete="off">
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
 				{/* Error alert */}
 				{error && (
 					<Alert variant="destructive">
@@ -156,7 +153,7 @@ function RegisterPage() {
 						<button
 							type="button"
 							onClick={() => setShowPassword(!showPassword)}
-							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+							className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
 							disabled={isLoading}
 						>
 							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -204,7 +201,7 @@ function RegisterPage() {
 						<button
 							type="button"
 							onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+							className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
 							disabled={isLoading}
 						>
 							{showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -223,16 +220,16 @@ function RegisterPage() {
 						<input
 							type="checkbox"
 							id="terms"
-							className="w-4 h-4 rounded border-gray-300"
+							className="w-4 h-4 rounded border-slate-500/50"
 							{...register('acceptTerms')}
 						/>
-						<label htmlFor="terms" className="text-sm text-gray-600">
+						<label htmlFor="terms" className="text-sm text-slate-300">
 							Acepto los{" "}
-							<Link to={"/terms"} className="text-blue-600 hover:underline">
+							<Link to={"/terms"} className="text-cyan-300 hover:text-cyan-200 hover:underline">
 								Términos y condiciones
 							</Link>{" "}
 							y la {" "}
-							<Link to="/privacy" className="text-blue-600 hover:underline">
+							<Link to="/privacy" className="text-cyan-300 hover:text-cyan-200 hover:underline">
 								Política de Privacidad
 							</Link>
 						</label>
@@ -261,11 +258,11 @@ function RegisterPage() {
 				</Button>
 
 				{/* Login Link */}
-				<p className="text-center text-sm text-gray-600">
+				<p className="text-center text-sm text-slate-300">
 					¿Ya tienes una cuenta?{" "}
 					<Link
 						to={"/login"}
-						className="font-medium text-blue-600 hover:text-blue-700"
+						className="font-medium text-cyan-300 hover:text-cyan-200"
 					>
 						Inicia sesión
 					</Link>
@@ -278,7 +275,7 @@ function RegisterPage() {
 // Componente auxiliar para mostrar requisitos de contraseña
 function PasswordRequirement({ met, text }: { met: boolean, text: string }) {
 	return (
-		<div className={`flex items-center gap-2 ${met ? 'text-green-600' : 'text-gray-500'}`}>
+		<div className={`flex items-center gap-2 ${met ? 'text-emerald-400' : 'text-slate-400'}`}>
 			{met ? (
 				<CheckCircle2 size={14} />
 			) : (
