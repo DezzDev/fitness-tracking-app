@@ -1,75 +1,77 @@
 import type { ReactNode } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Sparkles, TimerReset, Trophy } from "lucide-react";
 
 interface AuthLayoutProps {
-	children: ReactNode;
-	title: string;
-	subtitle: string;
+  children: ReactNode;
+  title: string;
+  subtitle: string;
 }
 
-export default function AuthLayout ({children, title, subtitle}:AuthLayoutProps){
-	return(
-		<div className="min-h-screen flex flex-col lg:flex-row">
-			{/* Panel izquierdo branding */}
-			<div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-blue-600 to-purple-700 p-12 text-white flex-col justify-between">
-				<div>
-					<Link to={"/"} className="flex items-center gap-2 text-2xl font-bold">
-					<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-blue-600">
-						💪
-					</div>
-					<span>Fitness Tracker</span>
-					</Link>
-				</div>
+const highlights = [
+  { icon: Trophy, label: "Planifica y completa metas semanales" },
+  { icon: TimerReset, label: "Mantén rachas con seguimiento diario" },
+  { icon: Sparkles, label: "Interfaz limpia para entrenar con foco" },
+];
 
-				<div className="space-y-6">
-					<h1 className="text-5xl font-bold leading-tight">
-						Transforma tus <br />
-						entrenamientos 
-					</h1>
-					<p className="text-xl text-blue-100">
-						Registra, analiza y mejora cada repetición.
-					</p>
-				</div>
+export default function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
+  return (
+    <div className="app-gradient-bg min-h-screen lg:grid lg:grid-cols-2">
+      <section className="relative z-10 hidden border-r border-white/10 p-12 lg:flex lg:flex-col lg:justify-between">
+        <Link to="/" className="inline-flex items-center gap-3 text-xl font-bold text-white">
+          <div className="brand-badge">💪</div>
+          <span>Fitness Tracker</span>
+        </Link>
 
-				<div className="flex gap-8 text-sm">
-					<div>
-						<div className="text-3xl font-bold">15k+</div>
-						<div className="text-blue-200">Usuarios activos</div>
-					</div>
-					<div>
-						<div className="text-3xl font-bold">500k+</div>
-						<div className="text-blue-200">Repeticiones registradas</div>
-					</div>
-					<div>
-						<div className="text-3xl font-bold">100%</div>
-						<div className="text-blue-200">Más músculos</div>
-					</div>
-				</div>
-			</div>
+        <div className="max-w-md space-y-5">
+          <h1 className="text-5xl font-bold leading-tight text-white">Entrena con claridad. Mejora con datos.</h1>
+          <p className="text-lg text-slate-300">
+            Organiza tus rutinas, revisa tu constancia y mantiene tus objetivos con una experiencia visual consistente.
+          </p>
 
-			{/* Panel derecho formulario */}
-			<div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
-				<div className="w-full max-w-md space-y-6">
-					{/* Logo móvil*/}
-					<div className="lg:hidden text-center mb-8">
-						<Link to={"/"} className="inline-flex items-center gap-2 text-2xl font-bold text-gray-900">
-							<div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
-								💪
-							</div>
-							<span>Fitness Tracker</span>
-						</Link>
-					</div>
+          <ul className="space-y-3 text-sm text-slate-200">
+            {highlights.map(({ icon: Icon, label }) => (
+              <li key={label} className="flex items-center gap-2">
+                <Icon size={16} className="text-cyan-300" />
+                <span>{label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <StatCard value="15k+" label="Usuarios activos" />
+          <StatCard value="500k+" label="Series registradas" />
+          <StatCard value="92%" label="Retención mensual" />
+        </div>
+      </section>
 
-					<div className="text-center">
-						<h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-						<p className="mt-2 text-gray-600">{subtitle}</p>
-					</div>
+      <section className="relative z-10 flex items-center justify-center p-6 sm:p-8">
+        <div className="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl sm:p-8">
+          <div className="mb-6 text-center lg:hidden">
+            <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold text-white">
+              <div className="brand-badge">💪</div>
+              <span>Fitness Tracker</span>
+            </Link>
+          </div>
 
-					{children}
-				</div>
-			</div>
+          <div className="mb-6 text-center">
+            <h2 className="text-3xl font-bold text-white">{title}</h2>
+            <p className="mt-2 text-slate-300">{subtitle}</p>
+          </div>
 
-		</div>
-	)
+          {children}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function StatCard({ value, label }: { value: string; label: string }) {
+  return (
+    <article className="glass-panel rounded-xl p-3">
+      <p className="text-2xl font-bold text-white">{value}</p>
+      <p className="text-slate-300">{label}</p>
+    </article>
+  );
 }
