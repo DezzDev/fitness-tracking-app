@@ -18,8 +18,10 @@ import {
 	WorkoutSessionWithTemplateName,
 	WorkoutSessionWithTemplateNameRow
 } from "@/types";
+import { castRows } from "@/utils/castRows.utils";
 
 import { v4 as uuidv4 } from "uuid";
+import { map } from "zod";
 
 //===========================================
 // Helpers
@@ -456,7 +458,39 @@ export const workoutSessionRepository = {
 		const row = result.rows[ 0 ] as WorkoutSessionRow | undefined;
 		if (!row) return null;
 		return mapRowToWorkoutSession(row);
-	}
+	},
+
+	/**
+	 * list workout sessions by filters
+	 * @param filters (userId, templateId?, startDate?, endDate?, searchTerm?)
+	 * @param page page number
+	 * @param limit number of sessions per page
+	 * @returns list of workout sessions (without exercises and sets)
+	 */
+	findAll: async (
+		filters:WorkoutSessionFilters,
+		page:number = 1,
+		limit:number = 10
+	): Promise<WorkoutSession[]> => {
+		const offset = (page -1) * limit;
+
+		const result = await execute({
+			sql: queries.findAll.sql(filters),
+			args: queries.findAll.args(filters, limit, offset)
+		});
+
+		if (result.rows.length === 0) return [];
+
+		const workoutSessionRows = castRows<WorkoutSessionRow>(result.rows);
+
+		const workoutSessions = workoutSessionRows.map( row =>
+			mapRowToWorkoutSession(row)
+		)
+
+		return workoutSessions;
+		
+	},
+	
 
 
 }
