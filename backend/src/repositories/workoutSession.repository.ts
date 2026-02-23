@@ -3,6 +3,7 @@
 import { batch, execute } from "@/config/database";
 import {
 	WorkoutSession,
+	WorkoutSessionCreateData,
 	WorkoutSessionExercise,
 	WorkoutSessionExerciseCreateData,
 	WorkoutSessionExerciseRow,
@@ -13,9 +14,24 @@ import {
 	WorkoutSessionSetRow,
 	WorkoutSessionStats,
 	WorkoutSessionUpdateData,
-	WorkoutSessionWithExercises
+	WorkoutSessionWithExercises,
+	WorkoutSessionWithTemplateName,
+	WorkoutSessionWithTemplateNameRow
 } from "@/types";
+
 import { v4 as uuidv4 } from "uuid";
+
+//===========================================
+// Helpers
+//===========================================
+
+const toDate = (value: string | number): Date => {
+	const d = new Date(value);
+	if (isNaN(d.getTime())) {
+		throw new Error("Invalid date from database");
+	}
+	return d;
+};
 
 //===========================================
 // MAPPERS
@@ -27,9 +43,21 @@ const mapRowToWorkoutSession = (row: WorkoutSessionRow): WorkoutSession => ({
 	templateId: row.template_id ?? undefined,
 	title: row.title,
 	notes: row.notes ?? undefined,
-	sessionDate: new Date(row.session_date),
+	sessionDate: toDate(row.session_date),
 	durationMinutes: row.duration_minutes ?? undefined,
-	createdAt: new Date(row.created_at),
+	createdAt: toDate(row.created_at),
+});
+
+const mapRowToWorkoutSessionWithTemplateName  = (row: WorkoutSessionWithTemplateNameRow): WorkoutSessionWithTemplateName => ({
+	id: row.id,
+	userId: row.user_id,
+	templateId: row.template_id ?? undefined,
+	title: row.title,
+	notes: row.notes ?? undefined,
+	sessionDate: toDate(row.session_date),
+	durationMinutes: row.duration_minutes ?? undefined,
+	createdAt: toDate(row.created_at),
+	templateName: row.template_name ?? undefined,
 });
 
 const mapRowToWorkoutSessionExercise = (row: WorkoutSessionExerciseRow): Omit<WorkoutSessionExercise, 'sets'> => ({
@@ -53,7 +81,7 @@ const mapRowToWorkoutSessionSet = (row: WorkoutSessionSetRow): WorkoutSessionSet
 	weight: row.weight ?? undefined,
 	restSeconds: row.rest_seconds ?? undefined,
 	notes: row.notes ?? undefined,
-	createdAt: new Date(row.created_at),
+	createdAt: toDate(row.created_at),
 });
 
 //===========================================
@@ -304,4 +332,131 @@ const getSessionExercisesWithSets = async (
 	)
 
 	return exercises;
+}
+
+//===========================================
+// Repository
+//===========================================
+
+export const workoutSessionRepository = {
+	/**
+	 * Create a new workout session with exercises and sets
+	 * @param data session data (userId, templateId?, title, notes?, sessionDate, durationMinutes?, exercises)
+	 * @returns completed session with exercises and sets
+	 */
+
+	create: async (data: WorkoutSessionCreateData): Promise<WorkoutSessionWithExercises> =>{
+		const sessionId = uuidv4();
+
+		// Create session
+		const sessionResult = await execute({
+			sql: queries.createSession.sql,
+			args: queries.createSession.args(
+				sessionId,
+				data.userId,
+				data.templateId || null,
+				data.title,
+				data.notes || null,
+				data.sessionDate,
+				data.durationMinutes || null
+			)
+		})
+
+		if(sessionResult.rows.length === 0) {
+			throw new Error ('Failed to create workout session')
+		}
+
+		for (const exerciseData of data.exercises) {
+			
+			// Create session exercises
+			const sessionExerciseId = uuidv4();
+			
+			await execute({
+				sql: queries.createSessionExercise.sql,
+				args: queries.createSessionExercise.args(
+					sessionExerciseId,
+					sessionId,
+					exerciseData.exerciseId,
+					exerciseData.orderIndex
+				)
+			})
+
+			// Create session exercise sets
+			if(exerciseData.sets.length > 0) {
+				const setInserts = exerciseData.sets.map(set => ({
+					sql: queries.createSessionExerciseSet.sql,
+					args: queries.createSessionExerciseSet.args(
+						uuidv4(),
+						sessionExerciseId,
+						set.setNumber,
+						set.reps || null,
+						set.durationSeconds || null,
+						set.weight || null,
+						set.restSeconds || null,
+						set.notes || null
+					)
+				}))
+
+				await batch(setInserts)
+			}
+		}
+		const fullSession = await workoutSessionRepository.findById(sessionId, data.userId)
+
+		if(!fullSession) throw new Error('Failed to retrieve workout session')
+		
+			return fullSession;
+
+	},
+
+	/**
+	 * Find a workout session with exercises and sets by id
+	 * @param id session id
+	 * @param userId user id
+	 * @returns workout session with exercises and sets
+	 */
+	findById: async (
+		id: string,
+		userId: string
+	): Promise<WorkoutSessionWithExercises | null> => {
+		const result = await execute({
+			sql: queries.findByIdWithTemplateName.sql,
+			args: queries.findByIdWithTemplateName.args(id, userId)
+		})
+
+		const row = result.rows[ 0 ] as WorkoutSessionWithTemplateNameRow | undefined;
+
+		if (!row) return null;
+
+		const session = mapRowToWorkoutSessionWithTemplateName(row);
+		const exercises = await getSessionExercisesWithSets(id)
+
+		return {
+			...session,
+			exercises,
+			templateName : session.templateName
+		}
+
+	},
+
+	/**
+	 * find base session by id (without exercises and sets)
+	 * @param id session id
+	 * @param userId user id
+	 * @return session base or null
+	 */
+	findBaseSessionById: async (
+		id: string,
+		userId: string
+	): Promise<WorkoutSession | null> => {
+		const result = await execute({
+			sql: queries.findById.sql,
+			args: queries.findById.args(id, userId)
+		})
+		
+		const row = result.rows[ 0 ] as WorkoutSessionRow | undefined;
+		if (!row) return null;
+		return mapRowToWorkoutSession(row);
+	}
+
+
 }

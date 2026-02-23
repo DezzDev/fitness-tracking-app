@@ -44,6 +44,10 @@ export type WorkoutSessionWithExercises = WorkoutSession & {
 	templateName?: string;
 }
 
+export type WorkoutSessionWithTemplateName = WorkoutSession & {
+	templateName?: string;
+}
+
 // CREATE/UPDATE TYPES
 
 export type WorkoutSessionSetCrateData = {
@@ -84,12 +88,12 @@ export type WorkoutSessionUpdateData = {
 export type WorkoutSessionRow = {
 	id: string;
 	user_id: string;
-	template_id?: string;
+	template_id: string | null;
 	title: string;
-	notes?: string;
-	session_date: Date;
-	duration_minutes?: number;
-	created_at: Date;
+	notes: string | null;
+	session_date: string;
+	duration_minutes: number | null;
+	created_at: string;
 }
 
 export type WorkoutSessionExerciseRow = {
@@ -99,22 +103,26 @@ export type WorkoutSessionExerciseRow = {
 	order_index: number;
 	// join with exercise
 	exercise_name: string;
-	exercise_description?: string;
-	difficulty?: string;
-	muscle_group?: string;
-	type?: string;
+	exercise_description: string | null;
+	difficulty: string | null;
+	muscle_group: string | null;
+	type: string | null;
 }
 
 export type WorkoutSessionSetRow = {
 	id: string;
 	session_exercise_id: string;
 	set_number: number;
-	reps?: number;
-	duration_seconds?: number;
-	weight?: number;
-	rest_seconds?: number;
-	notes?: string;
-	created_at: Date;
+	reps: number | null;
+	duration_seconds: number | null;
+	weight: number | null;
+	rest_seconds: number | null;
+	notes: string | null;
+	created_at: string;
+}
+
+export type WorkoutSessionWithTemplateNameRow = WorkoutSessionRow & {
+	template_name: string | null
 }
 
 // QUERY TYPES

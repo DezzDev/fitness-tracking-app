@@ -83,5 +83,7 @@ export type {
 	WorkoutSessionSetRow,
 	WorkoutSessionSetCrateData,
 	WorkoutSessionFilters,
-	WorkoutSessionStats
+	WorkoutSessionStats,
+	WorkoutSessionWithTemplateNameRow,
+	WorkoutSessionWithTemplateName
 } from './entities/workoutSession.type';
