@@ -1,0 +1,363 @@
+// requests/workoutSession.request.http
+@baseUrl = http://localhost:3000/api
+
+# ============================================
+# LOGIN ROUTES
+# ============================================
+### POST /users/login - Usuario regular (capturar token)
+# @name userToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+# ============================================
+# WORKOUT SESSION ROUTES - STATS Y UTILIDADES
+# ============================================
+
+### GET /sessions/stats - Obtener estadísticas de sesiones
+GET {{baseUrl}}/sessions/stats HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions/recent - Obtener sesiones recientes (últimas 5)
+GET {{baseUrl}}/sessions/recent HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions/recent - Obtener sesiones recientes (últimas 10)
+GET {{baseUrl}}/sessions/recent?limit=10 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions/date-range - Obtener sesiones por rango de fechas
+GET {{baseUrl}}/sessions/date-range?startDate=2024-01-01T00:00:00Z&endDate=2024-12-31T23:59:59Z HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### POST /sessions/from-template - Crear sesión desde template
+POST {{baseUrl}}/sessions/from-template HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"templateId": "d2c31fd5-5720-459c-964b-17f9cad150a9",
+	"sessionDate": "2025-02-26T10:00:00Z",
+	"notes": "Morning workout session",
+	"durationMinutes": 45
+}
+
+# ============================================
+# WORKOUT SESSION ROUTES - CRUD PRINCIPAL
+# ============================================
+
+### POST /sessions - Crear nueva sesión de entrenamiento
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Morning Push Session",
+	"notes": "Feeling strong today",
+	"sessionDate": "2025-02-26T08:00:00Z",
+	"durationMinutes": 60,
+	"templateId": "d2c31fd5-5720-459c-964b-17f9cad150a9",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 12,
+					"weight": 20,
+					"restSeconds": 90,
+					"notes": "Warmup set"
+				},
+				{
+					"setNumber": 2,
+					"reps": 10,
+					"weight": 25,
+					"restSeconds": 120
+				},
+				{
+					"setNumber": 3,
+					"reps": 8,
+					"weight": 30,
+					"restSeconds": 120
+				}
+			]
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 1,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 15,
+					"restSeconds": 60
+				},
+				{
+					"setNumber": 2,
+					"reps": 12,
+					"restSeconds": 60
+				},
+				{
+					"setNumber": 3,
+					"reps": 10,
+					"restSeconds": 60
+				}
+			]
+		}
+	]
+}
+
+### POST /sessions - Crear sesión sin template (independiente)
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Evening Cardio Session",
+	"notes": "Light cardio before dinner",
+	"sessionDate": "2025-02-26T18:00:00Z",
+	"durationMinutes": 30,
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"durationSeconds": 300,
+					"notes": "5 minutes steady pace"
+				}
+			]
+		}
+	]
+}
+
+### GET /sessions - Listar sesiones del usuario (con paginación por defecto)
+GET {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions - Listar sesiones con paginación personalizada
+GET {{baseUrl}}/sessions?page=1&limit=20 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions - Filtrar por template
+GET {{baseUrl}}/sessions?templateId=d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions - Filtrar por rango de fechas
+GET {{baseUrl}}/sessions?startDate=2025-02-01T00:00:00Z&endDate=2025-02-28T23:59:59Z HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions - Buscar por término
+GET {{baseUrl}}/sessions?searchTerm=push HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions - Filtros combinados
+GET {{baseUrl}}/sessions?startDate=2025-02-01T00:00:00Z&endDate=2025-02-28T23:59:59Z&searchTerm=morning&page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /sessions/:id - Obtener sesión por id
+GET {{baseUrl}}/sessions/SESSION_ID_AQUI HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### PATCH /sessions/:id - Actualizar sesión completa
+PATCH {{baseUrl}}/sessions/SESSION_ID_AQUI HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Morning Push Session - Updated",
+	"notes": "Actually felt amazing today!",
+	"durationMinutes": 65,
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 12,
+					"weight": 20,
+					"restSeconds": 90
+				},
+				{
+					"setNumber": 2,
+					"reps": 12,
+					"weight": 25,
+					"restSeconds": 120
+				},
+				{
+					"setNumber": 3,
+					"reps": 10,
+					"weight": 30,
+					"restSeconds": 120
+				},
+				{
+					"setNumber": 4,
+					"reps": 8,
+					"weight": 32.5,
+					"restSeconds": 150,
+					"notes": "PR attempt!"
+				}
+			]
+		}
+	]
+}
+
+### PATCH /sessions/:id - Actualizar solo título y notas
+PATCH {{baseUrl}}/sessions/SESSION_ID_AQUI HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Quick Morning Session",
+	"notes": "Short but effective"
+}
+
+### PATCH /sessions/:id - Actualizar solo duración
+PATCH {{baseUrl}}/sessions/SESSION_ID_AQUI HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"durationMinutes": 50
+}
+
+### POST /sessions/:id/duplicate - Duplicar sesión con nueva fecha
+POST {{baseUrl}}/sessions/SESSION_ID_AQUI/duplicate HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"newDate": "2025-02-27T08:00:00Z"
+}
+
+### DELETE /sessions/:id - Eliminar sesión
+DELETE {{baseUrl}}/sessions/SESSION_ID_AQUI HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+# ============================================
+# CASOS DE PRUEBA - VALIDACIONES
+# ============================================
+
+### ERROR - Crear sesión sin título
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"sessionDate": "2025-02-26T08:00:00Z",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10
+				}
+			]
+		}
+	]
+}
+
+### ERROR - Crear sesión sin ejercicios
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Empty Session",
+	"sessionDate": "2025-02-26T08:00:00Z",
+	"exercises": []
+}
+
+### ERROR - Crear sesión con fecha futura
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Future Session",
+	"sessionDate": "2026-12-31T08:00:00Z",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10
+				}
+			]
+		}
+	]
+}
+
+### ERROR - Crear sesión con ejercicios duplicados
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Duplicate Exercises",
+	"sessionDate": "2025-02-26T08:00:00Z",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10
+				}
+			]
+		},
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 1,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10
+				}
+			]
+		}
+	]
+}
+
+### ERROR - Crear sesión con set sin setNumber
+POST {{baseUrl}}/sessions HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "Invalid Set",
+	"sessionDate": "2025-02-26T08:00:00Z",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"reps": 10
+				}
+			]
+		}
+	]
+}
+
+### ERROR - Actualizar sesión sin campos
+PATCH {{baseUrl}}/sessions/SESSION_ID_AQUI HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{}
+
+### ERROR - Rango de fechas inválido (endDate antes de startDate)
+GET {{baseUrl}}/sessions/date-range?startDate=2025-12-31T00:00:00Z&endDate=2025-01-01T00:00:00Z HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
