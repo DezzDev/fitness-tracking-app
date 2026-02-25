@@ -414,7 +414,7 @@ export const workoutSessionRepository = {
    * Find a workout session with exercises and sets by id
    * @param id session id
    * @param userId user id
-   * @returns workout session with exercises and sets
+   * @returns workout session with exercises and sets or null
    */
   findById: async (
     id: string,

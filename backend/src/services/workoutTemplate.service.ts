@@ -174,8 +174,8 @@ export const workoutTemplateService = {
 
 		const completeFilters: WorkoutTemplateFilters = {
 			userId,
-			searchTerm: filters.searchTerm,
-			favoritesOnly: filters.favoritesOnly,
+			searchTerm: filters?.searchTerm,
+			favoritesOnly: filters?.favoritesOnly,
 		}
 
 		try {
