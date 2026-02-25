@@ -5,12 +5,10 @@ import {
   WorkoutSession,
   WorkoutSessionCreateData,
   WorkoutSessionExercise,
-  WorkoutSessionExerciseCreateData,
   WorkoutSessionExerciseRow,
   WorkoutSessionFilters,
   WorkoutSessionRow,
   WorkoutSessionSet,
-  WorkoutSessionSetCrateData,
   WorkoutSessionSetRow,
   WorkoutSessionStats,
   WorkoutSessionUpdateData,
@@ -19,7 +17,6 @@ import {
   WorkoutSessionWithTemplateNameRow
 } from "@/types";
 import { castRow, castRows } from "@/utils/castRows.utils";
-import { stat } from "fs";
 
 import { v4 as uuidv4 } from "uuid";
 
