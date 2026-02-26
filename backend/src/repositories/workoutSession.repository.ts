@@ -217,7 +217,7 @@ const queries = {
 
   count: {
     sql: (filters: WorkoutSessionFilters) => {
-      let sql = `SELECT COUNT(*) as total FROM workout_session ws)`
+      let sql = `SELECT COUNT(*) as total FROM workout_sessions ws`
       const conditions: string[] = ['ws.user_id = ?'];
 
       if (filters.templateId) conditions.push('ws.template_id = ?')
