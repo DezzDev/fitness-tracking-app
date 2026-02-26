@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+ 
+  color-scheme: light dark;
+  
+} 
+
+@theme{
+
+	--color-dark-bg: #121212;
+	--color-primary-text: #E0E0E0;
+	--color-accent: #FF6F3C;
+	--color-accent-light: #FFC18E;
+
+	--font-display: "Monument Extended", sans-serif;
+	--font-body: "Space mono", monospace;
+
+	--animate-fast-pulse: pulse 0.25s ease-in-out 1;
+	
+}
+
+@layer base {
+	body {
+		background-color: var(--color-dark-bg);
+		color: var(--color-primary-text);
+		font-family: var(--font-body);
+	}
+}
+
