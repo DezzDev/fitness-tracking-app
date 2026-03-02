@@ -16,8 +16,8 @@ export default function WorkoutsMainPage() {
 			{/* Header */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div>
-					<h1 className="text-3xl font-bold text-gray-900">Entrenamientos</h1>
-					<p className="text-gray-600 mt-1">
+				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">Entrenamientos</h1>
+					<p className="text-muted-foreground mt-1">
 						Crea plantillas y registra tus sesiones
 					</p>
 				</div>

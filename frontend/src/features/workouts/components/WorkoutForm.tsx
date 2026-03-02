@@ -164,7 +164,7 @@ export default function WorkoutForm({
 					{/* Titulo */}
 					<div className='space-y-2'>
 						<Label htmlFor='title'>
-							Título del entrenamiento <span className='text-red-500'>*</span>
+							Título del entrenamiento 					<span className='text-destructive'>*</span>
 						</Label>
 						<Input
 							id='title'
@@ -173,7 +173,7 @@ export default function WorkoutForm({
 							{...register('title')}
 						/>
 						{errors.title && (
-							<p className='text-sm text-red-600'>{errors.title.message}</p>
+							<p className='text-sm text-destructive'>{errors.title.message}</p>
 						)}
 					</div>
 
@@ -188,7 +188,7 @@ export default function WorkoutForm({
 							{...register('notes')}
 						/>
 						{errors.notes && (
-							<p className='text-sm text-red-600'>{errors.notes.message}</p>
+							<p className='text-sm text-destructive'>{errors.notes.message}</p>
 						)}
 					</div>
 				</CardContent>
@@ -255,7 +255,7 @@ export default function WorkoutForm({
 												variant={'ghost'}
 												size={'sm'}
 												onClick={() => handleRemoveExercise(index)}
-												className='text-red-600 hover:text-red-700'
+												className='text-destructive hover:text-destructive/80'
 											>
 												<Trash2 className='h-4 w-4' />
 											</Button>
@@ -271,7 +271,7 @@ export default function WorkoutForm({
 			)}
 
 			{errors.exercises && (
-				<p className='text-sm text-red-600'>{errors.exercises.message}</p>
+				<p className='text-sm text-destructive'>{errors.exercises.message}</p>
 			)}
 
 			{/* Botones de acción */}

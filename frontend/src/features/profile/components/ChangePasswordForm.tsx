@@ -112,7 +112,7 @@ export default function ChangePasswordForm(){
 							<button
 								type='button'
 								onClick={()=> setShowCurrent(!showCurrent)}
-								className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700'
+								className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
 								disabled={isPending}
 							>
 								{showCurrent ? <EyeOff size={20} />:	<Eye size={20} />}
@@ -120,7 +120,7 @@ export default function ChangePasswordForm(){
 						</div>
 						{
 							errors.currentPassword && (
-								<p className='text-sm text-red-600'>
+								<p className='text-sm text-destructive'>
 									{errors.currentPassword.message}
 								</p>
 							)
@@ -141,11 +141,11 @@ export default function ChangePasswordForm(){
 							<button
 								type='button'
 								onClick={()=> setShowNew(!showNew)}
-								className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700'
-								disabled={isPending}
-							>
-								{showNew ? <EyeOff size={20} />:	<Eye size={20} />}
-							</button>
+							className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+							disabled={isPending}
+						>
+							{showNew ? <EyeOff size={20} />:	<Eye size={20} />}
+						</button>
 						</div>
 
 						{/* Indicadores de fortaleza */}
@@ -175,9 +175,9 @@ export default function ChangePasswordForm(){
 
 						{
 							errors.newPassword && (
-								<p className='text-sm text-red-600'>
-									{errors.newPassword.message}
-								</p>
+							<p className='text-sm text-destructive'>
+								{errors.newPassword.message}
+							</p>
 							)
 						}
 					</div>
@@ -196,17 +196,17 @@ export default function ChangePasswordForm(){
 							<button
 								type='button'
 								onClick={() => setShowConfirm(!showConfirm)}
-								className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700'
-								disabled={isPending}
-							>
-								{showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
-							</button>
+							className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
+							disabled={isPending}
+						>
+							{showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
+						</button>
 						</div>
 						{
 							errors.confirmNewPassword && (
-								<p className='text-sm text-red-600'>
-									{errors.confirmNewPassword.message}
-								</p>
+							<p className='text-sm text-destructive'>
+								{errors.confirmNewPassword.message}
+							</p>
 							)
 						}
 					</div>
@@ -233,7 +233,7 @@ export default function ChangePasswordForm(){
 // Componente auxiliar
 function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
 	return (
-		<div className={`flex items-center gap-2 ${met ? 'text-green-600' : 'text-gray-500'}`}>
+		<div className={`flex items-center gap-2 ${met ? 'text-[var(--success)]' : 'text-muted-foreground'}`}>
 			{met ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
 			<span>{text}</span>
 		</div>

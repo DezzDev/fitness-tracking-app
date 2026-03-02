@@ -75,13 +75,13 @@ function LoginPage() {
 						{...register("email")}
 					/>
 					{errors.email && (
-						<p className="text-sm text-red-600">{errors.email.message}</p>
+						<p className="text-sm text-destructive">{errors.email.message}</p>
 					)}
 				</div>
 
 				{/* Password */}
 				<div className="space-y-2">
-					<Label htmlFor="password">Contraseña</Label>
+					<Label htmlFor="password">Contrase&ntilde;a</Label>
 					<div className="relative">
 						<Input
 							id="password"
@@ -94,7 +94,7 @@ function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setShowPassword(!showPassword)}
-							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+							className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
 							disabled={isLoading}
 						>
 							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -102,7 +102,7 @@ function LoginPage() {
 						</button>
 					</div>
 					{errors.password && (
-						<p className="text-sm text-red-600">{errors.password.message}</p>
+						<p className="text-sm text-destructive">{errors.password.message}</p>
 					)}
 				</div>
 
@@ -111,42 +111,42 @@ function LoginPage() {
 					<label className="flex items-center gap-2 cursor-pointer">
 						<input
 							type="checkbox"
-							className="w-4 h-4 rounded border-gray-300"
+							className="w-4 h-4 rounded border-border accent-primary bg-[var(--surface)]"
 						/>
-						<span className="text-gray-600">Recordarme</span>
+						<span className="text-muted-foreground">Recordarme</span>
 					</label>
 					<Link
 						to="/forgot-password"
-						className="text-blue-600 hover:text-blue-700 font-medium"
+						className="text-primary hover:text-accent font-medium transition-colors"
 					>
-						¿Olvidaste tu contraseña?
+						&iquest;Olvidaste tu contrase&ntilde;a?
 					</Link>
 				</div>
 
 				{/* Submit */}
 				<Button
 					type="submit"
-					className="w-full"
+					className="w-full glow-orange-sm hover:glow-orange transition-shadow"
 					size={"lg"}
 					disabled={isLoading}
 				>
 					{isLoading ? (
 						<>
-							<Loader2 className="mr-2 h-4 w-4 anime-spin" />
-							Iniciando sesión...
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							Iniciando sesi&oacute;n...
 						</>
 					) : (
-						'Iniciar sesión'
+						'Iniciar sesi\u00F3n'
 					)}
 				</Button>
 
 				{/* Divider */}
 				<div className="relative my-6">
 					<div className="absolute inset-0 flex items-center">
-						<div className="w-full border-t border-gray-300"/>
+						<div className="w-full border-t border-border"/>
 					</div>
 					<div className="relative flex justify-center text-sm">
-						<span className="px-4 bg-gray-50 text-gray-500">
+						<span className="px-4 bg-[var(--surface)] text-muted-foreground">
 							Continua con
 						</span>
 					</div>
@@ -158,6 +158,7 @@ function LoginPage() {
 						type="button"
 						variant="outline"
 						disabled={isLoading}
+						className="hover:border-primary/40 transition-colors"
 					>
 						<svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
 							<path
@@ -183,6 +184,7 @@ function LoginPage() {
 						type="button"
 						variant="outline"
 						disabled={isLoading}
+						className="hover:border-primary/40 transition-colors"
 					>
 						<svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
 							<path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" />
@@ -191,13 +193,13 @@ function LoginPage() {
 					</Button>
 				</div>
 				{/* Register Link */}
-				<p className="text-center text-sm text-gray-600">
-					¿No tienes una cuenta?{' '}
+				<p className="text-center text-sm text-muted-foreground">
+					&iquest;No tienes una cuenta?{' '}
 					<Link
 						to="/register"
-						className="font-medium text-blue-600 hover:text-blue-700"
+						className="font-medium text-primary hover:text-accent transition-colors"
 					>
-						Regístrate gratis
+						Reg&iacute;strate gratis
 					</Link>
 				</p>
 			</form>

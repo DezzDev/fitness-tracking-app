@@ -30,7 +30,7 @@ export default function TemplatesList() {
 			{/* Búsqueda */}
 			<Card className="p-4">
 				<div className="relative">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 					<Input
 						placeholder="Buscar plantillas..."
 						value={searchTerm}
@@ -54,14 +54,14 @@ export default function TemplatesList() {
 			) : templates.length === 0 ? (
 				<Card className="p-12 text-center">
 					<div className="max-w-sm mx-auto space-y-4">
-						<div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-							<Plus className="h-8 w-8 text-gray-400" />
-						</div>
-						<div>
-							<h3 className="text-lg font-semibold text-gray-900">
-								No hay plantillas
-							</h3>
-							<p className="text-gray-500 mt-1">
+					<div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto">
+						<Plus className="h-8 w-8 text-muted-foreground" />
+					</div>
+					<div>
+						<h3 className="text-lg font-semibold text-foreground">
+							No hay plantillas
+						</h3>
+						<p className="text-muted-foreground mt-1">
 								Crea tu primera plantilla de entrenamiento
 							</p>
 						</div>
@@ -84,7 +84,7 @@ export default function TemplatesList() {
 											{template.name}
 										</CardTitle>
 										{template.description && (
-											<p className="text-sm text-gray-500 mt-1 line-clamp-2">
+											<p className="text-sm text-muted-foreground mt-1 line-clamp-2">
 												{template.description}
 											</p>
 										)}
@@ -125,7 +125,7 @@ export default function TemplatesList() {
 											<DropdownMenuSeparator />
 											<DropdownMenuItem
 												onClick={() => deleteTemplate(template.id)}
-												className="text-red-600 focus:text-red-600"
+												className="text-destructive focus:text-destructive"
 											>
 												<Trash2 className="mr-2 h-4 w-4" />
 												Eliminar

@@ -60,7 +60,7 @@ export default function EditWorkoutPage() {
 		return(
 			<div className="max-w-4xl mx-auto">
 				<Card className="p-12 text-center">
-					<p className="text-gray-500 mb-4">Entrenamiento no encontrado</p>
+					<p className="text-muted-foreground mb-4">Entrenamiento no encontrado</p>
 					<Button onClick={()=> navigate('/workouts')}>
 						Volver a entrenamientos
 					</Button>
@@ -84,10 +84,10 @@ export default function EditWorkoutPage() {
 				</Button>
 
 				<div>
-					<h1 className="text-3xl font-bold text-gray-900">
-						Editar Entrenamiento
-					</h1>
-					<p className="text-gray-600 mt-1">{workout.title}</p>
+				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">
+					Editar Entrenamiento
+				</h1>
+				<p className="text-muted-foreground mt-1">{workout.title}</p>
 				</div>
 			</div>
 

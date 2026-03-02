@@ -14,8 +14,8 @@ export default function ProfilePage() {
 		<div className="space-y-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-				<p className="text-gray-600 mt-1">
+				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">Mi Perfil</h1>
+				<p className="text-muted-foreground mt-1">
 					Administra tu información personal y configuración
 				</p>
 			</div>

@@ -47,9 +47,9 @@ export default function WorkoutDetailPage() {
 	if (isError || !workout) {
 		return (
 			<Card className="p-12 text-center">
-				<p className="text-gray-500">
-					Entrenamiento no encontrado
-				</p>
+			<p className="text-muted-foreground">
+				Entrenamiento no encontrado
+			</p>
 				<Button
 					onClick={() => navigate('/workouts')}
 					className="mt-4"
@@ -79,11 +79,11 @@ export default function WorkoutDetailPage() {
 							Volver
 						</Button>
 
-						<h1 className="text-3xl font-bold text-gray-900">
+						<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">
 							{workout.title}
 						</h1>
 
-						<div className="flex items-center gap-4 mt-3 text-gray-600">
+						<div className="flex items-center gap-4 mt-3 text-muted-foreground">
 							<div className="flex items-center gap-2">
 								<Calendar className="h-4 w-4" />
 								<span>{format(workoutDate, "d 'de' MMMM, yyyy", { locale: es })}</span>
@@ -123,7 +123,7 @@ export default function WorkoutDetailPage() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-gray-700 whitespace-pre-wrap">
+							<p className="text-muted-foreground whitespace-pre-wrap">
 								{workout.notes}
 							</p>
 						</CardContent>
@@ -139,7 +139,7 @@ export default function WorkoutDetailPage() {
 					</CardHeader>
 					<CardContent>
 						{!workout.exercises || workout.exercises.length === 0 ? (
-							<div className="text-center py-8 text-gray-500">
+							<div className="text-center py-8 text-muted-foreground">
 								<Dumbbell className='h-12 w-12 mx-auto mb-3 opacity-50' />
 								<p>No hay ejercicios registrados</p>
 							</div>
@@ -159,14 +159,14 @@ export default function WorkoutDetailPage() {
 											{/* Series (sets) */}
 											{workoutExercise.sets && workoutExercise.sets.length > 0 && (
 												<div className="space-y-2">
-													<h4 className="text sm font-medium text-gray-700">
+													<h4 className="text sm font-medium text-muted-foreground">
 														Series ({workoutExercise.sets.length})
 													</h4>
 
 													<div className="space-y-2">
 														{workoutExercise.sets.map(set => (
 															<div 
-																className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg"
+																className="flex items-center gap-4 p-3 bg-[var(--surface-elevated)] rounded-lg"
 																key={set.setNumber}	
 															>
 																<Badge className="shrink-0" variant={'default'}>
@@ -176,30 +176,30 @@ export default function WorkoutDetailPage() {
 																<div className="flex items-center gap-4 flex-wrap text-sm">
 																	{set.reps !== null && set.reps !== undefined && (
 																		<div className="flex items-center gap-1">
-																			<Repeat className="h-4 w-4 text-gray-500" />
+																			<Repeat className="h-4 w-4 text-muted-foreground" />
 																			<span className="font-medium">{set.reps}</span>
-																			<span className="text-gray-500">reps</span>
+																			<span className="text-muted-foreground">reps</span>
 																		</div>
 																	)}
 
 																	{set.weight !== null && set.weight !== undefined && set.weight > 0 && (
 																		<div className="flex items-center gap-1">
-																			<Weight className="h-4 w-4 text-gray-500" />
+																			<Weight className="h-4 w-4 text-muted-foreground" />
 																			<span className="font-medium">{set.weight}</span>
-																			<span className="text-gray-500">kg</span>
+																			<span className="text-muted-foreground">kg</span>
 																		</div>
 																	)}
 
 																	{set.durationSeconds !== null && set.durationSeconds !== undefined && set.durationSeconds > 0 && (
 																		<div className="flex items-center gap-1">
-																			<Clock className="h-4 w-4 text-gray-500" />
+																			<Clock className="h-4 w-4 text-muted-foreground" />
 																			<span className="font-medium">{set.durationSeconds}</span>
-																			<span className="text-gray-500">seg</span>
+																			<span className="text-muted-foreground">seg</span>
 																		</div>
 																	)}
 
 																	{set.restSeconds !== null && set.restSeconds !== undefined && set.restSeconds > 0 && (
-																		<div className="flex items-center gap-1 text-gray-500">
+																		<div className="flex items-center gap-1 text-muted-foreground">
 																			<span>↓</span>
 																			<span>{set.restSeconds}s descanso</span>
 																		</div>
@@ -207,7 +207,7 @@ export default function WorkoutDetailPage() {
 																</div>
 
 																{set.notes && (
-																	<p className="text-sm text-gray-600 ml-auto">
+																	<p className="text-sm text-muted-foreground ml-auto">
 																		{set.notes}
 																	</p>
 																)}
@@ -232,15 +232,15 @@ export default function WorkoutDetailPage() {
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle className="flex items-center gap-2 text-red-600">
-							<AlertTriangle className="h-5 w-5"/>
-							¿Eliminar entrenamiento?
-						</DialogTitle>
-						<DialogDescription>
-							<p className="mb-3">
-								Estás a punto de eliminar el entrenamiento:
-							</p>
-							<p className="font-semibold text-gray-900 mb-3">
+					<DialogTitle className="flex items-center gap-2 text-destructive">
+						<AlertTriangle className="h-5 w-5"/>
+						¿Eliminar entrenamiento?
+					</DialogTitle>
+					<DialogDescription>
+						<p className="mb-3">
+							Estás a punto de eliminar el entrenamiento:
+						</p>
+						<p className="font-semibold text-foreground mb-3">
 								"{workout.title}"
 							</p>
 							<p className="text-sm">

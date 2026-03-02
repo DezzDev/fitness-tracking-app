@@ -29,7 +29,7 @@ export default function ExerciseSelector({
 		<div className="space-y-4">
 			{/* Búsqueda */}
 			<div className="relative">
-				<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+				<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 				<Input
 					placeholder='Buscar ejercicios...'
 					value={searchTerm}
@@ -52,7 +52,7 @@ export default function ExerciseSelector({
 						))}
 					</div>
 				) : exercises.length === 0 ? (
-					<div className="p-8 text-center text-gray-500">
+					<div className="p-8 text-center text-muted-foreground">
 						<p>No se encontraron ejercicios</p>
 						{searchTerm && (
 							<p className="text-sm mt-1">
@@ -67,16 +67,16 @@ export default function ExerciseSelector({
 						return (
 							<div
 								key={exercise.id}
-								className="p-4 hover:bg-gray-50 transition-colors"
+								className="p-4 hover:bg-[var(--surface-elevated)] transition-colors"
 							>
 								<div className="flex items-start justify-between gap-4">
 									<div className="flex-1 min-w-0">
-										<h4 className="font-medium text-gray-900 truncate">
+										<h4 className="font-medium text-foreground truncate">
 											{exercise.name}
 										</h4>
 
 										{exercise.description && (
-											<p className="text-sm text-gray-500 mt-1 line-clamp-1">
+											<p className="text-sm text-muted-foreground mt-1 line-clamp-1">
 												{exercise.description}
 											</p>
 										)}
@@ -85,12 +85,12 @@ export default function ExerciseSelector({
 											{exercise.difficulty && (
 												<Badge
 													variant={'outline'}
-													className={`text-xs ${exercise.difficulty === 'beginner'
-														? 'border-green-500 text-green-700'
-														: exercise.difficulty === 'intermediate'
-															? 'border-yellow-500 text-yellow-700'
-															: 'border-red-500 text-red-700'
-														}`}
+												className={`text-xs ${exercise.difficulty === 'beginner'
+													? 'border-[var(--success)] text-[var(--success)]'
+													: exercise.difficulty === 'intermediate'
+														? 'border-[var(--warning)] text-[var(--warning)]'
+														: 'border-destructive text-destructive'
+													}`}
 												>
 													{
 														exercise.difficulty === 'beginner'

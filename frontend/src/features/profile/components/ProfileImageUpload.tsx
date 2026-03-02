@@ -68,7 +68,7 @@ export default function ProfileImageUpload(){
 							src={preview || user?.profileImage}
 							alt={user?.name}
 						/>
-						<AvatarFallback className='bg-blue-600 text-white text-3xl'>
+						<AvatarFallback className='bg-primary text-primary-foreground text-3xl'>
 							{user?.name?.charAt(0).toUpperCase()}
 						</AvatarFallback>
 					</Avatar>
@@ -85,7 +85,7 @@ export default function ProfileImageUpload(){
 						type='button'
 						onClick={handleButtonClick}
 						disabled={isPending}
-						className='absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50'
+						className='absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full hover:bg-accent transition-colors disabled:opacity-50'
 					>
 						<Camera size={20}/>
 					</button>
@@ -123,7 +123,7 @@ export default function ProfileImageUpload(){
 				</Button>
 
 				{/* Información */}
-				<div className='text-xs text-gray-500 text-center space-y-1'>
+				<div className='text-xs text-muted-foreground text-center space-y-1'>
 					<p>Tamaño máximo 5MB</p>
 					<p>Formatos: JPG, PNG, GIF</p>
 				</div>

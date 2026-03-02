@@ -61,11 +61,11 @@ export default function AccountSettings() {
 						<div className='flex items-center justify-between'>
 							<div>
 								<h3 className='font-medium'>Estado de cuenta</h3>
-								<p className='text-sm text-gray-500'>
+							<p className='text-sm text-muted-foreground'>
 									Tu cuenta está actualmente activa.
 								</p>
 							</div>
-							<Badge variant={'default'} className='bg-green-500'>
+							<Badge variant={'default'} className='bg-[var(--success)]'>
 								Activa
 							</Badge>
 						</div>
@@ -73,7 +73,7 @@ export default function AccountSettings() {
 						<div className='flex items-center justify-between'>
 							<div>
 								<h3 className='font-medium'>Rol</h3>
-								<p className='text-sm text-gray-500'>
+							<p className='text-sm text-muted-foreground'>
 									Nivel de acceso en la plataforma.
 								</p>
 							</div>
@@ -85,7 +85,7 @@ export default function AccountSettings() {
 						<div className='flex items-center justify-between'>
 							<div>
 								<h3 className='font-medium'>Miembro desde</h3>
-								<p className='text-sm text-gray-500'>
+							<p className='text-sm text-muted-foreground'>
 									Fecha de registro
 								</p>
 							</div>
@@ -113,7 +113,7 @@ export default function AccountSettings() {
 								<Label htmlFor='email-notifications'>
 									Notificaciones por email
 								</Label>
-								<p className='text-sm text-gray-500'>
+							<p className='text-sm text-muted-foreground'>
 									Recibe emails sobre tu actividad
 								</p>
 							</div>
@@ -129,7 +129,7 @@ export default function AccountSettings() {
 								<Label htmlFor='push-notifications'>
 									Notificaciones push
 								</Label>
-								<p className='text-sm text-gray-500'>
+							<p className='text-sm text-muted-foreground'>
 									Recibe notificaciones en tu dispositivo
 								</p>
 							</div>
@@ -145,7 +145,7 @@ export default function AccountSettings() {
 								<Label htmlFor='marketing-emails'>
 									Emails de marketing
 								</Label>
-								<p className='text-sm text-gray-500'>
+							<p className='text-sm text-muted-foreground'>
 									Recibe notificaciones y ofertas especiales
 								</p>
 							</div>
@@ -162,14 +162,14 @@ export default function AccountSettings() {
 					<div className="space-y-4">
 
 						<div className="flex items-center gap-2">
-							<AlertTriangle className='w-5 h-5 text-red-600' />
-							<h3 className='font-medium text-red-600'>Zona de peligro</h3>
+							<AlertTriangle className='w-5 h-5 text-destructive' />
+							<h3 className='font-medium text-destructive'>Zona de peligro</h3>
 						</div>
 
-						<div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+						<div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-3">
 							<div>
-								<h4 className="font-medium text-red-900"> Eliminar cuenta</h4>
-								<p className="text-sm text-red-700 mt-1">
+								<h4 className="font-medium text-destructive"> Eliminar cuenta</h4>
+								<p className="text-sm text-destructive/80 mt-1">
 									Una vez eliminada tu cuenta, no podrás recuperar tu
 									información. Esta acción es permanente.
 								</p>
@@ -192,7 +192,7 @@ export default function AccountSettings() {
 			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle className="flex items-center gap-2 text-red-600">
+						<DialogTitle className="flex items-center gap-2 text-destructive">
 							<AlertTriangle className="w-5 h-5" />
 							¿Eliminar cuenta?
 						</DialogTitle>
@@ -220,7 +220,7 @@ export default function AccountSettings() {
 							placeholder='Escribe "eliminar"'
 							value={confirmText}
 							onChange={(e) => setConfirmText(e.target.value)}
-							className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+							className="w-full px-3 py-2 border border-border rounded-lg bg-[var(--surface)] text-foreground focus:outline-none focus:ring-2 focus:ring-destructive"
 							disabled={isPending}
 						/>
 					</div>

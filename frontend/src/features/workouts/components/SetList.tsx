@@ -58,7 +58,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 				{fields.map((field, setIndex) => (
 					<div
 						key={field.id}
-						className="p-4 border rounded-lg bg-gray-50 space-y-3"
+						className="p-4 border rounded-lg bg-[var(--surface-elevated)] space-y-3"
 					>
 						{/* Header de la serie */}
 						<div className="flex items-center justify-between">
@@ -72,7 +72,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 									variant={'ghost'}
 									size={'sm'}
 									onClick={() => handleRemoveSet(setIndex)}
-									className='h-7 text-red-600 hover:text-red-700'
+									className='h-7 text-destructive hover:text-destructive/80'
 								>
 									<Trash2 className='w-4 h-4' />
 								</Button>
@@ -100,7 +100,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 									)}
 								/>
 								{errors.exercises?.[exerciseIndex]?.sets?.[setIndex]?.reps  && (
-									<p className='text-sm text-red-600'>
+									<p className='text-sm text-destructive'>
 										{errors.exercises?.[exerciseIndex]?.sets?.[setIndex]?.reps.message}
 									</p>
 								)}
@@ -126,7 +126,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 									)}
 								/>
 								{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.weight && (
-									<p className='text-sm text-red-600'>
+									<p className='text-sm text-destructive'>
 										{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.weight.message}
 									</p>
 								)}
@@ -151,7 +151,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 									)}
 								/>
 								{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.durationSeconds && (
-									<p className='text-sm text-red-600'>
+									<p className='text-sm text-destructive'>
 										{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.durationSeconds.message}
 									</p>
 								)}
@@ -176,7 +176,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 									)}
 								/>
 								{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.restSeconds && (
-									<p className='text-sm text-red-600'>
+									<p className='text-sm text-destructive'>
 										{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.restSeconds.message}
 									</p>
 								)}
@@ -200,7 +200,7 @@ export default function SetList({ control, exerciseIndex, errors }: SetListProps
 								)}
 							/>
 							{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.notes && (
-								<p className='text-sm text-red-600'>
+								<p className='text-sm text-destructive'>
 									{errors.exercises?.[ exerciseIndex ]?.sets?.[ setIndex ]?.notes.message}
 								</p>
 							)}

@@ -24,7 +24,7 @@ export default function SessionsList() {
 			{/* Búsqueda */}
 			<Card className="p-4">
 				<div className="relative">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 					<Input
 						placeholder="Buscar entrenamientos..."
 						value={searchTerm}
@@ -46,14 +46,14 @@ export default function SessionsList() {
 			) : sessions.length === 0 ? (
 				<Card className="p-12 text-center">
 					<div className="max-w-sm mx-auto space-y-4">
-						<div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-							<Dumbbell className="h-8 w-8 text-gray-400" />
-						</div>
-						<div>
-							<h3 className="text-lg font-semibold text-gray-900">
-								No hay entrenamientos registrados
-							</h3>
-							<p className="text-gray-500 mt-1">
+					<div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto">
+						<Dumbbell className="h-8 w-8 text-muted-foreground" />
+					</div>
+					<div>
+						<h3 className="text-lg font-semibold text-foreground">
+							No hay entrenamientos registrados
+						</h3>
+						<p className="text-muted-foreground mt-1">
 								Inicia tu primer entrenamiento
 							</p>
 						</div>
@@ -76,11 +76,11 @@ export default function SessionsList() {
 									<div className="flex items-center justify-between gap-4">
 										{/* Info principal */}
 										<div className="flex-1 min-w-0">
-											<h3 className="font-semibold text-gray-900 truncate">
+											<h3 className="font-semibold text-foreground truncate">
 												{session.title}
 											</h3>
 
-											<div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+											<div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
 												<div className="flex items-center gap-1">
 													<Calendar className="h-4 w-4" />
 													<span>
@@ -104,7 +104,7 @@ export default function SessionsList() {
 											</div>
 
 											{session.notes && (
-												<p className="text-sm text-gray-600 mt-2 line-clamp-1">
+												<p className="text-sm text-muted-foreground mt-2 line-clamp-1">
 													{session.notes}
 												</p>
 											)}
@@ -122,7 +122,7 @@ export default function SessionsList() {
 												variant="ghost"
 												size="sm"
 												onClick={() => deleteSession(session.id)}
-												className="text-red-600 hover:text-red-700"
+												className="text-destructive hover:text-destructive/80"
 											>
 												<Trash2 className="h-4 w-4" />
 											</Button>

@@ -60,12 +60,12 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 
 						<div className="flex-1">
 							<Link to={`/workouts/${workout.id}`}>
-								<h3 className="font-semibold text-lg hover:text-blue-600 transition-colors line-clamp-1">
+								<h3 className="font-semibold text-lg hover:text-primary transition-colors line-clamp-1">
 									{workout.title}
 								</h3>
 							</Link>
 
-							<div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+							<div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
 								<Calendar className="w-4 h-4" />
 								<span>
 									{format(workoutDate, "dd 'de' MMMM 'de' yyyy", { locale: es })}
@@ -102,7 +102,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 								<DropdownMenuSeparator />
 								<DropdownMenuItem
 									onClick={() => setShowDeleteDialog(true)}
-									className="text-red-600 focus:text-red-600"
+									className="text-destructive focus:text-destructive"
 								>
 									<Trash2 className="mr-2 h-4 w-4" />
 									Eliminar
@@ -115,14 +115,14 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 				<CardContent>
 					{/* Notas */}
 					{workout.notes && (
-						<p className="text-sm text-gray-600 line-clamp-2 mb-3">
+						<p className="text-sm text-muted-foreground line-clamp-2 mb-3">
 							{workout.notes}
 						</p>
 					)}
 
 					{/* Footer - placeholder para cuando tenga ejercicios */}
 					<div className="flex items-center justify-between pt-3 border-t">
-						<div className="flex items-center gap-2 text-sm text-gray-500">
+						<div className="flex items-center gap-2 text-sm text-muted-foreground">
 							<Dumbbell className="h-4 w-4" />
 							<span>
 								{workout.exercises.length || 0} ejercicio
@@ -143,7 +143,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle className="flex items-center gap-2 text-red-600">
+						<DialogTitle className="flex items-center gap-2 text-destructive">
 							<AlertTriangle className="h-5 w-5" />
 							¿Eliminar entrenamiento?
 						</DialogTitle>
@@ -151,7 +151,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 							<p className="mb-3">
 								Estás a punto de eliminar el entrenamiento:
 							</p>
-							<p className="font-semibold text-gray-900 mb-3">
+							<p className="font-semibold text-foreground mb-3">
 								"{workout.title}"
 							</p>
 							<p className="text-sm">

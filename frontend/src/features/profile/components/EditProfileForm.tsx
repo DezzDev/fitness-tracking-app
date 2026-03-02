@@ -65,9 +65,9 @@ function EditProfileForm() {
 							type="email"
 							value={user?.email || ''}
 							disabled
-							className="bg-gray-50"
+							className="bg-[var(--surface-elevated)]"
 						/>
-						<p className="text-xs text-gray-500">
+						<p className="text-xs text-muted-foreground">
 							El email no se puede modificar
 						</p>
 					</div>
@@ -83,7 +83,7 @@ function EditProfileForm() {
 							{...register('name')}
 						/>
 						{errors.name && (
-							<p className="text-sm text-red-600">{errors.name.message}</p>
+							<p className="text-sm text-destructive">{errors.name.message}</p>
 						)}
 					</div>
 
@@ -99,7 +99,7 @@ function EditProfileForm() {
 							{...register('age', { valueAsNumber: true })}
 						/>
 						{errors.age && (
-							<p className="text-sm text-red-600">{errors.age.message}</p>
+							<p className="text-sm text-destructive">{errors.age.message}</p>
 						)}
 					</div>
 
