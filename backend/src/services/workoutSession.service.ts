@@ -207,9 +207,7 @@ export const workoutSessionService = {
 	 */
 	findAll: async (
 		userId: string,
-		filters: WorkoutSessionFiltersInput,
-		page: number = 1,
-		limit: number = 10
+		filters: WorkoutSessionFiltersInput = { page: 1, limit: 10 },
 	): Promise<{
 		sessions: WorkoutSession[];
 		total: number;
@@ -217,8 +215,8 @@ export const workoutSessionService = {
 		totalPages: number;
 	}> => {
 		// Validación básica
-		if (page < 1) page = 1;
-		if (limit < 1 || limit > 100) limit = 10;
+		const page = filters.page < 1 ? 1 : filters.page;
+		const limit = filters.limit < 1 || filters.limit > 100 ? 10 : filters.limit;
 
 		const completeFilters: WorkoutSessionFilters = {
 			userId: userId || undefined,

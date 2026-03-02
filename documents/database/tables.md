@@ -1,5 +1,5 @@
 -- =====================================
--- SCHEMA: Tablas principales
+-- Tablas
 -- =====================================
 
 -- Users
@@ -27,44 +27,6 @@ CREATE TABLE IF NOT EXISTS exercises (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Workouts
-CREATE TABLE IF NOT EXISTS workouts (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  title TEXT NOT NULL,
-  notes TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Esta tabla simplemente indica que un entrenamiento incluye cierto ejercicio.
--- order_index es el orden en el que se ejecuta el ejercicio en el entrenamiento.
--- Workout_Exercises
-CREATE TABLE IF NOT EXISTS workout_exercises (
-  id TEXT PRIMARY KEY,
-  workout_id TEXT NOT NULL,
-  exercise_id TEXT NOT NULL,
-  order_index INTEGER DEFAULT 0, 
-  FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE,
-  FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
-);
-
--- Guardamos la información detallada de cada set del ejercicio de un entrenamiento
--- Workout_Exercise_Sets
-CREATE TABLE IF NOT EXISTS workout_exercise_sets (
-  id TEXT PRIMARY KEY,
-  workout_exercise_id TEXT NOT NULL,
-  set_number INTEGER NOT NULL, -- 1, 2, 3, ...
-  reps INTEGER,
-  duration_seconds INTEGER,
-  rest_seconds INTEGER,
-  weight REAL,
-  notes TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (workout_exercise_id) REFERENCES workout_exercises(id) ON DELETE CASCADE
-);
-
-
 -- Progress Logs
 CREATE TABLE IF NOT EXISTS progress_logs (
   id TEXT PRIMARY KEY,
@@ -76,10 +38,6 @@ CREATE TABLE IF NOT EXISTS progress_logs (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
--- =====================================
--- SCHEMA: Tags y Goals/PRs
--- =====================================
 
 -- Tags
 CREATE TABLE IF NOT EXISTS tags (

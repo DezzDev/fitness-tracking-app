@@ -59,7 +59,7 @@ export interface ExerciseWithTags extends Exercise {
 }
 
 // =================================
-// WORKOUT TYPES
+// WORKOUT TEMPLATE
 // =================================
 
 export interface WorkoutTemplate {
@@ -83,41 +83,8 @@ export interface WorkoutTemplateExercise {
 	notes?: string;	// Notas del ejercicio en la plantilla
 }
 
-export interface WorkoutSession {
-	id: string;
-	userId: string;
-	templateId: string;
-	title: string;
-	notes?: string;
-	sessionDate: Date; // Fecha del entrenamiento
-	duration?: number;  // duración en minutos
-	exercises: WorkoutSessionExercise[];
-	createdAt: Date;
-}
-
-
-export interface WorkoutSessionExercise {
-	id: string;
-	sessionId: string;
-	exerciseId: string;
-	orderIndex: number;
-	exercise: Exercise;
-	sets: WorkoutExerciseSet[];
-}
-
-export interface WorkoutExerciseSet {
-	id: string;
-	workoutExerciseId: string;
-	setNumber: number;
-	reps?: number;
-	durationSeconds?: number;
-	weight?: number;
-	notes?: string;
-	createdAt: Date;
-}
-
 // Para crear template
-export interface CreateWorkoutTemplateData{
+export interface CreateWorkoutTemplateData {
 	name: string;
 	description?: string;
 	exercises: {
@@ -129,6 +96,55 @@ export interface CreateWorkoutTemplateData{
 	}[]
 }
 
+
+// =================================
+// WORKOUT SESSION
+// =================================
+
+export interface WorkoutSession {
+	id: string;
+	userId: string;
+	templateId?: string;
+	title: string;
+	notes?: string;
+	sessionDate: Date; // Fecha del entrenamiento
+	durationMinutes?: number;  // duración en minutos
+	createdAt: Date;
+}
+
+export interface WorkoutSessionWithExercises extends WorkoutSession{
+	exercises: WorkoutSessionExercise[];
+	templateName?: string;
+}
+
+
+export type WorkoutSessionExercise = {
+	id: string;
+	sessionId: string;
+	exerciseId: string;
+	orderIndex: number;
+	sets: WorkoutSessionSet[];
+	// join with exercise
+	exerciseName: string;
+	exerciseDescription?: string;
+	difficulty?: string;
+	muscleGroup?: string;
+	type?: string;
+}
+
+export interface WorkoutSessionSet {
+	id: string;
+	sessionExerciseId: string;
+	setNumber: number;
+	reps?: number;
+	durationSeconds?: number;
+	weight?: number;
+	restSeconds?: number;
+	notes?: string;
+	createdAt: Date;
+}
+
+
 // Para crear session desde template
 export interface CreateWorkoutSessionData {
 	templateId: string;
@@ -138,7 +154,7 @@ export interface CreateWorkoutSessionData {
 	exercises: {
 		exerciseId: number;
 		orderIndex: number;
-		sets: Omit<WorkoutExerciseSet, 'id' | 'workoutExerciseId' | 'createdAt'>[];
+		sets: Omit<WorkoutSessionSet, 'id' | 'sessionExerciseId' | 'createdAt'>[];
 	}
 }
 
@@ -149,6 +165,21 @@ export interface SessionFilters {
 	endDate?: Date;
 	templateId?: string;
 	searchTerm?: string;
+}
+
+//================================
+// WORKOUTS DEPRECATED
+//================================
+
+export interface WorkoutExerciseSet {
+	id: string;
+	workoutExerciseId: string;
+	setNumber: number;
+	reps?: number;
+	durationSeconds?: number;
+	weight?: number;
+	notes?: string;
+	createdAt: Date;
 }
 
 // DEPRECATED: Mantener para compatibilidad temporal

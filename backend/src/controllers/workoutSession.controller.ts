@@ -83,7 +83,7 @@ export const listWorkoutSessions = asyncHandler(
 		const userId = getUserId(req);
 		const filters = (req.validatedQuery ?? { page: 1, limit: 10 }) as WorkoutSessionFiltersInput;
 
-		const result = await workoutSessionService.findAll(userId, filters, filters.page, filters.limit);
+		const result = await workoutSessionService.findAll(userId, filters);
 
 		ResponseHandler.success(res, result, 'Workout sessions retrieved successfully');
 	}
