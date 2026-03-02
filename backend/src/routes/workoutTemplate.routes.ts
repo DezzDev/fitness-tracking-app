@@ -2,6 +2,7 @@ import {
 	createWorkoutTemplate,
 	deleteWorkoutTemplate,
 	duplicateWorkoutTemplate,
+	getScheduledForToday,
 	getWorkoutTemplate,
 	listWorkoutTemplates,
 	toggleWorkoutTemplateFavorite,
@@ -42,6 +43,15 @@ router.get(
 	'/',
 	validateQuery(WorkoutTemplateFiltersSchema),
 	listWorkoutTemplates
+);
+
+/**
+ * GET /workoutTemplates/today
+ * Obtener templates programados para hoy
+ */
+router.get(
+	'/today',
+	getScheduledForToday
 );
 
 /**

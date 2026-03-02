@@ -1,5 +1,5 @@
 import { handleApiError } from "@/api/client";
-import { workoutSessionsApi } from "@/api/endpoints/workoutSessions";
+import { workoutSessionsApi, type CreateSessionFromTemplateData } from "@/api/endpoints/workoutSessions";
 import type { CreateWorkoutSessionData, SessionFilters } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -10,6 +10,8 @@ export const sessionKeys = {
 	list: (filters?: SessionFilters) => [ ...sessionKeys.lists(), filters ] as const,
 	details: () => [ ...sessionKeys.all, 'detail' ] as const,
 	detail: (id: string) => [ ...sessionKeys.details(), id ] as const,
+	recent: (limit?: number) => [ ...sessionKeys.all, 'recent', limit ] as const,
+	stats: () => [ ...sessionKeys.all, 'stats' ] as const,
 };
 
 /**
@@ -36,21 +38,40 @@ export function useWorkoutSession(id: string) {
 }
 
 /**
+ * Hook para obtener sesiones recientes
+ */
+export function useRecentSessions(limit?: number) {
+	return useQuery({
+		queryKey: sessionKeys.recent(limit),
+		queryFn: () => workoutSessionsApi.getRecentSessions(limit),
+		staleTime: 1 * 60 * 1000,
+	});
+}
+
+/**
+ * Hook para obtener estadísticas de sesiones
+ */
+export function useSessionStats() {
+	return useQuery({
+		queryKey: sessionKeys.stats(),
+		queryFn: () => workoutSessionsApi.getSessionStats(),
+		staleTime: 5 * 60 * 1000,
+	});
+}
+
+/**
  * Hook para crear sesión desde template
  */
 export function useCreateSessionFromTemplate() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({
-			templateId,
-			data
-		}: {
-			templateId: string;
-			data: Partial<CreateWorkoutSessionData>
-		}) => workoutSessionsApi.createSessionFromTemplate(templateId, data),
+		mutationFn: (data: CreateSessionFromTemplateData) => 
+			workoutSessionsApi.createSessionFromTemplate(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: sessionKeys.recent() });
+			queryClient.invalidateQueries({ queryKey: sessionKeys.stats() });
 
 			toast('✅ Sesión de entrenamiento creada');
 		},
@@ -71,6 +92,8 @@ export function useCreateSession() {
 			workoutSessionsApi.createSession(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: sessionKeys.recent() });
+			queryClient.invalidateQueries({ queryKey: sessionKeys.stats() });
 
 			toast('✅ Sesión de entrenamiento creada');
 		},
@@ -97,6 +120,7 @@ export function useUpdateSession() {
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
 			queryClient.invalidateQueries({ queryKey: sessionKeys.detail(variables.id) });
+			queryClient.invalidateQueries({ queryKey: sessionKeys.stats() });
 
 		toast('✅ Sesión de entrenamiento actualizada');
 		},
@@ -116,6 +140,7 @@ export function useDeleteSession() {
 		mutationFn: (id: string) => workoutSessionsApi.deleteSession(id),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: sessionKeys.stats() });
 
 			toast('✅ Sesión de entrenamiento eliminada');
 		},

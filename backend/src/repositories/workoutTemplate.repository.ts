@@ -48,6 +48,7 @@ const mapRowToWorkoutTemplate = (row: WorkoutTemplateRow): WorkoutTemplate => ({
 	userId: row.user_id,
 	name: row.name,
 	description: row.description ?? undefined,
+	scheduledDayOfWeek: row.scheduled_day_of_week ?? undefined,
 	createdAt: new Date(row.created_at),
 	updatedAt: new Date(row.updated_at),
 	deletedAt: row.deleted_at ? new Date(row.deleted_at) : undefined,
@@ -86,12 +87,12 @@ const mapRowToUsageStats = (result: ResultSet): usageStats => {
 const queries = {
 	createWorkoutTemplate: {
 		sql: `
-			INSERT INTO workout_templates (id, user_id, name, description, created_at, updated_at)
-			VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
+			INSERT INTO workout_templates (id, user_id, name, description, scheduled_day_of_week, created_at, updated_at)
+			VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
 			RETURNING *
 		`,
-		args: (id: string, userId: string, name: string, description: string | null) => [
-			id, userId, name, description
+		args: (id: string, userId: string, name: string, description: string | null, scheduledDayOfWeek: number | null) => [
+			id, userId, name, description, scheduledDayOfWeek
 		]
 	},
 
@@ -116,7 +117,7 @@ const queries = {
 
 	findById: {
 		sql: `
-			SELECT id, user_id, name, description, created_at, updated_at, deleted_at
+			SELECT id, user_id, name, description, scheduled_day_of_week, created_at, updated_at, deleted_at
 			FROM workout_templates
 			WHERE id = ? AND deleted_at IS NULL
 		`,
@@ -125,10 +126,10 @@ const queries = {
 
 	findByIdWithExercises: {
 		sql: `
-		 SELECT wt.id, wt.user_id, wt.name, wt.description, wt.created_at, wt.updated_at, wt.deleted_at,
+		 SELECT wt.id, wt.user_id, wt.name, wt.description, wt.scheduled_day_of_week, wt.created_at, wt.updated_at, wt.deleted_at,
 		 	      wte.id as exercise_id, wte.template_id, wte.exercise_id as exercise_template_id,
-						wte.order_index, wte.suggested_sets, wte.suggested_reps, wte.notes as exercise_notes,
-						e.name as exercise_name, e.description as exercise_description, e.difficulty, e.muscle_group, e.type
+					wte.order_index, wte.suggested_sets, wte.suggested_reps, wte.notes as exercise_notes,
+					e.name as exercise_name, e.description as exercise_description, e.difficulty, e.muscle_group, e.type
 			FROM workout_templates wt
 			LEFT JOIN workout_template_exercises wte on wt.id = wte.template_id
 			LEFT JOIN exercises e on wte.exercise_id = e.id
@@ -260,6 +261,17 @@ const queries = {
 			GROUP BY template_id
 		`,
 		args: (templateId: string) => [ templateId ]
+	},
+
+	// encontrar templates por día de la semana programado
+	findByScheduledDay: {
+		sql: `
+			SELECT id, user_id, name, description, scheduled_day_of_week, created_at, updated_at, deleted_at
+			FROM workout_templates
+			WHERE user_id = ? AND scheduled_day_of_week = ? AND deleted_at IS NULL
+			ORDER BY created_at DESC
+		`,
+		args: (userId: string, dayOfWeek: number) => [ userId, dayOfWeek ]
 	}
 }
 
@@ -274,7 +286,7 @@ export const workoutTemplateRepository = {
 		// Crear template
 		const templateResult = await execute({
 			sql: queries.createWorkoutTemplate.sql,
-			args: queries.createWorkoutTemplate.args(templateId, data.userId, data.name, data.description || null)
+			args: queries.createWorkoutTemplate.args(templateId, data.userId, data.name, data.description || null, data.scheduledDayOfWeek ?? null)
 		})
 
 		if (templateResult.rows.length === 0) {
@@ -444,6 +456,11 @@ export const workoutTemplateRepository = {
 			updateData.description = data.description;
 		}
 
+		if (typeof data.scheduledDayOfWeek !== 'undefined') {
+			fields.push('scheduled_day_of_week');
+			updateData.scheduledDayOfWeek = data.scheduledDayOfWeek;
+		}
+
 		if (fields.length > 0) {
 			const updatedTemplateResult = await execute({
 				sql: queries.workoutTemplateUpdate.sql(fields),
@@ -517,5 +534,56 @@ export const workoutTemplateRepository = {
 			sql: queries.deleteFavorite.sql,
 			args: queries.deleteFavorite.args(userId, templateId)
 		})
+	},
+
+	findByScheduledDay: async (userId: string, dayOfWeek: number): Promise<WorkoutTemplateWithExercises[]> => {
+		const result = await execute({
+			sql: queries.findByScheduledDay.sql,
+			args: queries.findByScheduledDay.args(userId, dayOfWeek)
+		});
+
+		const templates = result.rows.map(row => mapRowToWorkoutTemplate(row as unknown as WorkoutTemplateRow));
+		
+		// Enriquecer cada template con exercises, isFavorite, y usageStats
+		const enrichedTemplates = await Promise.all(
+			templates.map(async (template) => {
+				// Buscar ejercicios del template
+				const templateExercisesResult = await execute({
+					sql: queries.findWorkoutTemplateExercises.sql,
+					args: queries.findWorkoutTemplateExercises.args(template.id)
+				});
+
+				const exercises = templateExercisesResult.rows.map(
+					row => mapRowToWorkoutTemplateExercise(row as unknown as WorkoutTemplateExerciseRow)
+				);
+
+				// Comprobar si es favorito
+				const isFavoriteResult = await execute({
+					sql: queries.isFavorite.sql,
+					args: queries.isFavorite.args(userId, template.id)
+				});
+
+				const favoriteRow = isFavoriteResult.rows[0];
+				const isFavorite = typeof favoriteRow?.is_favorite === 'number' && favoriteRow.is_favorite === 1;
+
+				// Obtener estadísticas de uso
+				const usageCountResult = await execute({
+					sql: queries.getUsageStats.sql,
+					args: queries.getUsageStats.args(template.id)
+				});
+
+				const usageStats = mapRowToUsageStats(usageCountResult);
+
+				return {
+					...template,
+					exercises,
+					isFavorite,
+					usageCount: usageStats.usageCount,
+					lastUsedAt: usageStats.lastUsedAt
+				};
+			})
+		);
+
+		return enrichedTemplates;
 	}
 }

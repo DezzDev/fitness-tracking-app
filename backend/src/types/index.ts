@@ -16,21 +16,6 @@ export type {
 	UserUpdateData
 } from './entities/user.types';
 
-export type{
-	Workout, 
-	WorkoutWithExercises, 
-	WorkoutExercise, 
-	WorkoutExerciseSet, 
-	WorkoutExerciseSetCreateData, 
-	WorkoutExerciseCreateData, 
-	WorkoutCreateData, 
-	WorkoutUpdateData, 
-	WorkoutRow, 
-	WorkoutExerciseRow, 
-	WorkoutExerciseSetRow,
-	WorkoutFilters
-} from './entities/workout.types';
-
 export type {
 	Exercise,
 	ExerciseWithTags,

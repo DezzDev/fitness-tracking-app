@@ -7,6 +7,7 @@ export type WorkoutTemplate = {
 	userId: string;
 	name: string;
 	description?: string;
+	scheduledDayOfWeek?: number;
 	createdAt: Date;
 	updatedAt: Date;
 	deletedAt?: Date;
@@ -49,12 +50,14 @@ export type WorkoutTemplateCreateData = {
 	userId: string;
 	name: string;
 	description?: string;
+	scheduledDayOfWeek?: number;
 	exercises: WorkoutTemplateExerciseCreateData[];
 }
 
 export type WorkoutTemplateUpdateData = {
 	name?: string;
 	description?: string;
+	scheduledDayOfWeek?: number;
 	exercises?: WorkoutTemplateExerciseCreateData[];
 }
 
@@ -65,6 +68,7 @@ export type WorkoutTemplateRow = {
 	user_id: string;
 	name: string;
 	description?: string;
+	scheduled_day_of_week?: number;
 	created_at: Date;
 	updated_at: Date;
 	deleted_at?: Date;

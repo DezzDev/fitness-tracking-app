@@ -140,3 +140,17 @@ export const toggleWorkoutTemplateFavorite = asyncHandler(
 		ResponseHandler.success(res, updatedTemplate, 'Workout template favorite toggled successfully');
 	}
 );
+
+/**
+ * Obtener templates programados para hoy
+ */
+export const getScheduledForToday = asyncHandler(
+	async (req: Request, res: Response): Promise<undefined> => {
+		const userId = getUserId(req);
+
+		const templates = await workoutTemplateService.getScheduledForToday(userId);
+
+		ResponseHandler.success(res, templates, 'Scheduled templates for today retrieved successfully');
+	}
+);
+

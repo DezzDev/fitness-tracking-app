@@ -71,12 +71,16 @@ export interface ExerciseStats {
 
 export interface WorkoutTemplate {
 	id: string;
-	userId: number;
+	userId: string;
 	name: string;
 	description?: string;
+	scheduledDayOfWeek?: number;
 	exercises: WorkoutTemplateExercise[];
 	createdAt: Date;
 	updatedAt: Date;
+	isFavorite?: boolean;
+	usageCount?: number;
+	lastUsedAt?: Date;
 }
 
 export interface WorkoutTemplateExercise {
@@ -94,6 +98,7 @@ export interface WorkoutTemplateExercise {
 export interface CreateWorkoutTemplateData {
 	name: string;
 	description?: string;
+	scheduledDayOfWeek?: number;
 	exercises: {
 		exerciseId: string;
 		orderIndex: number;
@@ -159,10 +164,10 @@ export interface CreateWorkoutSessionData {
 	notes?: string;
 	sessionDate: Date;
 	exercises: {
-		exerciseId: number;
+		exerciseId: string;
 		orderIndex: number;
 		sets: Omit<WorkoutSessionSet, 'id' | 'sessionExerciseId' | 'createdAt'>[];
-	}
+	}[]
 }
 
 export interface SessionFilters {
@@ -216,7 +221,7 @@ export interface CreateWorkoutData {
 	title: string;
 	notes?: string;
 	exercises: {
-		exerciseId: number;
+		exerciseId: string;
 		orderIndex: number;
 		sets: Omit<WorkoutExerciseSet, 'id' | 'workoutExerciseId' | 'createdAt'>[];
 	}[];

@@ -2,12 +2,18 @@ import type { WorkoutSessionWithExercises } from "@/types";
 import { useEffect, useState } from "react";
 
 interface CompletionScreenProps {
-	session: WorkoutSessionWithExercises,
-	completedSets: boolean[][] | null,
-	onReturn: () => void,
+	session: WorkoutSessionWithExercises;
+	completedSets: boolean[][] | null;
+	startTime: Date;
+	onReturn: () => void;
 }
 
-export default function CompletionScreen ({ session, completedSets, onReturn }: CompletionScreenProps) {
+export default function CompletionScreen({
+	session,
+	completedSets,
+	startTime,
+	onReturn,
+}: CompletionScreenProps) {
 	const [step, setStep] = useState(0);
 
 	useEffect(() => {
@@ -20,67 +26,54 @@ export default function CompletionScreen ({ session, completedSets, onReturn }: 
 		return () => timers.forEach(clearTimeout);
 	}, []);
 
-	const totalSeries = completedSets ? completedSets.reduce(
-		(a, sets) => a + sets.filter(Boolean).length,
-		0
-	) : 0;
+	// Calculate real duration
+	const endTime = new Date();
+	const durationMs = endTime.getTime() - startTime.getTime();
+	const durationMinutes = Math.round(durationMs / (1000 * 60));
+
+	// Calculate total completed sets
+	const totalSeries = completedSets
+		? completedSets.reduce((a, sets) => a + sets.filter(Boolean).length, 0)
+		: 0;
+
+	// Calculate total volume (weight × reps)
 	const volume = session.exercises.reduce((a, e, i) => {
 		const done = completedSets ? completedSets[i].filter(Boolean).length : 0;
-		const weightReps = e.sets.reduce((wr, s) => wr + ((s.weight ?? 0) * (s.reps ?? 0)), 0);
-		
-		return a + done * weightReps / e.sets.length;
+		const weightReps = e.sets.reduce(
+			(wr, s) => wr + (s.weight ?? 0) * (s.reps ?? 0),
+			0
+		);
+
+		return a + (done * weightReps) / e.sets.length;
 	}, 0);
 
 	const metrics = [
 		{ value: session.exercises.length, label: "EJERCICIOS" },
 		{ value: totalSeries, label: "SERIES" },
 		{
-			value: `${(volume / 1000).toFixed(1)}K`,
+			value: volume >= 1000 ? `${(volume / 1000).toFixed(1)}K` : Math.round(volume),
 			label: "KG VOLUMEN",
 		},
-		{ value: "47 MIN", label: "DURACIÓN" },
+		{ value: `${durationMinutes} MIN`, label: "DURACIÓN" },
 	];
 
+	const today = new Date();
+
 	return (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				height: "100%",
-				justifyContent: "space-between",
-				padding: "40px 32px 32px",
-				background: "#000",
-			}}
-		>
+		<div className="flex flex-col h-full justify-between px-8 py-10 bg-black">
 			{/* Title */}
 			<div
+				className="transition-all duration-500 ease-out"
 				style={{
 					opacity: step >= 1 ? 1 : 0,
 					transform: step >= 1 ? "none" : "translateY(20px)",
-					transition: "all 0.5s ease",
 				}}
 			>
-				<div
-					style={{
-						fontFamily: "'Barlow Condensed', sans-serif",
-						fontSize: "11px",
-						letterSpacing: "4px",
-						color: "var(--orange)",
-						marginBottom: "12px",
-						fontWeight: 600,
-					}}
-				>
-					{session.sessionDate.toLocaleDateString("es-ES",{day: "numeric", month: "short"})} · {session.title}
+				<div className="font-barlow text-[11px] tracking-[4px] text-primary mb-3 font-semibold">
+					{today.toLocaleDateString("es-ES", { day: "numeric", month: "short" })} ·{" "}
+					{session.title}
 				</div>
-				<div
-					style={{
-						fontFamily: "'Bebas Neue', cursive",
-						fontSize: "clamp(52px, 13vw, 76px)",
-						lineHeight: 0.9,
-						color: "var(--white)",
-						letterSpacing: "2px",
-					}}
-				>
+				<div className="font-bebas text-[clamp(52px,13vw,76px)] leading-[0.9] text-foreground tracking-wide">
 					SESIÓN
 					<br />
 					COMPLETADA
@@ -89,135 +82,59 @@ export default function CompletionScreen ({ session, completedSets, onReturn }: 
 
 			{/* Metrics */}
 			<div
+				className="border-t border-b border-border py-7 grid grid-cols-2 gap-6 transition-all duration-500 ease-out"
 				style={{
-					borderTop: "1px solid var(--border)",
-					borderBottom: "1px solid var(--border)",
-					padding: "28px 0",
-					display: "grid",
-					gridTemplateColumns: "1fr 1fr",
-					gap: "24px",
 					opacity: step >= 2 ? 1 : 0,
 					transform: step >= 2 ? "none" : "translateY(16px)",
-					transition: "all 0.5s ease",
 				}}
 			>
 				{metrics.map((m, i) => (
 					<div key={i}>
-						<div
-							style={{
-								fontFamily: "'Bebas Neue', cursive",
-								fontSize: "38px",
-								color: "var(--white)",
-								lineHeight: 1,
-							}}
-						>
+						<div className="font-bebas text-[38px] text-foreground leading-none">
 							{m.value}
 						</div>
-						<div
-							style={{
-								fontFamily: "'Barlow Condensed', sans-serif",
-								fontSize: "10px",
-								letterSpacing: "3px",
-								color: "var(--gray-mid)",
-								marginTop: "4px",
-							}}
-						>
+						<div className="font-barlow text-[10px] tracking-[3px] text-muted-foreground mt-1">
 							{m.label}
 						</div>
 					</div>
 				))}
 			</div>
 
-			{/* PR highlights */}
+			{/* PR highlights - removed fake data */}
 			<div
+				className="transition-all duration-500 ease-out flex flex-col gap-2.5"
 				style={{
 					opacity: step >= 3 ? 1 : 0,
 					transform: step >= 3 ? "none" : "translateY(12px)",
-					transition: "all 0.5s ease",
-					display: "flex",
-					flexDirection: "column",
-					gap: "10px",
 				}}
 			>
-				{[
-					"NUEVO RÉCORD EN PRESS BANCA",
-					"+12% VOLUMEN VS ÚLTIMA SESIÓN",
-				].map((text, i) => (
-					<div
-						key={i}
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "10px",
-						}}
-					>
-						<div
-							style={{
-								width: "4px",
-								height: "4px",
-								borderRadius: "50%",
-								background: "var(--orange)",
-								flexShrink: 0,
-							}}
-						/>
-						<div
-							style={{
-								fontFamily: "'Barlow Condensed', sans-serif",
-								fontSize: "12px",
-								letterSpacing: "2px",
-								color: "var(--gray-light)",
-								fontWeight: 600,
-							}}
-						>
-							{text}
-						</div>
+				{/* TODO: Replace with real PR data from API */}
+				<div className="flex items-center gap-2.5">
+					<div className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+					<div className="font-barlow text-xs tracking-[2px] text-muted-foreground font-semibold">
+						¡GRAN TRABAJO!
 					</div>
-				))}
+				</div>
 			</div>
 
 			{/* Actions */}
 			<div
+				className="flex flex-col gap-3 transition-all duration-400 ease-out"
 				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "12px",
 					opacity: step >= 4 ? 1 : 0,
 					transform: step >= 4 ? "none" : "translateY(10px)",
-					transition: "all 0.4s ease",
 				}}
 			>
-				<button
-					style={{
-						width: "100%",
-						background: "transparent",
-						border: "1px solid var(--border)",
-						color: "var(--gray-light)",
-						fontFamily: "'Barlow Condensed', sans-serif",
-						fontSize: "13px",
-						letterSpacing: "3px",
-						padding: "16px",
-						cursor: "pointer",
-					}}
-				>
+				<button className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors">
 					VER DETALLE COMPLETO
 				</button>
 				<button
 					onClick={onReturn}
-					style={{
-						width: "100%",
-						background: "var(--orange)",
-						border: "none",
-						color: "#000",
-						fontFamily: "'Bebas Neue', cursive",
-						fontSize: "20px",
-						letterSpacing: "4px",
-						padding: "18px",
-						cursor: "pointer",
-					}}
+					className="w-full bg-primary hover:bg-primary/90 border-none text-black font-bebas text-xl tracking-[4px] py-[18px] cursor-pointer transition-colors"
 				>
 					VOLVER AL DASHBOARD
 				</button>
 			</div>
 		</div>
 	);
-};
+}

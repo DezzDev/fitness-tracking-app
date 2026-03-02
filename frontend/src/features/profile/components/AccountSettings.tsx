@@ -19,7 +19,6 @@ import {
 import { useAuthStore } from '@/store/authStore';
 import { useDeleteAccount } from '../hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
-import { set } from 'zod';
 
 
 export default function AccountSettings() {

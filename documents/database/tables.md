@@ -87,6 +87,7 @@ CREATE TABLE workout_templates (
   user_id TEXT NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
+  scheduled_day_of_week INTEGER CHECK(scheduled_day_of_week BETWEEN 0 AND 6),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 	deleted_at DATETIME DEFAULT NULL,

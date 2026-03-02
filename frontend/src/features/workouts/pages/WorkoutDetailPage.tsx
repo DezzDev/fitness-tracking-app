@@ -197,13 +197,6 @@ export default function WorkoutDetailPage() {
 																			<span className="text-muted-foreground">seg</span>
 																		</div>
 																	)}
-
-																	{set.restSeconds !== null && set.restSeconds !== undefined && set.restSeconds > 0 && (
-																		<div className="flex items-center gap-1 text-muted-foreground">
-																			<span>↓</span>
-																			<span>{set.restSeconds}s descanso</span>
-																		</div>
-																	)}
 																</div>
 
 																{set.notes && (

@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useExercise } from "../hooks/useExercises";
-import type { Exercise } from "@/types";
 
 interface ExerciseDetailDialogProps {
 	exerciseId: string | null;

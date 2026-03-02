@@ -21,12 +21,13 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 			setTimeout(() => setVisible(true), 50);
 		}, []);
 
-		const exercise = session.exercises[ currentIdx ];
-		const exCompleted = completedSets[ currentIdx ].every(Boolean);
-		const nextSetIdx = completedSets[ currentIdx ].findIndex((s) => !s);
-		const totalCompleted = completedSets.filter((sets) =>
-			sets.every(Boolean)
-		).length;
+	const exercise = session.exercises[ currentIdx ];
+	const exCompleted = completedSets[ currentIdx ].every(Boolean);
+	const nextSetIdx = completedSets[ currentIdx ].findIndex((s) => !s);
+	const displaySetIdx = nextSetIdx === -1 ? exercise.sets.length - 1 : nextSetIdx;
+	const totalCompleted = completedSets.filter((sets) =>
+		sets.every(Boolean)
+	).length;
 
 		const completeSet = () => {
 			if (nextSetIdx === -1) return;
@@ -180,7 +181,7 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 							alignItems: "flex-end",
 						}}
 					>
-						{exercise.sets[ nextSetIdx ].weight && exercise.sets[ nextSetIdx ].weight > 0 && (
+						{exercise.sets[ displaySetIdx ].weight && exercise.sets[ displaySetIdx ].weight > 0 && (
 							<div>
 								<div
 									style={{
@@ -190,7 +191,7 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 										color: "var(--white)",
 									}}
 								>
-									{exercise.sets[ nextSetIdx ].weight || 0}
+									{exercise.sets[ displaySetIdx ].weight || 0}
 									<span
 										style={{
 											fontSize: "22px",
@@ -218,12 +219,12 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 							<div
 								style={{
 									fontFamily: "'Bebas Neue', cursive",
-									fontSize: exercise.sets[ nextSetIdx ].reps ? exercise.sets[ nextSetIdx ].reps > 0 ? "36px" : "52px" : "52px",
+									fontSize: exercise.sets[ displaySetIdx ].reps ? exercise.sets[ displaySetIdx ].reps > 0 ? "36px" : "52px" : "52px",
 									lineHeight: 1,
 									color: "var(--gray-light)",
 								}}
 							>
-								{exercise.sets[ nextSetIdx ].reps}
+								{exercise.sets[ displaySetIdx ].reps}
 							</div>
 							<div
 								style={{

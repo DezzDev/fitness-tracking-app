@@ -37,6 +37,12 @@ export const CreateWorkoutTemplateSchema = z.object({
 		.trim()
 		.optional(),
 	
+	scheduledDayOfWeek: z
+		.int('Scheduled day must be an integer')
+		.min(0, 'Scheduled day must be between 0 (Monday) and 6 (Sunday)')
+		.max(6, 'Scheduled day must be between 0 (Monday) and 6 (Sunday)')
+		.optional(),
+	
 	exercises: z
 		.array(WorkoutTemplateExerciseSchema)
 		.min(1, { error: 'Workout template must have at least 1 exercise' })
@@ -52,6 +58,7 @@ export const CreateWorkoutTemplateSchema = z.object({
 export const UpdateWorkoutTemplateSchema = z.object({
 	name: CreateWorkoutTemplateSchema.shape.name.optional(),
 	description: CreateWorkoutTemplateSchema.shape.description.optional(),
+	scheduledDayOfWeek: CreateWorkoutTemplateSchema.shape.scheduledDayOfWeek.optional(),
 	exercises: CreateWorkoutTemplateSchema.shape.exercises.optional()
 }).strict()
 

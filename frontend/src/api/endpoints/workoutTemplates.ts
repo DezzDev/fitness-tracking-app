@@ -17,7 +17,7 @@ export const workoutTemplatesApi = {
 		if (params?.searchTerm) queryParams.append('searchTerm', params.searchTerm);
 
 		const response = await apiClient.get<PaginatedResponse<WorkoutTemplate>>(
-			`/workout-templates?${queryParams.toString()}`
+			`/workoutTemplates?${queryParams.toString()}`
 		)
 
 		return response.data;
@@ -27,8 +27,16 @@ export const workoutTemplatesApi = {
 	 * Obtener template por ID
 	 */
 	getTemplate: async (id: string): Promise<WorkoutTemplate> => {
-		const response = await apiClient.get<ApiResponse<WorkoutTemplate>>(`/workout-templates/${id}`);
+		const response = await apiClient.get<ApiResponse<WorkoutTemplate>>(`/workoutTemplates/${id}`);
 
+		return response.data.data!;
+	},
+
+	/**
+	 * Obtener templates programados para hoy
+	 */
+	getScheduledToday: async (): Promise<WorkoutTemplate[]> => {
+		const response = await apiClient.get<ApiResponse<WorkoutTemplate[]>>('/workoutTemplates/today');
 		return response.data.data!;
 	},
 
@@ -37,7 +45,7 @@ export const workoutTemplatesApi = {
 	 */
 	createTemplate: async (data: CreateWorkoutTemplateData): Promise<WorkoutTemplate> => {
 		const response = await apiClient.post<ApiResponse<WorkoutTemplate>>(
-			'/workout-templates',
+			'/workoutTemplates',
 			data
 		);
 		return response.data.data!;
@@ -51,7 +59,7 @@ export const workoutTemplatesApi = {
 		data: Partial<CreateWorkoutTemplateData>
 	): Promise<WorkoutTemplate> => {
 		const response = await apiClient.patch<ApiResponse<WorkoutTemplate>>(
-			`/workout-templates/${id}`,
+			`/workoutTemplates/${id}`,
 			data
 		)
 		return response.data.data!;
@@ -61,7 +69,7 @@ export const workoutTemplatesApi = {
 	 * Eliminar template
 	 */
 	deleteTemplate: async (id: string): Promise<void> => {
-		await apiClient.delete(`/workout-templates/${id}`);
+		await apiClient.delete(`/workoutTemplates/${id}`);
 	},
 
 	/**
@@ -69,9 +77,19 @@ export const workoutTemplatesApi = {
 	 */
 	duplicateTemplate: async (id: string): Promise<WorkoutTemplate> => {
 		const response = await apiClient.post<ApiResponse<WorkoutTemplate>>(
-			`/workout-templates/${id}/duplicate`
+			`/workoutTemplates/${id}/duplicate`
 		);
 		return response.data.data!;
 	},
+
+	/**
+	 * Agregar/quitar favorito
+	 */
+	toggleFavorite: async (id: string): Promise<WorkoutTemplate> => {
+		const response = await apiClient.patch<ApiResponse<WorkoutTemplate>>(
+			`/workoutTemplates/${id}/favorite`
+		);
+		return response.data.data!;
+	}
 	
 }

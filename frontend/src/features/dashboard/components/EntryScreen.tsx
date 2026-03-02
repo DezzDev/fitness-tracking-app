@@ -1,137 +1,70 @@
-import type {  WorkoutSessionWithExercises } from "@/types";
-import{ useEffect, useState } from "react";
+import type { WorkoutTemplate, WorkoutTemplateExercise } from "@/types";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
-interface EntryScreenProps {	
-	session: WorkoutSessionWithExercises, 
-	onStart : () => void, 
-	completed: boolean
+interface EntryScreenProps {
+	template: WorkoutTemplate;
+	onStart: () => void;
+	completed: boolean;
+	isCreatingSession?: boolean;
 }
 
-export default function EntryScreen ({ session, onStart, completed }: EntryScreenProps) {
+export default function EntryScreen({
+	template,
+	onStart,
+	completed,
+	isCreatingSession = false,
+}: EntryScreenProps) {
 	const [visible, setVisible] = useState(false);
+	
 	useEffect(() => {
-		setTimeout(() => setVisible(true), 50);
+		const timer = setTimeout(() => setVisible(true), 50);
+		return () => clearTimeout(timer);
 	}, []);
 
-	const totalSeries = session.exercises.reduce((a, e) => a + e.sets.length, 0);
+	const totalSeries = template.exercises.reduce(
+		(a: number, e: WorkoutTemplateExercise) => a + (e.suggestedSets || 3),
+		0
+	);
+	const today = new Date();
 
 	return (
-		<div className="flex flex-col h-full justify-between p-0 transition duration-500 ease
-			opacity-0 translate-y-"
+		<div
+			className="flex flex-col h-full justify-between transition-all duration-500 ease-out"
 			style={{
-				display: "flex",
-				flexDirection: "column",
-				height: "100%",
-				justifyContent: "space-between",
-				padding: "0",
 				opacity: visible ? 1 : 0,
 				transform: visible ? "none" : "translateY(20px)",
-				transition: "opacity 0.5s ease, transform 0.5s ease",
 			}}
 		>
 			{/* Top section */}
-			<div
-				style={{
-					flex: 1,
-					display: "flex",
-					flexDirection: "column",
-					justifyContent: "center",
-					padding: "40px 32px 0",
-				}}
-			>
-				<div
-					style={{
-						fontFamily: "'Barlow Condensed', sans-serif",
-						fontSize: "11px",
-						letterSpacing: "4px",
-						color: "var(--orange)",
-						marginBottom: "16px",
-						fontWeight: 600,
-					}}
-				>
+			<div className="flex-1 flex flex-col justify-center px-8 pt-10">
+				<div className="font-barlow text-[11px] tracking-[4px] text-primary mb-4 font-semibold">
 					{completed ? "SESIÓN DEL DÍA" : "SESIÓN PROGRAMADA"}
 				</div>
 
-				<div
-					style={{
-						fontFamily: "'Bebas Neue', cursive",
-						fontSize: "clamp(56px, 12vw, 88px)",
-						lineHeight: 0.9,
-						color: "var(--white)",
-						letterSpacing: "2px",
-						marginBottom: "8px",
-					}}
-				>
-					{session.title}
+				<div className="font-bebas text-[clamp(56px,12vw,88px)] leading-[0.9] text-foreground tracking-wide mb-2">
+					{template.name}
 				</div>
 
-				<div
-					style={{
-						fontFamily: "'Barlow Condensed', sans-serif",
-						fontSize: "18px",
-						color: "var(--gray-mid)",
-						letterSpacing: "3px",
-						fontWeight: 500,
-						marginBottom: "48px",
-					}}
-				>
-					{session.sessionDate.toLocaleDateString("es-ES",{day: "numeric", month: "short"})}
+				<div className="font-barlow text-lg text-muted-foreground tracking-[3px] font-medium mb-12">
+					{today.toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
 				</div>
 
 				{!completed && (
-					<div
-						style={{
-							borderTop: "1px solid var(--border)",
-							borderBottom: "1px solid var(--border)",
-							padding: "24px 0",
-							display: "grid",
-							gridTemplateColumns: "1fr 1fr",
-							gap: "24px",
-						}}
-					>
+					<div className="border-t border-b border-border py-6 grid grid-cols-2 gap-6">
 						<div>
-							<div
-								style={{
-									fontFamily: "'Bebas Neue', cursive",
-									fontSize: "42px",
-									color: "var(--white)",
-									lineHeight: 1,
-								}}
-							>
-								{session.exercises.length}
+							<div className="font-bebas text-[42px] text-foreground leading-none">
+								{template.exercises.length}
 							</div>
-							<div
-								style={{
-									fontFamily: "'Barlow Condensed', sans-serif",
-									fontSize: "11px",
-									letterSpacing: "3px",
-									color: "var(--gray-mid)",
-									marginTop: "4px",
-								}}
-							>
+							<div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground mt-1">
 								EJERCICIOS
 							</div>
 						</div>
 						<div>
-							<div
-								style={{
-									fontFamily: "'Bebas Neue', cursive",
-									fontSize: "42px",
-									color: "var(--white)",
-									lineHeight: 1,
-								}}
-							>
+							<div className="font-bebas text-[42px] text-foreground leading-none">
 								{totalSeries}
 							</div>
-							<div
-								style={{
-									fontFamily: "'Barlow Condensed', sans-serif",
-									fontSize: "11px",
-									letterSpacing: "3px",
-									color: "var(--gray-mid)",
-									marginTop: "4px",
-								}}
-							>
+							<div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground mt-1">
 								SERIES
 							</div>
 						</div>
@@ -139,30 +72,9 @@ export default function EntryScreen ({ session, onStart, completed }: EntryScree
 				)}
 
 				{completed && (
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "10px",
-							color: "var(--orange)",
-						}}
-					>
-						<div
-							style={{
-								width: "8px",
-								height: "8px",
-								borderRadius: "50%",
-								background: "var(--orange)",
-							}}
-						/>
-						<div
-							style={{
-								fontFamily: "'Barlow Condensed', sans-serif",
-								fontSize: "13px",
-								letterSpacing: "3px",
-								fontWeight: 600,
-							}}
-						>
+					<div className="flex items-center gap-2.5 text-primary">
+						<div className="w-2 h-2 rounded-full bg-primary" />
+						<div className="font-barlow text-[13px] tracking-[3px] font-semibold">
 							COMPLETADO
 						</div>
 					</div>
@@ -170,49 +82,28 @@ export default function EntryScreen ({ session, onStart, completed }: EntryScree
 			</div>
 
 			{/* Bottom CTA */}
-			<div style={{ padding: "32px" }}>
+			<div className="p-8">
 				{!completed ? (
 					<button
 						onClick={onStart}
-						style={{
-							width: "100%",
-							background: "var(--orange)",
-							border: "none",
-							color: "#000",
-							fontFamily: "'Bebas Neue', cursive",
-							fontSize: "22px",
-							letterSpacing: "4px",
-							padding: "20px",
-							cursor: "pointer",
-							transition: "transform 0.1s ease, filter 0.2s ease",
-							position: "relative",
-							overflow: "hidden",
-						}}
-						onMouseDown={(e) =>
-							(e.currentTarget.style.transform = "scale(0.98)")
-						}
-						onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+						disabled={isCreatingSession}
+						className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						INICIAR SESIÓN
+						{isCreatingSession ? (
+							<span className="flex items-center justify-center gap-2">
+								<Loader2 className="h-5 w-5 animate-spin" />
+								INICIANDO...
+							</span>
+						) : (
+							"INICIAR SESIÓN"
+						)}
 					</button>
 				) : (
-					<button
-						style={{
-							width: "100%",
-							background: "transparent",
-							border: "1px solid var(--border)",
-							color: "var(--gray-light)",
-							fontFamily: "'Barlow Condensed', sans-serif",
-							fontSize: "14px",
-							letterSpacing: "3px",
-							padding: "18px",
-							cursor: "pointer",
-						}}
-					>
+					<button className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-sm tracking-[3px] py-[18px] cursor-pointer hover:bg-muted/20 transition-colors">
 						VER DETALLE
 					</button>
 				)}
 			</div>
 		</div>
 	);
-};
+}

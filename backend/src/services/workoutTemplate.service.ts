@@ -291,6 +291,25 @@ export const workoutTemplateService = {
 				{ templateId, userId }
 			)
 		}
+	},
+
+	getScheduledForToday: async (userId: string): Promise<WorkoutTemplateWithExercises[]> => {
+		try {
+			// Obtener el día de la semana actual (0 = Lunes, 6 = Domingo)
+			const today = new Date();
+			const dayOfWeek = (today.getDay() + 6) % 7; // Convertir de 0=Domingo a 0=Lunes
+
+			const templates = await workoutTemplateRepository.findByScheduledDay(userId, dayOfWeek);
+
+			return templates.map(sanitizeTemplate);
+		} catch (error) {
+			throw handleServiceError(
+				error,
+				'WorkoutTemplateService.getScheduledForToday',
+				'Unable to get scheduled templates for today',
+				{ userId }
+			)
+		}
 	}
 
 

@@ -10,6 +10,7 @@ export const templateKeys = {
 	list: (filters?: unknown) => [ ...templateKeys.lists(), filters ] as const,
 	details: () => [ ...templateKeys.all, 'detail' ] as const,
 	detail: (id: string) => [ ...templateKeys.details(), id ] as const,
+	today: () => [ ...templateKeys.all, 'today' ] as const,
 };
 
 /**
@@ -40,6 +41,17 @@ export function useWorkoutTemplate(id: string) {
 }
 
 /**
+ * Hook para obtener templates programados para hoy
+ */
+export function useScheduledTemplate() {
+	return useQuery({
+		queryKey: templateKeys.today(),
+		queryFn: () => workoutTemplatesApi.getScheduledToday(),
+		staleTime: 10 * 60 * 1000, // 10 minutos - no cambia tan frecuentemente
+	});
+}
+
+/**
  * Hook para crear template
  */
 export function useCreateTemplate() {
@@ -51,6 +63,7 @@ export function useCreateTemplate() {
 			workoutTemplatesApi.createTemplate(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: templateKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: templateKeys.today() });
 
 			toast('✅ Plantilla creada');
 		},
@@ -72,6 +85,7 @@ export function useUpdateTemplate() {
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({ queryKey: templateKeys.lists() });
 			queryClient.invalidateQueries({ queryKey: templateKeys.detail(variables.id) });
+			queryClient.invalidateQueries({ queryKey: templateKeys.today() });
 
 			toast('✅ Plantilla actualizada');
 		},
@@ -91,6 +105,7 @@ export function useDeleteTemplate() {
 		mutationFn: (id: string) => workoutTemplatesApi.deleteTemplate(id),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: templateKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: templateKeys.today() });
 
 			toast('Plantilla eliminada');
 		},
@@ -118,3 +133,25 @@ export function useDuplicateTemplate() {
 		}
 	});
 }
+
+/**
+ * Hook para alternar favorito
+ */
+export function useToggleFavorite() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (id: string) => workoutTemplatesApi.toggleFavorite(id),
+		onSuccess: (_, id) => {
+			queryClient.invalidateQueries({ queryKey: templateKeys.lists() });
+			queryClient.invalidateQueries({ queryKey: templateKeys.detail(id) });
+			queryClient.invalidateQueries({ queryKey: templateKeys.today() });
+
+			toast('✅ Favorito actualizado');
+		},
+		onError: (error) => {
+			toast.error(handleApiError(error, 'No se pudo actualizar el favorito'));
+		}
+	});
+}
+

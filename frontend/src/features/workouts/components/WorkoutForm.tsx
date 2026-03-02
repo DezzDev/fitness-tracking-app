@@ -3,7 +3,7 @@ import { CreateWorkoutSchema, type CreateWorkoutFormData } from "../schemas/work
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { WorkoutWithExercises } from "@/types";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,42 +57,18 @@ export default function WorkoutForm({
 	const [ hasSubmitted, setHasSubmitted ] = useState(false);
 	const blocker = useUnsavedChanges(isDirty && !hasSubmitted && !isSubmitting);
 
-	// guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
-	const [ exerciseNames, setExerciseNames ] = useState<Record<string, string>>({});
-
-	// Cargar datos iniciales si estamos editando un entrenamiento
-	useEffect(() => {
-		if (initialData) {
-
-			// Guardar los nombres de los ejercicios con el id como index, para mostrarlos en la lista de ejercicios
-			const names: Record<string, string> = {}
-			initialData.exercises.forEach(ex => {
-				if(ex.exerciseName) {
-					names[ex.exerciseId] = ex.exerciseName
-				}
-			})
-			setExerciseNames(names)			
-
-		}
-	}, [ initialData, setValue ]);
-
 	const handleFormSubmit = (data: CreateWorkoutFormData) => {
 		setHasSubmitted(true);
 		onSubmit(data)
 	}
 
-	const handleAddExercise = (exerciseId: string, exerciseName: string) => {
+	const handleAddExercise = (exerciseId: string, _exerciseName: string) => {
 		// Verificar que no esté ya agregado
 		const exists = fields.some(f => f.exerciseId === exerciseId)
 		if (exists) {
 			toast.error('Ya existe este ejercicio')
 			return
 		}
-
-		setExerciseNames((prev) => ({
-			...prev,
-			[ exerciseId ]: exerciseName,
-		}));
 
 		append({
 			exerciseId,

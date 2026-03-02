@@ -88,17 +88,9 @@ export default function SessionsList() {
 													</span>
 												</div>
 
-												<div className="flex items-center gap-1">
-													<Dumbbell className="h-4 w-4" />
-													<span>
-														{session.exercises?.length || 0} ejercicio
-														{session.exercises?.length !== 1 ? 's' : ''}
-													</span>
-												</div>
-
-												{session.duration && (
+												{session.durationMinutes && (
 													<Badge variant="outline" className="text-xs">
-														{session.duration} min
+														{session.durationMinutes} min
 													</Badge>
 												)}
 											</div>
