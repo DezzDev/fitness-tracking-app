@@ -24,9 +24,9 @@ Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 
 {
-	"name": "Test Workout Template 2",
+	"name": "Test Workout Template Tuesday",
 	"description": "Test Workout Template Description 2",
-	"scheduledDayOfWeek": 0,
+	"scheduledDayOfWeek": 1,
 	"exercises": [
 		{
 			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
