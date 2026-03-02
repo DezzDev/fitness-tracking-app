@@ -1,10 +1,19 @@
-const EntryScreen = ({ session, onStart, completed }) => {
+import type {  WorkoutSessionWithExercises } from "@/types";
+import{ useEffect, useState } from "react";
+
+interface EntryScreenProps {	
+	session: WorkoutSessionWithExercises, 
+	onStart : () => void, 
+	completed: boolean
+}
+
+export default function EntryScreen ({ session, onStart, completed }: EntryScreenProps) {
 	const [visible, setVisible] = useState(false);
 	useEffect(() => {
 		setTimeout(() => setVisible(true), 50);
 	}, []);
 
-	const totalSeries = session.exercises.reduce((a, e) => a + e.sets, 0);
+	const totalSeries = session.exercises.reduce((a, e) => a + e.sets.length, 0);
 
 	return (
 		<div className="flex flex-col h-full justify-between p-0 transition duration-500 ease
@@ -53,7 +62,7 @@ const EntryScreen = ({ session, onStart, completed }) => {
 						marginBottom: "8px",
 					}}
 				>
-					{session.name}
+					{session.title}
 				</div>
 
 				<div
@@ -66,7 +75,7 @@ const EntryScreen = ({ session, onStart, completed }) => {
 						marginBottom: "48px",
 					}}
 				>
-					{session.date}
+					{session.sessionDate.toLocaleDateString("es-ES",{day: "numeric", month: "short"})}
 				</div>
 
 				{!completed && (
