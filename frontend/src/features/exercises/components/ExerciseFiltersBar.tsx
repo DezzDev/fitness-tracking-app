@@ -1,0 +1,121 @@
+import { Search, X } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import type { ExerciseDifficulty, ExerciseType } from "@/types";
+
+interface ExerciseFiltersBarProps {
+	searchTerm: string;
+	onSearchChange: (value: string) => void;
+	difficulty?: ExerciseDifficulty;
+	onDifficultyChange: (value: ExerciseDifficulty | undefined) => void;
+	type?: ExerciseType;
+	onTypeChange: (value: ExerciseType | undefined) => void;
+	muscleGroup?: string;
+	onMuscleGroupChange: (value: string | undefined) => void;
+	onClearFilters: () => void;
+}
+
+export default function ExerciseFiltersBar({
+	searchTerm,
+	onSearchChange,
+	difficulty,
+	onDifficultyChange,
+	type,
+	onTypeChange,
+	muscleGroup,
+	onMuscleGroupChange,
+	onClearFilters
+}: ExerciseFiltersBarProps) {
+	const hasActiveFilters = searchTerm || difficulty || type || muscleGroup;
+
+	return (
+		<Card className="p-4">
+			<div className="flex flex-col sm:flex-row gap-4">
+				{/* Búsqueda */}
+				<div className="relative flex-1">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+					<Input
+						placeholder="Buscar ejercicios..."
+						value={searchTerm}
+						onChange={(e) => onSearchChange(e.target.value)}
+						className="pl-10"
+					/>
+				</div>
+
+				{/* Filtro de dificultad */}
+				<Select
+					value={difficulty || "all"}
+					onValueChange={(value) => 
+						onDifficultyChange(value === "all" ? undefined : value as ExerciseDifficulty)
+					}
+				>
+					<SelectTrigger className="w-full sm:w-[180px]">
+						<SelectValue placeholder="Dificultad" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="all">Todas las dificultades</SelectItem>
+						<SelectItem value="beginner">🟢 Principiante</SelectItem>
+						<SelectItem value="intermediate">🟡 Intermedio</SelectItem>
+						<SelectItem value="advanced">🔴 Avanzado</SelectItem>
+					</SelectContent>
+				</Select>
+
+				{/* Filtro de tipo */}
+				<Select
+					value={type || "all"}
+					onValueChange={(value) => 
+						onTypeChange(value === "all" ? undefined : value as ExerciseType)
+					}
+				>
+					<SelectTrigger className="w-full sm:w-[180px]">
+						<SelectValue placeholder="Tipo" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="all">Todos los tipos</SelectItem>
+						<SelectItem value="strength">💪 Fuerza</SelectItem>
+						<SelectItem value="endurance">🏋️‍♀️ Resistencia</SelectItem>
+						<SelectItem value="skill">🧠 Habilidad</SelectItem>
+						<SelectItem value="explosive">💥 Explosivo</SelectItem>
+					</SelectContent>
+				</Select>
+
+				{/* Filtro de grupo muscular */}
+				<Select
+					value={muscleGroup || "all"}
+					onValueChange={(value) => 
+						onMuscleGroupChange(value === "all" ? undefined : value)
+					}
+				>
+					<SelectTrigger className="w-full sm:w-[180px]">
+						<SelectValue placeholder="Grupo muscular" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="all">Todos los grupos</SelectItem>
+						<SelectItem value="chest">Pecho</SelectItem>
+						<SelectItem value="back">Espalda</SelectItem>
+						<SelectItem value="legs">Piernas</SelectItem>
+						<SelectItem value="shoulders">Hombros</SelectItem>
+						<SelectItem value="arms">Brazos</SelectItem>
+						<SelectItem value="core">Core</SelectItem>
+						<SelectItem value="cardio">Cardio</SelectItem>
+					</SelectContent>
+				</Select>
+
+				{/* Botón limpiar filtros */}
+				{hasActiveFilters && (
+					<Button
+						variant="outline"
+						size="icon"
+						onClick={onClearFilters}
+						className="shrink-0"
+						title="Limpiar filtros"
+					>
+						<X className="h-4 w-4" />
+					</Button>
+				)}
+			</div>
+		</Card>
+	);
+}

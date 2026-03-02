@@ -58,6 +58,13 @@ export interface ExerciseWithTags extends Exercise {
 	tags: Tag[];
 }
 
+export interface ExerciseStats {
+	total: number;
+	byDifficulty: Record<string, number>;
+	byType: Record<string, number>;
+	byMuscleGroup: Record<string, number>;
+}
+
 // =================================
 // WORKOUT TEMPLATE
 // =================================

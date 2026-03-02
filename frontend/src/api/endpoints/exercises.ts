@@ -1,5 +1,5 @@
 import {apiClient, type ApiResponse, type PaginatedResponse} from '../client';
-import type { Exercise, ExerciseFilters } from '@/types';
+import type { Exercise, ExerciseFilters, ExerciseStats } from '@/types';
 
 type ExerciseListResponse = {
 	success: boolean
@@ -56,6 +56,17 @@ export const exercisesApi = {
 	getExercise: async (id: string): Promise<Exercise> => {
 		const response = await apiClient.get<ApiResponse<Exercise>>(
 			`/exercises/${id}`
+		);
+		return response.data.data!;
+	},
+
+	/**
+	 * Obtener estadísticas de ejercicios
+	 * @returns estadísticas (total, byDifficulty, byType, byMuscleGroup)
+	 */
+	getStats: async (): Promise<ExerciseStats> => {
+		const response = await apiClient.get<ApiResponse<ExerciseStats>>(
+			'/exercises/stats'
 		);
 		return response.data.data!;
 	}

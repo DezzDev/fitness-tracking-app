@@ -43,3 +43,15 @@ export function useExercise(id: string) {
 		}
 	})
 }
+
+/**
+ * Hook para obtener estadísticas de ejercicios
+ * @returns Estadísticas (total, byDifficulty, byType, byMuscleGroup)
+ */
+export function useExerciseStats() {
+	return useQuery({
+		queryKey: queryKeys.exerciseStats,
+		queryFn: () => exercisesApi.getStats(),
+		staleTime: 15 * 60 * 1000, // 15 minutos (estadísticas cambian raramente)
+	})
+}
