@@ -1,129 +1,145 @@
 // src/features/workouts/components/SessionsList.tsx
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Search, Calendar, Dumbbell, Eye, Trash2 } from 'lucide-react';
+import { Dumbbell, Clock, ArrowRight } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useWorkoutSessions, useDeleteSession } from '../hooks/useWorkoutSessions';
+import { useWorkoutSessions } from '../hooks/useWorkoutSessions';
+import type { WorkoutSession } from '@/types';
 
 export default function SessionsList() {
-	const [ searchTerm, setSearchTerm ] = useState('');
-	const { data, isLoading } = useWorkoutSessions({ searchTerm, limit: 50 });
-	const { mutate: deleteSession } = useDeleteSession();
+	const { data, isLoading } = useWorkoutSessions({ limit: 100 });
 
 	const sessions = data?.data.items || [];
 
+	// Agrupar sesiones por mes
+	const sessionsByMonth = useMemo(() => {
+		const grouped = new Map<string, WorkoutSession[]>();
+
+		sessions.forEach((session) => {
+			const sessionDate = new Date(session.sessionDate);
+			const monthKey = format(sessionDate, 'MMMM yyyy', { locale: es }).toUpperCase();
+
+			if (!grouped.has(monthKey)) {
+				grouped.set(monthKey, []);
+			}
+			grouped.get(monthKey)!.push(session);
+		});
+
+		return grouped;
+	}, [sessions]);
+
 	return (
 		<div className="space-y-6">
-			{/* Búsqueda */}
-			<Card className="p-4">
-				<div className="relative">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-					<Input
-						placeholder="Buscar entrenamientos..."
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-						className="pl-10"
-					/>
-				</div>
-			</Card>
-
-			{/* Lista */}
+			{/* Loading */}
 			{isLoading ? (
-				<div className="space-y-3">
-					{[ ...Array(5) ].map((_, i) => (
-						<Card key={i} className="p-4">
-							<Skeleton className="h-20 w-full" />
-						</Card>
+				<div className="space-y-6">
+					{[ ...Array(3) ].map((_, i) => (
+						<div key={i} className="space-y-3">
+							<Skeleton className="h-6 w-32" />
+							<Skeleton className="h-24 w-full" />
+						</div>
 					))}
 				</div>
 			) : sessions.length === 0 ? (
-				<Card className="p-12 text-center">
-					<div className="max-w-sm mx-auto space-y-4">
-					<div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto">
-						<Dumbbell className="h-8 w-8 text-muted-foreground" />
-					</div>
-					<div>
-						<h3 className="text-lg font-semibold text-foreground">
-							No hay entrenamientos registrados
-						</h3>
-						<p className="text-muted-foreground mt-1">
+				/* Empty state */
+				<Card className="border-2 border-dashed border-border bg-muted/5">
+					<div className="p-12 text-center max-w-sm mx-auto space-y-4">
+						<div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto">
+							<Dumbbell className="h-8 w-8 text-muted-foreground" />
+						</div>
+						<div>
+							<h3 className="text-lg font-bebas tracking-wide uppercase text-foreground">
+								No hay sesiones
+							</h3>
+							<p className="text-muted-foreground mt-1 text-sm font-barlow">
 								Inicia tu primer entrenamiento
 							</p>
 						</div>
-						<Link to="/workouts/sessions/start">
-							<Button>
-								<Dumbbell className="mr-2 h-4 w-4" />
-								Iniciar Entrenamiento
-							</Button>
-						</Link>
 					</div>
 				</Card>
 			) : (
-				<div className="space-y-3">
-					{sessions.map((session) => {
-						const sessionDate = new Date(session.sessionDate);
+				/* Lista agrupada por mes */
+				<div className="space-y-8">
+					{Array.from(sessionsByMonth.entries()).map(([ monthKey, monthSessions ]) => (
+						<div key={monthKey} className="space-y-3">
+							{/* Divisor de mes */}
+							<div className="flex items-center gap-3">
+								<h3 className="text-sm font-bebas tracking-widest text-muted-foreground uppercase">
+									{monthKey}
+								</h3>
+								<div className="flex-1 h-px bg-border" />
+							</div>
 
-						return (
-							<Card key={session.id} className="hover:shadow-md transition-shadow">
-								<CardContent className="p-4">
-									<div className="flex items-center justify-between gap-4">
-										{/* Info principal */}
-										<div className="flex-1 min-w-0">
-											<h3 className="font-semibold text-foreground truncate">
-												{session.title}
-											</h3>
+							{/* Sesiones del mes */}
+							<div className="space-y-3">
+								{monthSessions.map((session) => {
+									const sessionDate = new Date(session.sessionDate);
+									const isTodaySession = isToday(sessionDate);
 
-											<div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-												<div className="flex items-center gap-1">
-													<Calendar className="h-4 w-4" />
-													<span>
-														{format(sessionDate, "d 'de' MMM, yyyy", { locale: es })}
-													</span>
+									return (
+										<Link 
+											key={session.id} 
+											to={`/workouts/sessions/${session.id}`}
+											className="block"
+										>
+											<Card className={`
+												hover:shadow-md transition-all duration-200 
+												hover:border-primary/50 cursor-pointer
+												${isTodaySession ? 'border-primary/40 bg-primary/5' : 'border-border'}
+											`}>
+												<div className="p-4">
+													{/* Header con fecha y nombre */}
+													<div className="flex items-start justify-between gap-4 mb-3">
+														<div className="flex items-center gap-3 flex-1 min-w-0">
+															{/* Tag de fecha */}
+															<Badge 
+																variant="outline" 
+																className={`
+																	shrink-0 font-barlow font-bold uppercase text-xs
+																	${isTodaySession ? 'border-primary text-primary' : 'border-border text-muted-foreground'}
+																`}
+															>
+																{format(sessionDate, 'd MMM', { locale: es })}
+															</Badge>
+
+															{/* Nombre de sesión */}
+															<h4 className="font-bebas tracking-wide text-lg text-foreground truncate">
+																{session.title}
+															</h4>
+														</div>
+
+														<ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+													</div>
+
+													{/* Métricas */}
+													<div className="flex items-center gap-4 text-sm text-muted-foreground font-barlow">
+														{/* Duración */}
+														{session.durationMinutes && (
+															<div className="flex items-center gap-1.5">
+																<Clock className="h-4 w-4" />
+																<span>{session.durationMinutes} min</span>
+															</div>
+														)}
+
+														{/* Placeholder para ejercicios/series/volumen - necesitaremos datos adicionales */}
+														<div className="flex items-center gap-1.5">
+															<Dumbbell className="h-4 w-4" />
+															<span>Ver detalle</span>
+														</div>
+													</div>
 												</div>
-
-												{session.durationMinutes && (
-													<Badge variant="outline" className="text-xs">
-														{session.durationMinutes} min
-													</Badge>
-												)}
-											</div>
-
-											{session.notes && (
-												<p className="text-sm text-muted-foreground mt-2 line-clamp-1">
-													{session.notes}
-												</p>
-											)}
-										</div>
-
-										{/* Acciones */}
-										<div className="flex items-center gap-2">
-											<Link to={`/workouts/sessions/${session.id}`}>
-												<Button variant="ghost" size="sm">
-													<Eye className="h-4 w-4" />
-												</Button>
-											</Link>
-
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={() => deleteSession(session.id)}
-												className="text-destructive hover:text-destructive/80"
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-						);
-					})}
+											</Card>
+										</Link>
+									);
+								})}
+							</div>
+						</div>
+					))}
 				</div>
 			)}
 		</div>

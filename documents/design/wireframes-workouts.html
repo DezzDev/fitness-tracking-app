@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframes — Workouts Fitness Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f0f0f;
+    font-family: 'Barlow Condensed', sans-serif;
+    padding: 48px 32px 80px;
+    min-height: 100vh;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 64px;
+    border-bottom: 1px solid #1e1e1e;
+    padding-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .page-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: #E85D04;
+    opacity: 0.5;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .page-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 42px;
+    letter-spacing: 3px;
+    color: #222;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .page-route {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #252525;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* ── ROW LAYOUT ── */
+  .row {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 72px;
+    align-items: flex-start;
+  }
+
+  .row-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #222;
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    align-self: center;
+    margin-right: 8px;
+  }
+
+  /* ── PHONE FRAME ── */
+  .phone {
+    width: 260px;
+    height: 540px;
+    border: 1.5px solid #222;
+    background: #141414;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .phone.active-state {
+    border-color: #2a2a2a;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 42px;
+    border-right: 1px solid #1e1e1e;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    flex-shrink: 0;
+  }
+  .logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    color: #E85D04;
+    opacity: 0.6;
+    letter-spacing: 1px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  .nav-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    width: 100%;
+  }
+  .nav-item {
+    width: 100%;
+    padding: 7px 0;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: #252525;
+    position: relative;
+    text-transform: uppercase;
+  }
+  .nav-item.active {
+    color: #444;
+    background: #1a1a1a;
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 2px; height: 12px;
+    background: #E85D04;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── INNER HEADER ── */
+  .inner-header {
+    padding: 14px 16px 0;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .inner-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    color: #282828;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+  }
+  .tab {
+    padding: 7px 0;
+    margin-right: 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8px;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #252525;
+    position: relative;
+  }
+  .tab.active {
+    color: #3a3a3a;
+  }
+  .tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 1.5px;
+    background: #E85D04;
+    opacity: 0.7;
+  }
+
+  /* ── SCROLL AREA ── */
+  .scroll-area {
+    flex: 1;
+    padding: 12px 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* ── SESSION CARD ── */
+  .session-card {
+    border: 1px solid #1e1e1e;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #161616;
+  }
+  .session-card.highlight {
+    border-color: #282828;
+  }
+  .card-left {}
+  .card-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 2.5px;
+    color: #E85D04;
+    opacity: 0.5;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .card-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    color: #2e2e2e;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 10px;
+  }
+  .card-meta-item {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 1.5px;
+    color: #252525;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .card-arrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    color: #252525;
+  }
+  .card-duration {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    color: #252525;
+  }
+
+  /* ── MONTH DIVIDER ── */
+  .month-divider {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 3px;
+    color: #1e1e1e;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 0;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 4px;
+  }
+
+  /* ── TEMPLATE CARD ── */
+  .template-card {
+    border: 1px solid #1e1e1e;
+    padding: 10px 12px;
+    background: #161616;
+  }
+  .template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .template-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    color: #2e2e2e;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .template-fav {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #E85D04;
+    opacity: 0.4;
+    margin-top: 2px;
+  }
+  .template-exercises {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .exercise-pill {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 6px;
+    letter-spacing: 1.5px;
+    color: #252525;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid #1e1e1e;
+    padding: 2px 5px;
+  }
+  .template-footer {
+    display: flex;
+    gap: 10px;
+  }
+  .template-action {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: #E85D04;
+    opacity: 0.4;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .template-action.ghost {
+    color: #252525;
+    opacity: 1;
+  }
+
+  /* ── BOTTOM CTA ── */
+  .bottom-cta {
+    padding: 10px 16px 14px;
+    border-top: 1px solid #1e1e1e;
+  }
+  .cta-btn {
+    height: 36px;
+    background: #E85D04;
+    opacity: 0.2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cta-btn-text {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: #E85D04;
+    opacity: 0.9;
+  }
+
+  /* ── DETAIL HEADER ── */
+  .detail-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .back-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: #252525;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .detail-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 3px;
+    color: #E85D04;
+    opacity: 0.5;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .detail-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    color: #2e2e2e;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .detail-stats {
+    display: flex;
+    gap: 16px;
+  }
+  .detail-stat {
+    display: flex;
+    flex-direction: column;
+  }
+  .stat-val {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    color: #282828;
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 6px;
+    letter-spacing: 2px;
+    color: #222;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ── EXERCISE ROW ── */
+  .exercise-row {
+    padding: 10px 16px;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ex-left {}
+  .ex-muscle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 6px;
+    letter-spacing: 2px;
+    color: #E85D04;
+    opacity: 0.4;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .ex-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    color: #2a2a2a;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .ex-right {
+    text-align: right;
+  }
+  .ex-sets {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    color: #252525;
+    line-height: 1;
+  }
+  .ex-sets-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 6px;
+    letter-spacing: 1.5px;
+    color: #1e1e1e;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* ── VOLUME CHART PLACEHOLDER ── */
+  .chart-area {
+    margin: 0 16px;
+    height: 48px;
+    border: 1px solid #1a1a1a;
+    background: #121212;
+    display: flex;
+    align-items: flex-end;
+    padding: 6px 8px;
+    gap: 4px;
+    position: relative;
+  }
+  .chart-bar {
+    flex: 1;
+    background: #1e1e1e;
+    border-radius: 0;
+  }
+  .chart-bar.accent {
+    background: #E85D04;
+    opacity: 0.2;
+  }
+  .chart-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 6px;
+    letter-spacing: 2px;
+    color: #1e1e1e;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: absolute;
+    top: 6px;
+    right: 8px;
+  }
+
+  /* ── CREATE FORM ── */
+  .form-group {
+    padding: 0 16px;
+    margin-bottom: 10px;
+  }
+  .form-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 3px;
+    color: #252525;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .form-input {
+    height: 28px;
+    border: 1px solid #1e1e1e;
+    background: #111;
+    width: 100%;
+  }
+  .form-input.filled {
+    border-color: #2a2a2a;
+    background: #161616;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+  }
+  .form-input-text {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    color: #2e2e2e;
+    letter-spacing: 1px;
+  }
+  .form-input-placeholder {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: #1e1e1e;
+    font-weight: 600;
+  }
+
+  /* ── ADDED EXERCISE ── */
+  .added-exercise {
+    margin: 0 16px;
+    padding: 8px 10px;
+    border: 1px solid #1e1e1e;
+    background: #131313;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .added-ex-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 12px;
+    color: #2a2a2a;
+    letter-spacing: 1px;
+  }
+  .added-ex-sets {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .set-chip {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 8px;
+    color: #252525;
+  }
+
+  /* ── ADD EXERCISE BTN ── */
+  .add-exercise-btn {
+    margin: 0 16px;
+    height: 28px;
+    border: 1px dashed #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .add-ex-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 2.5px;
+    color: #252525;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* ── SCREEN CAPTION ── */
+  .caption {
+    margin-top: 14px;
+    padding-left: 2px;
+  }
+  .caption-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #222;
+    font-weight: 600;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+  }
+  .caption-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: #2e2e2e;
+    text-transform: uppercase;
+  }
+  .caption-route {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: #E85D04;
+    opacity: 0.35;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .caption-desc {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: #1e1e1e;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-top: 5px;
+    line-height: 1.6;
+  }
+
+  /* ── FLOW CONNECTOR ── */
+  .flow-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 72px;
+    padding-left: 42px;
+  }
+  .flow-node {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: #222;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .flow-arrow {
+    width: 40px;
+    height: 1px;
+    background: #1a1a1a;
+    margin: 0 8px;
+    flex-shrink: 0;
+  }
+
+  hr { border: none; border-top: 1px solid #1a1a1a; }
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div>
+    <div class="page-tag">Fitness Tracker — /workouts</div>
+    <div class="page-title">Wireframes — Workouts</div>
+  </div>
+  <div class="page-route">
+    5 pantallas<br>1 flujo completo
+  </div>
+</div>
+
+<!-- FLOW INDICATOR -->
+<div class="flow-bar">
+  <div class="flow-node">01 Sesiones</div>
+  <div class="flow-arrow"></div>
+  <div class="flow-node">02 Plantillas</div>
+  <div class="flow-arrow"></div>
+  <div class="flow-node">03 Detalle sesión</div>
+  <div class="flow-arrow"></div>
+  <div class="flow-node">04 Crear entrenamiento</div>
+  <div class="flow-arrow"></div>
+  <div class="flow-node">05 Detalle plantilla</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- ROW 1 — SESIONES + PLANTILLAS -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label">Vista principal</div>
+
+  <!-- SCREEN 01 — SESIONES -->
+  <div>
+    <div class="phone active-state">
+      <div class="sidebar">
+        <div class="logo">FT</div>
+        <div class="nav-items">
+          <div class="nav-item">DB</div>
+          <div class="nav-item active">WO</div>
+          <div class="nav-item">EX</div>
+          <div class="nav-item">ST</div>
+          <div class="nav-item">PR</div>
+        </div>
+        <div style="height:6px"></div>
+      </div>
+      <div class="content">
+        <!-- inner header + tabs -->
+        <div class="inner-header">
+          <div class="inner-title">WORKOUTS</div>
+          <div class="tabs">
+            <div class="tab active">SESIONES</div>
+            <div class="tab">PLANTILLAS</div>
+          </div>
+        </div>
+
+        <!-- list -->
+        <div class="scroll-area">
+          <div class="month-divider">MARZO 2025</div>
+
+          <div class="session-card highlight">
+            <div class="card-left">
+              <div class="card-tag">HOY</div>
+              <div class="card-name">PUSH DAY</div>
+              <div class="card-meta">
+                <div class="card-meta-item">5 EJ</div>
+                <div class="card-meta-item">18 SERIES</div>
+                <div class="card-meta-item">4.3K KG</div>
+              </div>
+            </div>
+            <div class="card-right">
+              <div class="card-arrow">→</div>
+              <div class="card-duration">47 MIN</div>
+            </div>
+          </div>
+
+          <div class="session-card">
+            <div class="card-left">
+              <div class="card-tag">10 MAR</div>
+              <div class="card-name">PULL DAY</div>
+              <div class="card-meta">
+                <div class="card-meta-item">6 EJ</div>
+                <div class="card-meta-item">20 SERIES</div>
+                <div class="card-meta-item">3.8K KG</div>
+              </div>
+            </div>
+            <div class="card-right">
+              <div class="card-arrow">→</div>
+              <div class="card-duration">52 MIN</div>
+            </div>
+          </div>
+
+          <div class="session-card">
+            <div class="card-left">
+              <div class="card-tag">08 MAR</div>
+              <div class="card-name">LEG DAY</div>
+              <div class="card-meta">
+                <div class="card-meta-item">5 EJ</div>
+                <div class="card-meta-item">16 SERIES</div>
+                <div class="card-meta-item">6.1K KG</div>
+              </div>
+            </div>
+            <div class="card-right">
+              <div class="card-arrow">→</div>
+              <div class="card-duration">61 MIN</div>
+            </div>
+          </div>
+
+          <div class="month-divider" style="margin-top:4px;">FEBRERO 2025</div>
+
+          <div class="session-card">
+            <div class="card-left">
+              <div class="card-tag">28 FEB</div>
+              <div class="card-name">PUSH DAY</div>
+              <div class="card-meta">
+                <div class="card-meta-item">5 EJ</div>
+                <div class="card-meta-item">18 SERIES</div>
+              </div>
+            </div>
+            <div class="card-right">
+              <div class="card-arrow">→</div>
+              <div class="card-duration">44 MIN</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- bottom cta -->
+        <div class="bottom-cta">
+          <div class="cta-btn">
+            <div class="cta-btn-text">+ NUEVA SESIÓN</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="caption-number">01 / 05</div>
+      <div class="caption-title">Sesiones</div>
+      <div class="caption-route">/workouts → tab sesiones</div>
+      <div class="caption-desc">
+        Historial agrupado por mes.<br>
+        Sesión más reciente siempre arriba.<br>
+        Tap en card → detalle de sesión.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 02 — PLANTILLAS -->
+  <div>
+    <div class="phone">
+      <div class="sidebar">
+        <div class="logo">FT</div>
+        <div class="nav-items">
+          <div class="nav-item">DB</div>
+          <div class="nav-item active">WO</div>
+          <div class="nav-item">EX</div>
+          <div class="nav-item">ST</div>
+          <div class="nav-item">PR</div>
+        </div>
+        <div style="height:6px"></div>
+      </div>
+      <div class="content">
+        <div class="inner-header">
+          <div class="inner-title">WORKOUTS</div>
+          <div class="tabs">
+            <div class="tab">SESIONES</div>
+            <div class="tab active">PLANTILLAS</div>
+          </div>
+        </div>
+
+        <div class="scroll-area">
+
+          <!-- favorite section -->
+          <div class="month-divider">FAVORITAS</div>
+
+          <div class="template-card" style="border-color:#282828;">
+            <div class="template-header">
+              <div class="template-name">PUSH DAY A</div>
+              <div class="template-fav"></div>
+            </div>
+            <div class="template-exercises">
+              <div class="exercise-pill">BANCA</div>
+              <div class="exercise-pill">MILITAR</div>
+              <div class="exercise-pill">FONDOS</div>
+              <div class="exercise-pill">+2</div>
+            </div>
+            <div class="template-footer">
+              <div class="template-action">INICIAR</div>
+              <div class="template-action ghost">EDITAR</div>
+              <div class="template-action ghost">DUPLICAR</div>
+            </div>
+          </div>
+
+          <div class="template-card" style="border-color:#282828;">
+            <div class="template-header">
+              <div class="template-name">PULL DAY</div>
+              <div class="template-fav"></div>
+            </div>
+            <div class="template-exercises">
+              <div class="exercise-pill">DOMINADAS</div>
+              <div class="exercise-pill">REMO</div>
+              <div class="exercise-pill">CURL</div>
+            </div>
+            <div class="template-footer">
+              <div class="template-action">INICIAR</div>
+              <div class="template-action ghost">EDITAR</div>
+              <div class="template-action ghost">DUPLICAR</div>
+            </div>
+          </div>
+
+          <!-- all templates -->
+          <div class="month-divider" style="margin-top:4px;">TODAS</div>
+
+          <div class="template-card">
+            <div class="template-header">
+              <div class="template-name">LEG DAY</div>
+            </div>
+            <div class="template-exercises">
+              <div class="exercise-pill">SENTADILLA</div>
+              <div class="exercise-pill">PRENSA</div>
+              <div class="exercise-pill">+3</div>
+            </div>
+            <div class="template-footer">
+              <div class="template-action">INICIAR</div>
+              <div class="template-action ghost">EDITAR</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="bottom-cta">
+          <div class="cta-btn">
+            <div class="cta-btn-text">+ NUEVA PLANTILLA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="caption-number">02 / 05</div>
+      <div class="caption-title">Plantillas</div>
+      <div class="caption-route">/workouts → tab plantillas</div>
+      <div class="caption-desc">
+        Favoritas siempre al inicio.<br>
+        Acciones rápidas: iniciar / editar / duplicar.<br>
+        Tap en nombre → detalle de plantilla.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- ROW 2 — DETALLE SESIÓN + CREAR -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label">Subpáginas</div>
+
+  <!-- SCREEN 03 — DETALLE SESIÓN -->
+  <div>
+    <div class="phone">
+      <div class="sidebar">
+        <div class="logo">FT</div>
+        <div class="nav-items">
+          <div class="nav-item">DB</div>
+          <div class="nav-item active">WO</div>
+          <div class="nav-item">EX</div>
+          <div class="nav-item">ST</div>
+          <div class="nav-item">PR</div>
+        </div>
+        <div style="height:6px"></div>
+      </div>
+      <div class="content">
+        <!-- header -->
+        <div class="detail-header">
+          <div class="back-btn">← WORKOUTS</div>
+          <div class="detail-tag">12 MAR · PUSH DAY</div>
+          <div class="detail-title">SESIÓN<br>COMPLETADA</div>
+          <div class="detail-stats">
+            <div class="detail-stat">
+              <div class="stat-val">47</div>
+              <div class="stat-label">MIN</div>
+            </div>
+            <div class="detail-stat">
+              <div class="stat-val">18</div>
+              <div class="stat-label">SERIES</div>
+            </div>
+            <div class="detail-stat">
+              <div class="stat-val">4.3K</div>
+              <div class="stat-label">KG VOL</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- volume chart -->
+        <div style="padding:10px 16px 8px;">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#1e1e1e; font-weight:700; text-transform:uppercase; margin-bottom:6px;">VOLUMEN VS SESIÓN ANTERIOR</div>
+          <div class="chart-area">
+            <div class="chart-label">+12%</div>
+            <div class="chart-bar" style="height:60%;"></div>
+            <div class="chart-bar accent" style="height:100%;"></div>
+          </div>
+        </div>
+
+        <!-- exercise list -->
+        <div style="flex:1; overflow:hidden;">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#1e1e1e; font-weight:700; text-transform:uppercase; padding:6px 16px; border-bottom:1px solid #1a1a1a;">EJERCICIOS</div>
+
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">PECTORAL</div>
+              <div class="ex-name">PRESS BANCA</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">4 × 8</div>
+              <div class="ex-sets-label">80 KG</div>
+            </div>
+          </div>
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">HOMBRO</div>
+              <div class="ex-name">PRESS MILITAR</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">3 × 10</div>
+              <div class="ex-sets-label">60 KG</div>
+            </div>
+          </div>
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">TRÍCEPS</div>
+              <div class="ex-name">FONDOS</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">4 × 15</div>
+              <div class="ex-sets-label">PESO CORP.</div>
+            </div>
+          </div>
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">PECTORAL</div>
+              <div class="ex-name">APERTURAS</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">3 × 12</div>
+              <div class="ex-sets-label">20 KG</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- actions -->
+        <div class="bottom-cta" style="display:flex; gap:8px;">
+          <div style="flex:1; height:32px; border:1px solid #1e1e1e; display:flex; align-items:center; justify-content:center;">
+            <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#252525; font-weight:700; text-transform:uppercase;">DUPLICAR</div>
+          </div>
+          <div style="flex:1; height:32px; border:1px solid #1e1e1e; display:flex; align-items:center; justify-content:center;">
+            <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#252525; font-weight:700; text-transform:uppercase;">ELIMINAR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="caption-number">03 / 05</div>
+      <div class="caption-title">Detalle Sesión</div>
+      <div class="caption-route">/workouts/:id</div>
+      <div class="caption-desc">
+        Métricas resumidas arriba.<br>
+        Comparativa de volumen con sesión anterior.<br>
+        Lista completa de ejercicios con sets y peso.<br>
+        Acciones: duplicar / eliminar.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 04 — CREAR ENTRENAMIENTO -->
+  <div>
+    <div class="phone">
+      <div class="sidebar">
+        <div class="logo">FT</div>
+        <div class="nav-items">
+          <div class="nav-item">DB</div>
+          <div class="nav-item active">WO</div>
+          <div class="nav-item">EX</div>
+          <div class="nav-item">ST</div>
+          <div class="nav-item">PR</div>
+        </div>
+        <div style="height:6px"></div>
+      </div>
+      <div class="content">
+        <!-- header -->
+        <div class="detail-header">
+          <div class="back-btn">← WORKOUTS</div>
+          <div class="inner-title">NUEVO<br style="line-height:0.8;"> ENTRENAMIENTO</div>
+        </div>
+
+        <!-- form -->
+        <div style="flex:1; padding-top:12px; overflow:hidden; display:flex; flex-direction:column; gap:0;">
+
+          <div class="form-group">
+            <div class="form-label">NOMBRE</div>
+            <div class="form-input filled">
+              <div class="form-input-text">PUSH DAY B</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">DESDE PLANTILLA (OPCIONAL)</div>
+            <div class="form-input filled" style="justify-content:space-between;">
+              <div class="form-input-placeholder" style="color:#252525;">SELECCIONAR PLANTILLA</div>
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:8px; color:#1e1e1e;">↓</div>
+            </div>
+          </div>
+
+          <!-- exercises section -->
+          <div style="padding:0 16px; margin-bottom:8px;">
+            <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#1e1e1e; font-weight:700; text-transform:uppercase; padding-bottom:6px; border-bottom:1px solid #1a1a1a; margin-bottom:8px;">EJERCICIOS</div>
+          </div>
+
+          <div class="added-exercise">
+            <div>
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:6px; letter-spacing:2px; color:#E85D04; opacity:0.4; font-weight:600; text-transform:uppercase; margin-bottom:1px;">PECTORAL</div>
+              <div class="added-ex-name">PRESS BANCA</div>
+            </div>
+            <div class="added-ex-sets">
+              <div class="set-chip">4</div>
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; color:#1e1e1e;">×</div>
+              <div class="set-chip">8</div>
+              <div style="width:14px; height:14px; border:1px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-size:8px; color:#1e1e1e; margin-left:4px;">✕</div>
+            </div>
+          </div>
+
+          <div class="added-exercise">
+            <div>
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:6px; letter-spacing:2px; color:#E85D04; opacity:0.4; font-weight:600; text-transform:uppercase; margin-bottom:1px;">HOMBRO</div>
+              <div class="added-ex-name">PRESS MILITAR</div>
+            </div>
+            <div class="added-ex-sets">
+              <div class="set-chip">3</div>
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; color:#1e1e1e;">×</div>
+              <div class="set-chip">10</div>
+              <div style="width:14px; height:14px; border:1px solid #1a1a1a; display:flex; align-items:center; justify-content:center; font-size:8px; color:#1e1e1e; margin-left:4px;">✕</div>
+            </div>
+          </div>
+
+          <div class="add-exercise-btn" style="margin-top:4px;">
+            <div class="add-ex-text">+ AÑADIR EJERCICIO</div>
+          </div>
+
+        </div>
+
+        <!-- save -->
+        <div class="bottom-cta">
+          <div class="cta-btn">
+            <div class="cta-btn-text">GUARDAR ENTRENAMIENTO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="caption-number">04 / 05</div>
+      <div class="caption-title">Crear Entrenamiento</div>
+      <div class="caption-route">/workouts/new</div>
+      <div class="caption-desc">
+        Nombre + plantilla base opcional.<br>
+        Ejercicios añadidos con sets y reps.<br>
+        Botón para buscar y añadir ejercicios.<br>
+        CTA principal fijo abajo.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 05 — DETALLE PLANTILLA -->
+  <div>
+    <div class="phone">
+      <div class="sidebar">
+        <div class="logo">FT</div>
+        <div class="nav-items">
+          <div class="nav-item">DB</div>
+          <div class="nav-item active">WO</div>
+          <div class="nav-item">EX</div>
+          <div class="nav-item">ST</div>
+          <div class="nav-item">PR</div>
+        </div>
+        <div style="height:6px"></div>
+      </div>
+      <div class="content">
+        <!-- header -->
+        <div class="detail-header">
+          <div class="back-btn">← PLANTILLAS</div>
+          <div class="detail-tag">PLANTILLA · 5 EJERCICIOS</div>
+          <div class="detail-title">PUSH DAY A</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+            <div style="width:5px; height:5px; border-radius:50%; background:#E85D04; opacity:0.4;"></div>
+            <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#E85D04; opacity:0.4; font-weight:700; text-transform:uppercase;">FAVORITA</div>
+          </div>
+        </div>
+
+        <!-- usage stats -->
+        <div style="display:flex; padding:10px 16px; gap:16px; border-bottom:1px solid #1a1a1a;">
+          <div class="detail-stat">
+            <div class="stat-val">12</div>
+            <div class="stat-label">USOS</div>
+          </div>
+          <div class="detail-stat">
+            <div class="stat-val">44 MIN</div>
+            <div class="stat-label">PROM. DURACIÓN</div>
+          </div>
+          <div class="detail-stat">
+            <div class="stat-val">3.8K</div>
+            <div class="stat-label">KG PROM.</div>
+          </div>
+        </div>
+
+        <!-- exercise list -->
+        <div style="flex:1; overflow:hidden;">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#1e1e1e; font-weight:700; text-transform:uppercase; padding:6px 16px; border-bottom:1px solid #1a1a1a;">ESTRUCTURA</div>
+
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">PECTORAL</div>
+              <div class="ex-name">PRESS BANCA</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">4 × 8</div>
+              <div class="ex-sets-label">SUGERIDO</div>
+            </div>
+          </div>
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">HOMBRO</div>
+              <div class="ex-name">PRESS MILITAR</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">3 × 10</div>
+              <div class="ex-sets-label">SUGERIDO</div>
+            </div>
+          </div>
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">TRÍCEPS</div>
+              <div class="ex-name">FONDOS</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">4 × 15</div>
+              <div class="ex-sets-label">SUGERIDO</div>
+            </div>
+          </div>
+          <div class="exercise-row">
+            <div class="ex-left">
+              <div class="ex-muscle">PECTORAL</div>
+              <div class="ex-name">APERTURAS</div>
+            </div>
+            <div class="ex-right">
+              <div class="ex-sets">3 × 12</div>
+              <div class="ex-sets-label">SUGERIDO</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- actions -->
+        <div class="bottom-cta" style="display:flex; flex-direction:column; gap:8px; padding-top:8px;">
+          <div class="cta-btn">
+            <div class="cta-btn-text">INICIAR SESIÓN</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1; height:28px; border:1px solid #1e1e1e; display:flex; align-items:center; justify-content:center;">
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#252525; font-weight:700; text-transform:uppercase;">EDITAR</div>
+            </div>
+            <div style="flex:1; height:28px; border:1px solid #1e1e1e; display:flex; align-items:center; justify-content:center;">
+              <div style="font-family:'Barlow Condensed',sans-serif; font-size:7px; letter-spacing:2px; color:#252525; font-weight:700; text-transform:uppercase;">DUPLICAR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="caption-number">05 / 05</div>
+      <div class="caption-title">Detalle Plantilla</div>
+      <div class="caption-route">/workouts/templates/:id</div>
+      <div class="caption-desc">
+        Estadísticas de uso histórico.<br>
+        Estructura completa de ejercicios.<br>
+        CTA principal: iniciar sesión.<br>
+        Acciones secundarias: editar / duplicar.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,39 +1,36 @@
 // src/features/workouts/pages/WorkoutDetailPage.tsx
-
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDeleteWorkout, useWorkout } from "../hooks/useWorkouts";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, ArrowLeft, Calendar, Clock, Dumbbell, Pencil, Repeat, Trash2, Weight } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import ExerciseInfo from "../components/ExerciseInfo";
+import { ArrowLeft, Clock, Dumbbell, TrendingUp, Copy, Trash2, AlertTriangle } from "lucide-react";
 
+import { useWorkoutSession, useDeleteSession } from "../hooks/useWorkoutSessions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function WorkoutDetailPage() {
-
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const workoutId = id;
+	const sessionId = id!;
 
-	const { data: workout, isLoading, isError } = useWorkout(workoutId);
-	const { mutate: deleteWorkout, isPending: isDeleting } = useDeleteWorkout();
-	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false)
-	console.log({workout})
+	const { data: response, isLoading, isError } = useWorkoutSession(sessionId);
+	const { mutate: deleteSession, isPending: isDeleting } = useDeleteSession();
+	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
+
+	const session = response || null;
 
 	const handleDelete = () => {
-		if (workoutId === undefined) return
-		deleteWorkout(workoutId, {
+		deleteSession(sessionId, {
 			onSuccess: () => {
-				navigate('/workouts')
+				navigate('/workouts');
 			}
-		})
-	}
+		});
+	};
 
 	if (isLoading) {
 		return (
@@ -41,172 +38,195 @@ export default function WorkoutDetailPage() {
 				<Skeleton className='h-10 w-3/4' />
 				<Skeleton className="h-64 w-full" />
 			</div>
-		)
+		);
 	}
 
-	if (isError || !workout) {
+	if (isError || !session) {
 		return (
-			<Card className="p-12 text-center">
-			<p className="text-muted-foreground">
-				Entrenamiento no encontrado
-			</p>
-				<Button
-					onClick={() => navigate('/workouts')}
-					className="mt-4"
-				>
-					Volver a entrenamientos
+			<Card className="p-12 text-center max-w-md mx-auto">
+				<p className="text-muted-foreground mb-4">
+					Sesión no encontrada
+				</p>
+				<Button onClick={() => navigate('/workouts')}>
+					Volver a Workouts
 				</Button>
 			</Card>
-		)
+		);
 	}
 
-	const workoutDate = new Date(workout.createdAt);
+	const sessionDate = new Date(session.sessionDate);
+	const exercises = session.exercises || [];
+
+	// Calcular métricas
+	const totalSets = exercises.reduce((sum: number, ex: any) => sum + (ex.sets?.length || 0), 0);
+	const totalVolume = exercises.reduce((sum: number, ex: any) => {
+		const exerciseVolume = ex.sets?.reduce((exSum: number, set: any) => {
+			const weight = set.weight || 0;
+			const reps = set.reps || 0;
+			return exSum + (weight * reps);
+		}, 0) || 0;
+		return sum + exerciseVolume;
+	}, 0);
 
 	return (
 		<>
 			<div className="max-w-4xl mx-auto space-y-6">
+				{/* Back Button */}
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={() => navigate('/workouts')}
+					className="font-barlow uppercase tracking-wide text-xs"
+				>
+					<ArrowLeft className="h-4 w-4 mr-2" />
+					Workouts
+				</Button>
+
 				{/* Header */}
-				<div className="flex items-start justify-between gap-4">
+				<div className="space-y-4">
+					{/* Fecha tag */}
+					<Badge 
+						variant="outline" 
+						className="font-barlow uppercase tracking-wide text-xs"
+					>
+						{format(sessionDate, "d 'de' MMMM, yyyy", { locale: es })}
+					</Badge>
 
-					<div className="flex-1">
-						<Button
-							className="mb-4"
-							variant={'ghost'}
-							size={'sm'}
-							onClick={() => navigate('/workouts')}
-						>
-							<ArrowLeft className="h-4 w-4 mr-2" />
-							Volver
-						</Button>
+					{/* Título */}
+					<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
+						Sesión Completada
+					</h1>
 
-						<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">
-							{workout.title}
-						</h1>
-
-						<div className="flex items-center gap-4 mt-3 text-muted-foreground">
+					{/* Stats row */}
+					<div className="flex items-center gap-6 text-sm font-barlow">
+						{session.durationMinutes && (
 							<div className="flex items-center gap-2">
-								<Calendar className="h-4 w-4" />
-								<span>{format(workoutDate, "d 'de' MMMM, yyyy", { locale: es })}</span>
+								<Clock className="h-4 w-4 text-primary" />
+								<span className="text-foreground font-semibold">{session.durationMinutes}</span>
+								<span className="text-muted-foreground">minutos</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Clock className="h-4 w-4" />
-								<span>{format(workoutDate, 'HH:mm')}</span>
-							</div>
+						)}
+						
+						<div className="flex items-center gap-2">
+							<Dumbbell className="h-4 w-4 text-primary" />
+							<span className="text-foreground font-semibold">{totalSets}</span>
+							<span className="text-muted-foreground">series</span>
 						</div>
-					</div>
 
-					{/* Acciones */}
-					<div className="flex gap-2">
-						<Link to={`/workouts/${workoutId}/edit`}>
-							<Button variant={'outline'}>
-								<Pencil className="h-4 w-4 mr-2" />
-								Editar
-							</Button>
-						</Link>
-
-						<Button
-							variant={'destructive'}
-							onClick={() => setShowDeleteDialog(true)}
-						>
-							<Trash2 className="h-4 w-4 mr-2" />
-							Eliminar
-						</Button>
+						{totalVolume > 0 && (
+							<div className="flex items-center gap-2">
+								<TrendingUp className="h-4 w-4 text-primary" />
+								<span className="text-foreground font-semibold">{Math.round(totalVolume)}</span>
+								<span className="text-muted-foreground">kg</span>
+							</div>
+						)}
 					</div>
 				</div>
 
-				{/* Notas */}
-				{workout.notes && (
-					<Card>
-						<CardHeader>
-							<CardTitle className="tex-base">
-								Notas
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<p className="text-muted-foreground whitespace-pre-wrap">
-								{workout.notes}
-							</p>
-						</CardContent>
+				{/* Título de sesión */}
+				{session.title && (
+					<Card className="bg-muted/10">
+						<div className="p-4">
+							<h2 className="font-bebas tracking-wide text-xl text-foreground">
+								{session.title}
+							</h2>
+							{session.notes && (
+								<p className="text-muted-foreground font-barlow mt-2 text-sm">
+									{session.notes}
+								</p>
+							)}
+						</div>
 					</Card>
 				)}
 
+				{/* Comparación de volumen (placeholder) */}
+				{/* TODO: Implementar gráfico de comparación vs sesión anterior */}
+
 				{/* Ejercicios */}
 				<Card>
-					<CardHeader>
-						<CardTitle>
-							Ejercicios ({workout.exercises?.length || 0})
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{!workout.exercises || workout.exercises.length === 0 ? (
+					<div className="p-6 space-y-6">
+						<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
+							Ejercicios ({exercises.length})
+						</h2>
+
+						{exercises.length === 0 ? (
 							<div className="text-center py-8 text-muted-foreground">
 								<Dumbbell className='h-12 w-12 mx-auto mb-3 opacity-50' />
-								<p>No hay ejercicios registrados</p>
+								<p className="font-barlow">No hay ejercicios registrados</p>
 							</div>
-						): (
-							<div className="space-y">
-								{workout.exercises.map((workoutExercise, index) => (
+						) : (
+							<div className="space-y-6">
+								{exercises.map((workoutExercise: any, index: number) => (
 									<div key={workoutExercise.id}>
-										{index > 0 && <Separator className="my-6" />
-										}
-										{/* Ejercicio */}
+										{index > 0 && <Separator className="my-6" />}
+										
 										<div className="space-y-4">
-											<div className="flex items-start justify-between">
-												<ExerciseInfo exerciseId={workoutExercise.exerciseId} index={index} />
-												
+											{/* Ejercicio info */}
+											<div className="flex items-start gap-3">
+												<div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+													<span className="text-sm font-bebas text-primary">
+														{index + 1}
+													</span>
+												</div>
+
+												<div className="flex-1 min-w-0 space-y-1">
+													<h3 className="font-bebas tracking-wide text-lg text-foreground">
+														{workoutExercise.exercise?.name || 'Ejercicio'}
+													</h3>
+													
+													{workoutExercise.exercise?.muscleGroup && (
+														<Badge 
+															variant="secondary" 
+															className="font-barlow uppercase text-xs tracking-wide"
+														>
+															{workoutExercise.exercise.muscleGroup}
+														</Badge>
+													)}
+												</div>
 											</div>
 
-											{/* Series (sets) */}
+											{/* Series */}
 											{workoutExercise.sets && workoutExercise.sets.length > 0 && (
-												<div className="space-y-2">
-													<h4 className="text sm font-medium text-muted-foreground">
-														Series ({workoutExercise.sets.length})
-													</h4>
+												<div className="ml-11 space-y-2">
+													{workoutExercise.sets.map((set: any) => (
+														<div 
+															key={set.setNumber}
+															className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg"
+														>
+															<span className="text-xs font-barlow font-bold uppercase text-muted-foreground tracking-wide min-w-[60px]">
+																Serie {set.setNumber}
+															</span>
 
-													<div className="space-y-2">
-														{workoutExercise.sets.map(set => (
-															<div 
-																className="flex items-center gap-4 p-3 bg-[var(--surface-elevated)] rounded-lg"
-																key={set.setNumber}	
-															>
-																<Badge className="shrink-0" variant={'default'}>
-																	Serie {set.setNumber}
-																</Badge>
+															<div className="flex items-center gap-4 flex-wrap text-sm font-barlow">
+																{set.reps !== null && set.reps !== undefined && (
+																	<div>
+																		<span className="font-semibold text-foreground">{set.reps}</span>
+																		<span className="text-muted-foreground ml-1">reps</span>
+																	</div>
+																)}
 
-																<div className="flex items-center gap-4 flex-wrap text-sm">
-																	{set.reps !== null && set.reps !== undefined && (
-																		<div className="flex items-center gap-1">
-																			<Repeat className="h-4 w-4 text-muted-foreground" />
-																			<span className="font-medium">{set.reps}</span>
-																			<span className="text-muted-foreground">reps</span>
-																		</div>
-																	)}
+																{set.weight !== null && set.weight !== undefined && set.weight > 0 && (
+																	<div>
+																		<span className="font-semibold text-foreground">{set.weight}</span>
+																		<span className="text-muted-foreground ml-1">kg</span>
+																	</div>
+																)}
 
-																	{set.weight !== null && set.weight !== undefined && set.weight > 0 && (
-																		<div className="flex items-center gap-1">
-																			<Weight className="h-4 w-4 text-muted-foreground" />
-																			<span className="font-medium">{set.weight}</span>
-																			<span className="text-muted-foreground">kg</span>
-																		</div>
-																	)}
-
-																	{set.durationSeconds !== null && set.durationSeconds !== undefined && set.durationSeconds > 0 && (
-																		<div className="flex items-center gap-1">
-																			<Clock className="h-4 w-4 text-muted-foreground" />
-																			<span className="font-medium">{set.durationSeconds}</span>
-																			<span className="text-muted-foreground">seg</span>
-																		</div>
-																	)}
-																</div>
-
-																{set.notes && (
-																	<p className="text-sm text-muted-foreground ml-auto">
-																		{set.notes}
-																	</p>
+																{set.durationSeconds !== null && set.durationSeconds !== undefined && set.durationSeconds > 0 && (
+																	<div>
+																		<span className="font-semibold text-foreground">{set.durationSeconds}</span>
+																		<span className="text-muted-foreground ml-1">seg</span>
+																	</div>
 																)}
 															</div>
-														))}
-													</div>
+
+															{set.notes && (
+																<p className="text-sm text-muted-foreground ml-auto font-barlow">
+																	{set.notes}
+																</p>
+															)}
+														</div>
+													))}
 												</div>
 											)}
 										</div>
@@ -214,8 +234,31 @@ export default function WorkoutDetailPage() {
 								))}
 							</div>
 						)}
-					</CardContent>
+					</div>
 				</Card>
+
+				{/* Acciones */}
+				<div className="flex gap-3 pt-4">
+					<Button
+						variant="outline"
+						size="lg"
+						className="uppercase font-barlow font-semibold tracking-wide"
+						onClick={() => {/* TODO: Implementar duplicar */}}
+					>
+						<Copy className="h-5 w-5 mr-2" />
+						Duplicar
+					</Button>
+
+					<Button
+						variant="destructive"
+						size="lg"
+						className="uppercase font-barlow font-semibold tracking-wide"
+						onClick={() => setShowDeleteDialog(true)}
+					>
+						<Trash2 className="h-5 w-5 mr-2" />
+						Eliminar
+					</Button>
+				</div>
 			</div>
 
 			{/* Dialog de confirmación de eliminación */}
@@ -225,16 +268,16 @@ export default function WorkoutDetailPage() {
 			>
 				<DialogContent>
 					<DialogHeader>
-					<DialogTitle className="flex items-center gap-2 text-destructive">
-						<AlertTriangle className="h-5 w-5"/>
-						¿Eliminar entrenamiento?
-					</DialogTitle>
-					<DialogDescription>
-						<p className="mb-3">
-							Estás a punto de eliminar el entrenamiento:
-						</p>
-						<p className="font-semibold text-foreground mb-3">
-								"{workout.title}"
+						<DialogTitle className="flex items-center gap-2 text-destructive">
+							<AlertTriangle className="h-5 w-5"/>
+							¿Eliminar sesión?
+						</DialogTitle>
+						<DialogDescription>
+							<p className="mb-3">
+								Estás a punto de eliminar esta sesión de entrenamiento.
+							</p>
+							<p className="font-semibold text-foreground mb-3">
+								"{session.title}"
 							</p>
 							<p className="text-sm">
 								Esta acción no se puede deshacer. Se eliminarán todos los ejercicios y series asociados.
@@ -245,7 +288,7 @@ export default function WorkoutDetailPage() {
 					<DialogFooter>
 						<Button
 							variant={'outline'}
-							onClick={()=> setShowDeleteDialog(false)}
+							onClick={() => setShowDeleteDialog(false)}
 							disabled={isDeleting}
 						>
 							Cancelar
@@ -261,6 +304,7 @@ export default function WorkoutDetailPage() {
 				</DialogContent>
 			</Dialog>
 		</>
-	)
+	);
 }
+
 

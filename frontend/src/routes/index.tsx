@@ -16,6 +16,7 @@ import WorkoutsPage from '@/features/workouts/pages/WorkoutsPage';
 import CreateWorkoutPage from "@/features/workouts/pages/CreateWorkoutPage";
 import EditWorkoutPage from "@/features/workouts/pages/EditWorkoutPage";
 import WorkoutDetailPage from '@/features/workouts/pages/WorkoutDetailPage';
+import TemplateDetailPage from '@/features/workouts/pages/TemplateDetailPage';
 import ExercisesPage from '@/features/exercises/pages/ExercisesPage';
 import ProfilePage from '@/features/profile/pages/ProfilePage';
 import NotFoundPage from '@/pages/NotFoundPage';
@@ -66,8 +67,12 @@ export const router = createBrowserRouter([
 								element: <CreateWorkoutPage />
 							},
 							{
-								path: 'workouts/:id',
+								path: 'workouts/sessions/:id',
 								element: <WorkoutDetailPage />
+							},
+							{
+								path: 'workouts/templates/:id',
+								element: <TemplateDetailPage />
 							},
 							{
 								path: 'workouts/:id/edit',

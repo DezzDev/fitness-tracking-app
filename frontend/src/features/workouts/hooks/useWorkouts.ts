@@ -1,4 +1,8 @@
 // src/features/workouts/hooks/useWorkouts.ts
+// DEPRECATED: Este archivo está obsoleto.
+// Usa useWorkoutSessions.ts en su lugar.
+// Las rutas /workouts ya no existen en el backend.
+// Mantener temporalmente para compatibilidad.
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { workoutsApi } from "@/api/endpoints/workouts";
 import { queryKeys } from "@/lib/queryClient";

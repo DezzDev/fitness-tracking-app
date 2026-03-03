@@ -39,25 +39,25 @@ export default function CreateWorkoutPage() {
 
 	return (
 		<div className='max-w-4xl mx-auto space-y-6'>
-			{/* Header */}
-			<div className="flex items-center gap-4">
-				<Button
-					variant='ghost'
-					size='sm'
-					onClick={() => navigate('/workouts')}
-				>
-					<ArrowLeft className='h-4 w-4 mr-2' />
-					Volver
-				</Button>
+			{/* Back Button */}
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => navigate('/workouts')}
+				className="font-barlow uppercase tracking-wide text-xs"
+			>
+				<ArrowLeft className="h-4 w-4 mr-2" />
+				Workouts
+			</Button>
 
-				<div>
-				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">
+			{/* Header */}
+			<div>
+				<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
 					Nuevo Entrenamiento
 				</h1>
-				<p className='text-muted-foreground mt-1'>
-						Registra tu sesión de entrenamiento
-					</p>
-				</div>
+				<p className='text-muted-foreground mt-2 font-barlow'>
+					Registra tu sesión de entrenamiento
+				</p>
 			</div>
 
 			{/* Formulario */}
@@ -65,11 +65,9 @@ export default function CreateWorkoutPage() {
 				onSubmit={handleSubmit}
 				onCancel={handleCancel}
 				isSubmitting={isPending}
-				submitLabel='Crear Entrenamiento'
+				submitLabel='Guardar Entrenamiento'
 			/>
 
 		</div>
-	)
-
-
+	);
 }

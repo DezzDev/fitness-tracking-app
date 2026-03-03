@@ -30,16 +30,16 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { WorkoutWithExercises } from "@/types";
-import { useDeleteWorkout } from "../hooks/useWorkouts";
+import type { WorkoutWithExercises, WorkoutSessionWithExercises } from "@/types";
+import { useDeleteSession } from "../hooks/useWorkoutSessions";
 
 interface WorkoutCardProps {
-	workout: WorkoutWithExercises;
+	workout: WorkoutWithExercises | WorkoutSessionWithExercises;
 }
 
 export default function WorkoutCard({ workout }: WorkoutCardProps) {
 	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
-	const { mutate: deleteWorkout, isPending } = useDeleteWorkout();
+	const { mutate: deleteWorkout, isPending } = useDeleteSession();
 	console.log({workout})
 
 	const handleDelete = () => {
@@ -59,7 +59,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 					<div className="flex items-start justify-between">
 
 						<div className="flex-1">
-							<Link to={`/workouts/${workout.id}`}>
+							<Link to={`/workouts/sessions/${workout.id}`}>
 								<h3 className="font-semibold text-lg hover:text-primary transition-colors line-clamp-1">
 									{workout.title}
 								</h3>
@@ -83,7 +83,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 							<DropdownMenuContent align="end">
 								<DropdownMenuItem asChild>
 									<Link
-										to={`/workouts/${workout.id}`}
+										to={`/workouts/sessions/${workout.id}`}
 										className="flex items-center cursor-pointer"
 									>
 										<Eye className="mr-2 h-4 w-4" />
@@ -92,7 +92,7 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 								</DropdownMenuItem>
 								<DropdownMenuItem asChild>
 									<Link
-										to={`/workouts/${workout.id}/edit`}
+										to={`/workouts/sessions/${workout.id}/edit`}
 										className="flex items-center cursor-pointer"
 									>
 										<Pencil className="mr-2 h-4 w-4" />

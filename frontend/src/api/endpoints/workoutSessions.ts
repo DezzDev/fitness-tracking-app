@@ -18,8 +18,8 @@ export const workoutSessionsApi = {
 
 		if (filters?.page) params.append('page', filters.page.toString());
 		if (filters?.limit) params.append('limit', filters.limit.toString());
-		if (filters?.startDate) params.append('startDate', filters.startDate.toISOString());
-		if (filters?.endDate) params.append('endDate', filters.endDate.toISOString());
+		if (filters?.startDate) params.append('startDate', filters.startDate);
+		if (filters?.endDate) params.append('endDate', filters.endDate);
 		if (filters?.templateId) params.append('templateId', filters.templateId);
 		if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 

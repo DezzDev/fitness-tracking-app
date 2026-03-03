@@ -1,16 +1,17 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { CreateWorkoutSchema, type CreateWorkoutFormData } from "../schemas/workoutSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { WorkoutWithExercises } from "@/types";
+import type { WorkoutWithExercises, WorkoutSessionWithExercises } from "@/types";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Trash2, Loader2, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
+import { Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import ExerciseSelector from "./ExerciseSelector";
 import SetList from "./SetList";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
@@ -19,7 +20,7 @@ import ExerciseInfo from "./ExerciseInfo";
 
 
 interface WorkoutFormProps {
-	initialData?: WorkoutWithExercises;
+	initialData?: WorkoutWithExercises | WorkoutSessionWithExercises;
 	onSubmit: (data: CreateWorkoutFormData) => void;
 	onCancel: () => void;
 	isSubmitting?: boolean;
@@ -48,7 +49,7 @@ export default function WorkoutForm({
 		}
 	})
 
-	const { fields, append, remove, move } = useFieldArray({
+	const { fields, append, remove } = useFieldArray({
 		control,
 		name: 'exercises'
 	})
@@ -91,14 +92,6 @@ export default function WorkoutForm({
 		})
 	}
 
-	const handleMoveExercise = (fromIndex: number, toIndex: number) => {
-		move(fromIndex, toIndex)
-		// Actualizar order index
-		fields.forEach((_, i) => {
-			setValue(`exercises.${i}.orderIndex`, i)
-		})
-	}
-
 	const selectedExerciseIds = fields.map(f => f.exerciseId)
 
 	return (
@@ -132,134 +125,128 @@ export default function WorkoutForm({
 			)}
 			
 			{/* Información básica */}
-			<Card>
-				<CardHeader>
-					<CardTitle>Información General</CardTitle>
-				</CardHeader>
-				<CardContent className='space-y-4'>
-					{/* Titulo */}
-					<div className='space-y-2'>
-						<Label htmlFor='title'>
-							Título del entrenamiento 					<span className='text-destructive'>*</span>
-						</Label>
-						<Input
-							id='title'
-							placeholder='Ej: Pecho - Día 1'
-							disabled={isSubmitting}
-							{...register('title')}
-						/>
-						{errors.title && (
-							<p className='text-sm text-destructive'>{errors.title.message}</p>
-						)}
-					</div>
-
-					{/* Notas */}
-					<div className='space-y-2'>
-						<Label htmlFor='notes'>Notas (opcional)</Label>
-						<Textarea
-							id='notes'
-							placeholder='Agrega notas sobre tu entrenamiento'
-							rows={3}
-							disabled={isSubmitting}
-							{...register('notes')}
-						/>
-						{errors.notes && (
-							<p className='text-sm text-destructive'>{errors.notes.message}</p>
-						)}
-					</div>
-				</CardContent>
-			</Card>
-
-			{/* Selector de ejercicios  */}
-			<Card>
-				<CardHeader>
-					<CardTitle>Agregar Ejercicios</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<ExerciseSelector
-						onSelectExercise={handleAddExercise}
-						selectedExerciseIds={selectedExerciseIds}
+			<Card className="p-6 space-y-4">
+				{/* Título */}
+				<div className='space-y-2'>
+					<Label 
+						htmlFor='title'
+						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
+					>
+						Nombre del entrenamiento <span className='text-destructive'>*</span>
+					</Label>
+					<Input
+						id='title'
+						placeholder='Ej: Pecho y Tríceps - Día 1'
+						disabled={isSubmitting}
+						className="font-barlow"
+						{...register('title')}
 					/>
-				</CardContent>
+					{errors.title && (
+						<p className='text-sm text-destructive font-barlow'>{errors.title.message}</p>
+					)}
+				</div>
+
+				{/* Notas */}
+				<div className='space-y-2'>
+					<Label 
+						htmlFor='notes'
+						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
+					>
+						Notas (opcional)
+					</Label>
+					<Textarea
+						id='notes'
+						placeholder='Agrega notas sobre tu entrenamiento...'
+						rows={3}
+						disabled={isSubmitting}
+						className="font-barlow resize-none"
+						{...register('notes')}
+					/>
+					{errors.notes && (
+						<p className='text-sm text-destructive font-barlow'>{errors.notes.message}</p>
+					)}
+				</div>
 			</Card>
+
+			{/* Selector de ejercicios */}
+			<div className="space-y-3">
+				<ExerciseSelector
+					onSelectExercise={handleAddExercise}
+					selectedExerciseIds={selectedExerciseIds}
+				/>
+			</div>
 
 			{/* Lista de ejercicios agregados */}
 			{fields.length > 0 && (
-				<Card>
-					<CardHeader>
-						<CardTitle>Ejercicios ({fields.length})</CardTitle>
-					</CardHeader>
-					<CardContent className='space-y-6'>
+				<Card className="p-6 space-y-4">
+					<div className="flex items-center gap-3">
+						<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
+							Ejercicios
+						</h2>
+						<Badge variant="secondary" className="font-barlow font-semibold">
+							{fields.length}
+						</Badge>
+					</div>
+
+					<div className='space-y-6'>
 						{fields.map((field, index) => (
-							<div key={field.id} className='space-y-3'>
-								{index > 0 && <Separator />}
+							<div key={field.id}>
+								{index > 0 && <Separator className="my-6" />}
 
-								<div className='flex items-center gap-3'>
-									{/* Drag handle */}
-									<div className="flex flex-col gap-1 pt-2">
-										<Button
-											className="h-7 w-7 p-0 cursor-hand"
-											type="button"
-											variant={'ghost'}
-											size={'sm'}
-											disabled={index === 0 || isSubmitting}
-											onClick={() => handleMoveExercise(index, index - 1)}
-										>
-											<ArrowUp />
-										</Button>
-										<Button
-											className="h-7 w-7 p-0 cursor-hand"
-											type="button"
-											variant={'ghost'}
-											size={'sm'}
-											disabled={index === fields.length - 1 || isSubmitting}
-											onClick={() => handleMoveExercise(index, index + 1)}
-										>
-											<ArrowDown />
-										</Button>
-									</div>
+								<div className='space-y-4'>
+									{/* Header del ejercicio */}
+									<div className='flex items-start gap-3'>
+										{/* Número de orden */}
+										<div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mt-1">
+											<span className="text-sm font-bebas text-primary">
+												{index + 1}
+											</span>
+										</div>
 
-									<div className='flex-1 space-y-3' >
-										<div className="flex items start justify-between">
-											<div>
-												{/*  queda por definir cuando implementar la vista compacta */}
-												<ExerciseInfo exerciseId={field.exerciseId} index={index}   />
+										<div className='flex-1 min-w-0 space-y-3'>
+											{/* Info del ejercicio y botón eliminar */}
+											<div className="flex items-start justify-between gap-3">
+												<ExerciseInfo exerciseId={field.exerciseId} index={index} />
+												
+												<Button
+													type='button'
+													variant={'ghost'}
+													size={'sm'}
+													onClick={() => handleRemoveExercise(index)}
+													className='text-destructive hover:text-destructive/80 shrink-0'
+													disabled={isSubmitting}
+												>
+													<Trash2 className='h-4 w-4' />
+												</Button>
 											</div>
 
-											<Button
-												type='button'
-												variant={'ghost'}
-												size={'sm'}
-												onClick={() => handleRemoveExercise(index)}
-												className='text-destructive hover:text-destructive/80'
-											>
-												<Trash2 className='h-4 w-4' />
-											</Button>
+											{/* Series del ejercicio */}
+											<SetList errors={errors} control={control} exerciseIndex={index} />
 										</div>
-										{/* Series de ejercicio (sets) */}
-										<SetList errors={errors} control={control} exerciseIndex={index} />
 									</div>
 								</div>
 							</div>
 						))}
-					</CardContent>
+					</div>
 				</Card>
 			)}
 
+			{/* Error de ejercicios */}
 			{errors.exercises && (
-				<p className='text-sm text-destructive'>{errors.exercises.message}</p>
+				<p className='text-sm text-destructive font-barlow'>{errors.exercises.message}</p>
 			)}
 
 			{/* Botones de acción */}
-			<div className='flex gap-3'>
+			<div className='flex flex-col sm:flex-row gap-3 pt-4'>
 				<Button
 					type='submit'
 					size={'lg'}
 					disabled={isSubmitting || fields.length === 0}
+					className="flex-1 uppercase font-barlow font-semibold tracking-wide"
 				>
 					{isSubmitting ? (
 						<>
-							<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+							<Loader2 className='mr-2 h-5 w-5 animate-spin' />
 							Guardando...
 						</>
 					) : (
@@ -273,10 +260,10 @@ export default function WorkoutForm({
 					size={'lg'}
 					onClick={() => onCancel()}
 					disabled={isSubmitting}
+					className="uppercase font-barlow font-semibold tracking-wide"
 				>
 					Cancelar
 				</Button>
-
 			</div>
 		</form>
 	)

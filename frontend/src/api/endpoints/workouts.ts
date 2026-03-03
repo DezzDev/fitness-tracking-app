@@ -1,4 +1,8 @@
 // src/api/endpoints/workouts.ts
+// DEPRECATED: Este archivo está obsoleto.
+// Usa workoutSessions.ts y workoutTemplates.ts en su lugar.
+// Las rutas /workouts ya no existen en el backend.
+// Mantener temporalmente para compatibilidad con EditWorkoutPage.tsx
 import { apiClient, type ApiResponse, type PaginatedResponse } from "@/api/client";
 import type {
 	
@@ -32,8 +36,8 @@ export const workoutsApi = {
 
 		if (filters?.page) params.append('page', filters.page.toString());
 		if (filters?.limit) params.append('limit', filters.limit.toString());
-		if (filters?.startDate) params.append('startDate', filters.startDate.toISOString());
-		if (filters?.endDate) params.append('endDate', filters.endDate.toISOString());
+		if (filters?.startDate) params.append('startDate', filters.startDate);
+		if (filters?.endDate) params.append('endDate', filters.endDate);
 		if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
 		const response = await apiClient.get<WorkoutsWithExercisesResponse>(
@@ -111,14 +115,14 @@ export const workoutsApi = {
 
 	/**
 	 * Obtener estadísticas de workouts
-	 * @param filters Filtros para las estadísticas
+	 * @param filters Filtros de workout
 	 * @returns Estadísticas de workouts
 	 */
 	getWorkoutStats: async (filters?: WorkoutFilters): Promise<WorkoutStats> => {
 		const params = new URLSearchParams();
 
-		if (filters?.startDate) params.append('startDate', filters.startDate.toISOString());
-		if (filters?.endDate) params.append('endDate', filters.endDate.toISOString());
+		if (filters?.startDate) params.append('startDate', filters.startDate);
+		if (filters?.endDate) params.append('endDate', filters.endDate);
 
 		const response = await apiClient.get<ApiResponse<WorkoutStats>>(
 			`/workouts/stats?${params.toString()}`

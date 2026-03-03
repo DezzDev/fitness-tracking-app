@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom"
-import { useUpdateWorkout, useWorkout } from "../hooks/useWorkouts";
+import { useUpdateSession, useWorkoutSession } from "../hooks/useWorkoutSessions";
 import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import type { CreateWorkoutFormData } from "../schemas/workoutSchemas";
@@ -14,8 +14,8 @@ export default function EditWorkoutPage() {
 	const { id: workoutId } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 
-	const { data: workout, isLoading, isError } = useWorkout(workoutId);
-	const { mutate: updateWorkout, isPending } = useUpdateWorkout()
+	const { data: workout, isLoading, isError } = useWorkoutSession(workoutId!);
+	const { mutate: updateWorkout, isPending } = useUpdateSession()
 
 	const handleSubmit = (data: CreateWorkoutFormData) => {
 
@@ -23,7 +23,7 @@ export default function EditWorkoutPage() {
 			return;
 		}
 
-		// Transformar datos al formato backend
+		// Transformar datos al formato backend (WorkoutSession)
 		const workoutData = {
 			title: data.title,
 			notes: data.notes,
@@ -37,13 +37,13 @@ export default function EditWorkoutPage() {
 		updateWorkout(
 			{ id: workoutId, data: workoutData },
 			{onSuccess: ()=> {
-				navigate(`/workouts/${workoutId}`)
+				navigate(`/workouts/sessions/${workoutId}`)
 			}}
 		)
 	}
 
 	const handleCancel = ()=> {
-		navigate(`/workouts/${workoutId}`)
+		navigate(`/workouts/sessions/${workoutId}`)
 	}
 
 	if (isLoading) {
@@ -77,7 +77,7 @@ export default function EditWorkoutPage() {
 				<Button
 					variant={'ghost'}
 					size={'sm'}
-					onClick={() => navigate(`/workouts/${workoutId}`)}
+					onClick={() => navigate(`/workouts/sessions/${workoutId}`)}
 				>
 					<ArrowLeft className="w-4 h-4 mr-2" />
 					Volver

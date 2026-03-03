@@ -1,67 +1,76 @@
-// src/features/workouts/pages/WorkoutsMainPage.tsx
+// src/features/workouts/pages/WorkoutsPage.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Dumbbell, Clock, FileText } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TemplatesList from '../components/TemplatesList';
 import SessionsList from '../components/SessionsList';
 
-export default function WorkoutsMainPage() {
-	const [ activeTab, setActiveTab ] = useState<'templates' | 'sessions'>('templates');
+export default function WorkoutsPage() {
+	const [ activeTab, setActiveTab ] = useState<'sessions' | 'templates'>('sessions');
 
 	return (
 		<div className="space-y-6">
 			{/* Header */}
-			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-				<div>
-				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">Entrenamientos</h1>
-					<p className="text-muted-foreground mt-1">
-						Crea plantillas y registra tus sesiones
-					</p>
-				</div>
-
-				<div className="flex gap-2">
-					{activeTab === 'templates' ? (
-						<Link to="/workouts/templates/new">
-							<Button size="lg">
-								<Plus className="mr-2 h-5 w-5" />
-								Nueva Plantilla
-							</Button>
-						</Link>
-					) : (
-						<Link to="/workouts/sessions/start">
-							<Button size="lg">
-								<Dumbbell className="mr-2 h-5 w-5" />
-								Iniciar Entrenamiento
-							</Button>
-						</Link>
-					)}
-				</div>
+			<div>
+				<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
+					Workouts
+				</h1>
 			</div>
 
 			{/* Tabs */}
 			<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-				<TabsList className="grid w-full grid-cols-2 max-w-md">
-					<TabsTrigger value="templates" className="flex items-center gap-2">
-						<FileText size={18} />
-						<span>Plantillas</span>
+				<TabsList className="w-full max-w-md bg-muted/20 p-1 h-auto">
+					<TabsTrigger 
+						value="sessions" 
+						className="flex-1 uppercase font-barlow font-semibold tracking-wide text-sm data-[state=active]:bg-primary data-[state=active]:text-background"
+					>
+						Sesiones
 					</TabsTrigger>
-					<TabsTrigger value="sessions" className="flex items-center gap-2">
-						<Clock size={18} />
-						<span>Historial</span>
+					<TabsTrigger 
+						value="templates"
+						className="flex-1 uppercase font-barlow font-semibold tracking-wide text-sm data-[state=active]:bg-primary data-[state=active]:text-background"
+					>
+						Plantillas
 					</TabsTrigger>
 				</TabsList>
 
-				{/* Tab: Plantillas */}
-				<TabsContent value="templates" className="space-y-6 mt-6">
-					<TemplatesList />
+				{/* Tab: SESIONES */}
+				<TabsContent value="sessions" className="mt-6 space-y-6">
+					<SessionsList />
+					
+					{/* Bottom CTA */}
+					<div className="flex justify-center pt-4">
+						<Link to="/workouts/sessions/start">
+							<Button 
+								size="lg" 
+								className="w-full sm:w-auto uppercase font-barlow font-semibold tracking-wide"
+							>
+								<Plus className="mr-2 h-5 w-5" />
+								Nueva Sesión
+							</Button>
+						</Link>
+					</div>
 				</TabsContent>
 
-				{/* Tab: Sesiones (Historial) */}
-				<TabsContent value="sessions" className="space-y-6 mt-6">
-					<SessionsList />
+				{/* Tab: PLANTILLAS */}
+				<TabsContent value="templates" className="mt-6 space-y-6">
+					<TemplatesList />
+					
+					{/* Bottom CTA */}
+					<div className="flex justify-center pt-4">
+						<Link to="/workouts/templates/new">
+							<Button 
+								size="lg" 
+								className="w-full sm:w-auto uppercase font-barlow font-semibold tracking-wide"
+							>
+								<Plus className="mr-2 h-5 w-5" />
+								Nueva Plantilla
+							</Button>
+						</Link>
+					</div>
 				</TabsContent>
 			</Tabs>
 		</div>
