@@ -179,6 +179,19 @@ export interface SessionFilters {
 	searchTerm?: string;
 }
 
+export interface WorkoutSessionStats  {
+	totalSessions: number;
+	totalDuration: number;
+	averageDuration: number;
+	sessionsThisWeek: number;
+	sessionsThisMonth: number;
+	mostUsedTemplate?: {
+		templateId: string;
+		templateName: string;
+		usageCount: number;
+	}
+}
+
 //================================
 // WORKOUTS DEPRECATED
 //================================

@@ -12,8 +12,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import type { WorkoutSessionExercise, WorkoutSessionSet } from "@/types";
 
-export default function WorkoutDetailPage() {
+export default function SessionDetailPage() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const sessionId = id!;
@@ -22,6 +23,7 @@ export default function WorkoutDetailPage() {
 	const { mutate: deleteSession, isPending: isDeleting } = useDeleteSession();
 	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
 
+	
 	const session = response || null;
 
 	const handleDelete = () => {
@@ -56,11 +58,12 @@ export default function WorkoutDetailPage() {
 
 	const sessionDate = new Date(session.sessionDate);
 	const exercises = session.exercises || [];
+	
 
 	// Calcular métricas
-	const totalSets = exercises.reduce((sum: number, ex: any) => sum + (ex.sets?.length || 0), 0);
-	const totalVolume = exercises.reduce((sum: number, ex: any) => {
-		const exerciseVolume = ex.sets?.reduce((exSum: number, set: any) => {
+	const totalSets = exercises.reduce((sum: number, ex: WorkoutSessionExercise) => sum + (ex.sets?.length || 0), 0);
+	const totalVolume = exercises.reduce((sum: number, ex: WorkoutSessionExercise) => {
+		const exerciseVolume = ex.sets?.reduce((exSum: number, set: WorkoutSessionSet) => {
 			const weight = set.weight || 0;
 			const reps = set.reps || 0;
 			return exSum + (weight * reps);
@@ -156,7 +159,7 @@ export default function WorkoutDetailPage() {
 							</div>
 						) : (
 							<div className="space-y-6">
-								{exercises.map((workoutExercise: any, index: number) => (
+								{exercises.map((workoutExercise: WorkoutSessionExercise, index: number) => (
 									<div key={workoutExercise.id}>
 										{index > 0 && <Separator className="my-6" />}
 										
@@ -171,15 +174,15 @@ export default function WorkoutDetailPage() {
 
 												<div className="flex-1 min-w-0 space-y-1">
 													<h3 className="font-bebas tracking-wide text-lg text-foreground">
-														{workoutExercise.exercise?.name || 'Ejercicio'}
+														{workoutExercise.exerciseName || 'Ejercicio'}
 													</h3>
 													
-													{workoutExercise.exercise?.muscleGroup && (
+													{workoutExercise.muscleGroup && (
 														<Badge 
 															variant="secondary" 
 															className="font-barlow uppercase text-xs tracking-wide"
 														>
-															{workoutExercise.exercise.muscleGroup}
+															{workoutExercise.muscleGroup}
 														</Badge>
 													)}
 												</div>
@@ -188,7 +191,7 @@ export default function WorkoutDetailPage() {
 											{/* Series */}
 											{workoutExercise.sets && workoutExercise.sets.length > 0 && (
 												<div className="ml-11 space-y-2">
-													{workoutExercise.sets.map((set: any) => (
+													{workoutExercise.sets.map((set: WorkoutSessionSet) => (
 														<div 
 															key={set.setNumber}
 															className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg"

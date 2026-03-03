@@ -14,6 +14,7 @@ import type { WorkoutSession } from '@/types';
 export default function SessionsList() {
 	const { data, isLoading } = useWorkoutSessions({ limit: 100 });
 
+
 	const sessions = data?.data.items || [];
 
 	// Agrupar sesiones por mes

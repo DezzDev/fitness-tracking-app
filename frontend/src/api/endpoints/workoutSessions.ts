@@ -1,4 +1,4 @@
-import type { CreateWorkoutSessionData, WorkoutSession, WorkoutSessionWithExercises, SessionFilters } from "@/types";
+import type { CreateWorkoutSessionData, WorkoutSession, WorkoutSessionWithExercises, SessionFilters, WorkoutSessionStats } from "@/types";
 import { apiClient, type ApiResponse, type PaginatedResponse } from "../client";
 
 // Tipo específico para crear sesión desde template
@@ -9,11 +9,23 @@ export interface CreateSessionFromTemplateData {
 	durationMinutes?: number;
 }
 
+interface SessionsListResponse  {
+	success: boolean
+	message: string
+	data: {
+		sessions: WorkoutSession[]
+		total: number
+		page: number
+		totalPages: number
+	}
+	timestamp: string
+}
+
 export const workoutSessionsApi = {
 	/**
 	 * Listar sesiones con filtros
 	 */
-	listSessions: async (filters?: SessionFilters): Promise<PaginatedResponse<WorkoutSession>> =>{
+	listSessions: async (filters?: SessionFilters): Promise<PaginatedResponse<WorkoutSession>> => {
 		const params = new URLSearchParams();
 
 		if (filters?.page) params.append('page', filters.page.toString());
@@ -23,15 +35,29 @@ export const workoutSessionsApi = {
 		if (filters?.templateId) params.append('templateId', filters.templateId);
 		if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
-		const response = await apiClient.get<PaginatedResponse<WorkoutSession>>(`/workoutSessions?${params.toString()}`);
+		const response = await apiClient.get<SessionsListResponse>(`/workoutSessions?${params.toString()}`);
+		console.log({ response })
 
-		return response.data;
+		const { success, message, data, timestamp } = response.data;
+
+		return {
+			success,
+			message,
+			timestamp,
+			data: {
+				items: data.sessions,
+				total: data.total,
+				page: data.page,
+				totalPages: data.totalPages
+			}
+		};
+
 	},
 
 	/**
 	 * Obtener sesión por ID (retorna con exercises y sets)
 	 */
-	getSession: async (id: string): Promise<WorkoutSessionWithExercises> =>{
+	getSession: async (id: string): Promise<WorkoutSessionWithExercises> => {
 		const response = await apiClient.get<ApiResponse<WorkoutSessionWithExercises>>(
 			`/workoutSessions/${id}`
 		)
@@ -51,8 +77,8 @@ export const workoutSessionsApi = {
 	/**
 	 * Obtener estadísticas de sesiones
 	 */
-	getSessionStats: async (): Promise<any> => {
-		const response = await apiClient.get<ApiResponse<any>>(
+	getSessionStats: async (): Promise<WorkoutSessionStats> => {
+		const response = await apiClient.get<ApiResponse<WorkoutSessionStats>>(
 			'/workoutSessions/stats'
 		);
 		return response.data.data!;
@@ -88,7 +114,7 @@ export const workoutSessionsApi = {
 	/**
 	 * Crear sesión libre (sin template)
 	 */
-	createSession: async (data: CreateWorkoutSessionData):Promise<WorkoutSession> => {
+	createSession: async (data: CreateWorkoutSessionData): Promise<WorkoutSession> => {
 		const response = await apiClient.post<ApiResponse<WorkoutSession>>(
 			'/workoutSessions',
 			data
@@ -100,9 +126,9 @@ export const workoutSessionsApi = {
 	 * Actualizar sesión
 	 */
 	updateSession: async (
-		id:string,
-		data: Partial<CreateWorkoutSessionData>		
-	):Promise<WorkoutSession> => {
+		id: string,
+		data: Partial<CreateWorkoutSessionData>
+	): Promise<WorkoutSession> => {
 		const response = await apiClient.patch<ApiResponse<WorkoutSession>>(
 			`/workoutSessions/${id}`,
 			data
@@ -113,7 +139,7 @@ export const workoutSessionsApi = {
 	/**
 	 * Eliminar sesión
 	 */
-	deleteSession: async (id:string):Promise<void> => {
+	deleteSession: async (id: string): Promise<void> => {
 		await apiClient.delete(`/workoutSessions/${id}`);
 	}
 
