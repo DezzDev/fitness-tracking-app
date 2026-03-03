@@ -70,5 +70,7 @@ export type {
 	WorkoutSessionFilters,
 	WorkoutSessionStats,
 	WorkoutSessionWithTemplateNameRow,
-	WorkoutSessionWithTemplateName
+	WorkoutSessionWithTemplateName,
+	WorkoutSessionWithMetrics,
+	WorkoutSessionWithMetricsRow
 } from './entities/workoutSession.type';

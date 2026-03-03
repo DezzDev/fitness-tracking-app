@@ -3,13 +3,13 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { format, isToday } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Dumbbell, Clock, ArrowRight } from 'lucide-react';
+import { Dumbbell, ArrowRight } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWorkoutSessions } from '../hooks/useWorkoutSessions';
-import type { WorkoutSession } from '@/types';
+import type { WorkoutSessionWithMetrics } from '@/types';
 
 export default function SessionsList() {
 	const { data, isLoading } = useWorkoutSessions({ limit: 100 });
@@ -19,7 +19,7 @@ export default function SessionsList() {
 
 	// Agrupar sesiones por mes
 	const sessionsByMonth = useMemo(() => {
-		const grouped = new Map<string, WorkoutSession[]>();
+		const grouped = new Map<string, WorkoutSessionWithMetrics[]>();
 
 		sessions.forEach((session) => {
 			const sessionDate = new Date(session.sessionDate);
@@ -33,6 +33,25 @@ export default function SessionsList() {
 
 		return grouped;
 	}, [sessions]);
+
+	// Format volume for display
+	const formatVolume = (volumeKg: number): string => {
+		if (volumeKg >= 1000) {
+			return `${(volumeKg / 1000).toFixed(1)}K KG`;
+		}
+		return `${Math.round(volumeKg)} KG`;
+	};
+
+	// Format date badge
+	const formatDateBadge = (dateString: string): string => {
+		const sessionDate = new Date(dateString);
+		
+		if (isToday(sessionDate)) {
+			return 'HOY';
+		}
+		
+		return format(sessionDate, 'd MMM', { locale: es }).toUpperCase();
+	};
 
 	return (
 		<div className="space-y-6">
@@ -94,43 +113,42 @@ export default function SessionsList() {
 												${isTodaySession ? 'border-primary/40 bg-primary/5' : 'border-border'}
 											`}>
 												<div className="p-4">
-													{/* Header con fecha y nombre */}
-													<div className="flex items-start justify-between gap-4 mb-3">
-														<div className="flex items-center gap-3 flex-1 min-w-0">
-															{/* Tag de fecha */}
-															<Badge 
-																variant="outline" 
-																className={`
-																	shrink-0 font-barlow font-bold uppercase text-xs
-																	${isTodaySession ? 'border-primary text-primary' : 'border-border text-muted-foreground'}
-																`}
-															>
-																{format(sessionDate, 'd MMM', { locale: es })}
-															</Badge>
+													<div className="flex items-start justify-between gap-4">
+														{/* Left side - Session info */}
+														<div className="flex-1 min-w-0 space-y-3">
+															{/* Date tag and title */}
+															<div className="space-y-2">
+																<Badge 
+																	variant="outline" 
+																	className={`
+																		font-barlow font-bold uppercase text-xs tracking-wider
+																		${isTodaySession ? 'border-primary text-primary' : 'border-border text-muted-foreground'}
+																	`}
+																>
+																	{formatDateBadge(session.sessionDate)}
+																</Badge>
 
-															{/* Nombre de sesión */}
-															<h4 className="font-bebas tracking-wide text-lg text-foreground truncate">
-																{session.title}
-															</h4>
+																<h4 className="font-bebas tracking-wide text-xl text-foreground uppercase leading-none">
+																	{session.title}
+																</h4>
+															</div>
+
+															{/* Metrics row */}
+															<div className="flex items-center gap-4 text-xs font-barlow font-semibold uppercase tracking-wider text-muted-foreground">
+																<span>{session.totalExercises} EJ</span>
+																<span>{session.totalSets} SERIES</span>
+																<span>{formatVolume(session.totalVolumeKg)}</span>
+															</div>
 														</div>
 
-														<ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-													</div>
-
-													{/* Métricas */}
-													<div className="flex items-center gap-4 text-sm text-muted-foreground font-barlow">
-														{/* Duración */}
-														{session.durationMinutes && (
-															<div className="flex items-center gap-1.5">
-																<Clock className="h-4 w-4" />
-																<span>{session.durationMinutes} min</span>
-															</div>
-														)}
-
-														{/* Placeholder para ejercicios/series/volumen - necesitaremos datos adicionales */}
-														<div className="flex items-center gap-1.5">
-															<Dumbbell className="h-4 w-4" />
-															<span>Ver detalle</span>
+														{/* Right side - Duration and arrow */}
+														<div className="flex flex-col items-end gap-2 shrink-0">
+															<ArrowRight className="h-5 w-5 text-muted-foreground" />
+															{session.durationMinutes && (
+																<div className="font-bebas text-base text-muted-foreground leading-none">
+																	{session.durationMinutes} MIN
+																</div>
+															)}
 														</div>
 													</div>
 												</div>

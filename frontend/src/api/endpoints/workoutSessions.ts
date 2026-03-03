@@ -1,4 +1,4 @@
-import type { CreateWorkoutSessionData, WorkoutSession, WorkoutSessionWithExercises, SessionFilters, WorkoutSessionStats } from "@/types";
+import type { CreateWorkoutSessionData, WorkoutSession, WorkoutSessionWithExercises, SessionFilters, WorkoutSessionStats, WorkoutSessionWithMetrics } from "@/types";
 import { apiClient, type ApiResponse, type PaginatedResponse } from "../client";
 
 // Tipo específico para crear sesión desde template
@@ -13,7 +13,7 @@ interface SessionsListResponse  {
 	success: boolean
 	message: string
 	data: {
-		sessions: WorkoutSession[]
+		sessions: WorkoutSessionWithMetrics[]
 		total: number
 		page: number
 		totalPages: number
@@ -25,7 +25,7 @@ export const workoutSessionsApi = {
 	/**
 	 * Listar sesiones con filtros
 	 */
-	listSessions: async (filters?: SessionFilters): Promise<PaginatedResponse<WorkoutSession>> => {
+	listSessions: async (filters?: SessionFilters): Promise<PaginatedResponse<WorkoutSessionWithMetrics>> => {
 		const params = new URLSearchParams();
 
 		if (filters?.page) params.append('page', filters.page.toString());
@@ -36,7 +36,6 @@ export const workoutSessionsApi = {
 		if (filters?.searchTerm) params.append('searchTerm', filters.searchTerm);
 
 		const response = await apiClient.get<SessionsListResponse>(`/workoutSessions?${params.toString()}`);
-		console.log({ response })
 
 		const { success, message, data, timestamp } = response.data;
 

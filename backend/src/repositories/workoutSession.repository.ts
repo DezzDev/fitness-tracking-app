@@ -14,7 +14,9 @@ import {
   WorkoutSessionUpdateData,
   WorkoutSessionWithExercises,
   WorkoutSessionWithTemplateName,
-  WorkoutSessionWithTemplateNameRow
+  WorkoutSessionWithTemplateNameRow,
+  WorkoutSessionWithMetrics,
+  WorkoutSessionWithMetricsRow
 } from "@/types";
 import { castRow, castRows } from "@/utils/castRows.utils";
 
@@ -81,6 +83,20 @@ const mapRowToWorkoutSessionSet = (row: WorkoutSessionSetRow): WorkoutSessionSet
   restSeconds: row.rest_seconds ?? undefined,
   notes: row.notes ?? undefined,
   createdAt: toDate(row.created_at),
+});
+
+const mapRowToWorkoutSessionWithMetrics = (row: WorkoutSessionWithMetricsRow): WorkoutSessionWithMetrics => ({
+  id: row.id,
+  userId: row.user_id,
+  templateId: row.template_id ?? undefined,
+  title: row.title,
+  notes: row.notes ?? undefined,
+  sessionDate: toDate(row.session_date),
+  durationMinutes: row.duration_minutes ?? undefined,
+  createdAt: toDate(row.created_at),
+  totalExercises: row.total_exercises || 0,
+  totalSets: row.total_sets || 0,
+  totalVolumeKg: row.total_volume_kg || 0,
 });
 
 //===========================================
@@ -185,7 +201,16 @@ const queries = {
 
   findAll: {
     sql: (filters: WorkoutSessionFilters) => {
-      let sql = `SELECT ws.* FROM workout_sessions ws`;
+      let sql = `
+        SELECT 
+          ws.*,
+          COUNT(DISTINCT wse.id) as total_exercises,
+          COUNT(wss.id) as total_sets,
+          COALESCE(SUM(wss.weight * wss.reps), 0) as total_volume_kg
+        FROM workout_sessions ws
+        LEFT JOIN workout_session_exercises wse ON wse.session_id = ws.id
+        LEFT JOIN workout_session_sets wss ON wss.session_exercise_id = wse.id
+      `;
       const conditions: string[] = ['ws.user_id = ?'];
 
       if (filters.templateId) conditions.push('ws.template_id = ?')
@@ -194,7 +219,7 @@ const queries = {
       if (filters.searchTerm) conditions.push('(ws.title LIKE ? OR ws.notes LIKE ?)')
 
       sql += ` WHERE ` + conditions.join(' AND ')
-
+      sql += ` GROUP BY ws.id`
       sql += ` ORDER BY ws.session_date DESC LIMIT ? OFFSET ?`
       return sql
     },
@@ -462,13 +487,13 @@ export const workoutSessionRepository = {
    * @param filters (userId, templateId?, startDate?, endDate?, searchTerm?)
    * @param page page number
    * @param limit number of sessions per page
-   * @returns list of workout sessions (without exercises and sets)
+   * @returns list of workout sessions with metrics (totalExercises, totalSets, totalVolumeKg)
    */
   findAll: async (
     filters: WorkoutSessionFilters,
     page: number = 1,
     limit: number = 10
-  ): Promise<WorkoutSession[]> => {
+  ): Promise<WorkoutSessionWithMetrics[]> => {
     const offset = (page - 1) * limit;
 
     const result = await execute({
@@ -478,10 +503,10 @@ export const workoutSessionRepository = {
 
     if (result.rows.length === 0) return [];
 
-    const workoutSessionRows = castRows<WorkoutSessionRow>(result.rows);
+    const workoutSessionRows = castRows<WorkoutSessionWithMetricsRow>(result.rows);
 
     const workoutSessions = workoutSessionRows.map(row =>
-      mapRowToWorkoutSession(row)
+      mapRowToWorkoutSessionWithMetrics(row)
     )
 
     return workoutSessions;

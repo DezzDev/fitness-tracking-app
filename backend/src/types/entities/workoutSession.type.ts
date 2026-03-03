@@ -48,6 +48,12 @@ export type WorkoutSessionWithTemplateName = WorkoutSession & {
 	templateName?: string;
 }
 
+export type WorkoutSessionWithMetrics = WorkoutSession & {
+	totalExercises: number;
+	totalSets: number;
+	totalVolumeKg: number;
+}
+
 // CREATE/UPDATE TYPES
 
 export type WorkoutSessionSetCrateData = {
@@ -123,6 +129,12 @@ export type WorkoutSessionSetRow = {
 
 export type WorkoutSessionWithTemplateNameRow = WorkoutSessionRow & {
 	template_name: string | null
+}
+
+export type WorkoutSessionWithMetricsRow = WorkoutSessionRow & {
+	total_exercises: number;
+	total_sets: number;
+	total_volume_kg: number;
 }
 
 // QUERY TYPES

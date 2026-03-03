@@ -15,7 +15,8 @@ import {
 	WorkoutSessionCreateData,
 	WorkoutSessionUpdateData,
 	WorkoutSessionFilters,
-	WorkoutSessionStats
+	WorkoutSessionStats,
+	WorkoutSessionWithMetrics
 } from "@/types/entities/workoutSession.type";
 import { handleServiceError } from "@/utils/error.utils";
 import logger from "@/utils/logger";
@@ -203,13 +204,13 @@ export const workoutSessionService = {
 	 * @param filters filtros (templateId?, startDate?, endDate?, searchTerm?)
 	 * @param page página actual
 	 * @param limit resultados por página
-	 * @returns sesiones con paginación
+	 * @returns sesiones con paginación y métricas (totalExercises, totalSets, totalVolumeKg)
 	 */
 	findAll: async (
 		userId: string,
 		filters: WorkoutSessionFiltersInput = { page: 1, limit: 10 },
 	): Promise<{
-		sessions: WorkoutSession[];
+		sessions: WorkoutSessionWithMetrics[];
 		total: number;
 		page: number;
 		totalPages: number;

@@ -124,6 +124,12 @@ export interface WorkoutSession {
 	createdAt: string;
 }
 
+export interface WorkoutSessionWithMetrics extends WorkoutSession {
+	totalExercises: number;
+	totalSets: number;
+	totalVolumeKg: number;
+}
+
 export interface WorkoutSessionWithExercises extends WorkoutSession{
 	exercises: WorkoutSessionExercise[];
 	templateName?: string;
