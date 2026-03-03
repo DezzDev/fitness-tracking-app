@@ -110,7 +110,7 @@ export default function CompletionScreen({
 			>
 				{/* TODO: Replace with real PR data from API */}
 				<div className="flex items-center gap-2.5">
-					<div className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+					<div className="w-1 h-1 rounded-full bg-primary shrink-0" />
 					<div className="font-barlow text-xs tracking-[2px] text-muted-foreground font-semibold">
 						¡GRAN TRABAJO!
 					</div>

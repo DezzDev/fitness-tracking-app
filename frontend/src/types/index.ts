@@ -119,9 +119,9 @@ export interface WorkoutSession {
 	templateId?: string;
 	title: string;
 	notes?: string;
-	sessionDate: Date; // Fecha del entrenamiento
+	sessionDate: string; // Fecha del entrenamiento
 	durationMinutes?: number;  // duración en minutos
-	createdAt: Date;
+	createdAt: string;
 }
 
 export interface WorkoutSessionWithExercises extends WorkoutSession{
@@ -153,7 +153,7 @@ export interface WorkoutSessionSet {
 	weight?: number;
 	restSeconds?: number;
 	notes?: string;
-	createdAt: Date;
+	createdAt: string;
 }
 
 
@@ -162,7 +162,7 @@ export interface CreateWorkoutSessionData {
 	templateId: string;
 	title: string;
 	notes?: string;
-	sessionDate: Date;
+	sessionDate: string;
 	exercises: {
 		exerciseId: string;
 		orderIndex: number;
@@ -173,8 +173,8 @@ export interface CreateWorkoutSessionData {
 export interface SessionFilters {
 	page?: number;
 	limit?: number;
-	startDate?: Date;
-	endDate?: Date;
+	startDate?: string;
+	endDate?: string;
 	templateId?: string;
 	searchTerm?: string;
 }
@@ -191,7 +191,7 @@ export interface WorkoutExerciseSet {
 	durationSeconds?: number;
 	weight?: number;
 	notes?: string;
-	createdAt: Date;
+	createdAt: string;
 }
 
 // DEPRECATED: Mantener para compatibilidad temporal
@@ -234,8 +234,8 @@ export interface WorkoutStats {
 	totalExercises: number,
 	averageExercisesPerWorkout: number,
 	dateRange: {
-		earliest?: Date,
-		latest?: Date
+		earliest?: string,
+		latest?: string
 	}
 }
 
@@ -245,11 +245,11 @@ export interface WorkoutStats {
 export interface ProgressLog {
 	id: string;
 	userId: string;
-	logDate: Date;
+	logDate: string;
 	bodyWeight?: number;
 	bodyFatPercentage?: number;
 	notes?: string;
-	createdAt: Date;
+	createdAt: string;
 }
 
 export interface UserGoal {
@@ -261,7 +261,7 @@ export interface UserGoal {
 	targetWeight?: number;
 	notes?: string;
 	achieved: boolean;
-	createdAt: Date;
+	createdAt: string;
 }
 
 export interface PersonalRecord {
@@ -271,7 +271,7 @@ export interface PersonalRecord {
 	maxReps?: number;
 	maxDurationSeconds?: number;
 	maxWeight?: number;
-	achievedAt: Date;
+	achievedAt: string;
 }
 
 // =================================
@@ -293,8 +293,8 @@ export interface PaginationParams {
 }
 
 export interface WorkoutFilters extends PaginationParams {
-	startDate?: Date;
-	endDate?: Date;
+	startDate?: string;
+	endDate?: string;
 	searchTerm?: string;
 }
 

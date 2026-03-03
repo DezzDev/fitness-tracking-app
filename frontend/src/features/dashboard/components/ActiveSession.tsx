@@ -7,6 +7,7 @@ interface ActiveSessionProps {
 }
 
 export default function ActiveSession({ session, onComplete }: ActiveSessionProps) {
+	console.log({session})
 	{
 		const [ currentIdx, setCurrentIdx ] = useState(0);
 		const [ completedSets, setCompletedSets ] = useState(
@@ -94,7 +95,7 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 								color: "var(--gray-mid)",
 							}}
 						>
-							{session.sessionDate.toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
+							{new Date(session.sessionDate).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
 						</div>
 						<div
 							style={{
