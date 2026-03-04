@@ -109,24 +109,24 @@ export default function SessionsList() {
 										>
 											<Card className={`
 												hover:shadow-md transition-all duration-200 
-												hover:border-primary/50 cursor-pointer
+												hover:border-primary/50 cursor-pointer rounded-none
 												${isTodaySession ? 'border-primary/40 bg-primary/5' : 'border-border'}
 											`}>
-												<div className="p-4">
+												<div className="px-4">
 													<div className="flex items-start justify-between gap-4">
 														{/* Left side - Session info */}
 														<div className="flex-1 min-w-0 space-y-3">
 															{/* Date tag and title */}
 															<div className="space-y-2">
-																<Badge 
-																	variant="outline" 
+																<span 
+																	
 																	className={`
-																		font-barlow font-bold uppercase text-xs tracking-wider
+																		font-barlow font-bold uppercase text-xs text-primary tracking-wider
 																		${isTodaySession ? 'border-primary text-primary' : 'border-border text-muted-foreground'}
 																	`}
 																>
 																	{formatDateBadge(session.sessionDate)}
-																</Badge>
+																</span>
 
 																<h4 className="font-bebas tracking-wide text-xl text-foreground uppercase leading-none">
 																	{session.title}

@@ -64,9 +64,10 @@ export default function TemplatesList() {
 		return (
 			<Card 
 				key={template.id} 
-				className="hover:shadow-md transition-all duration-200 hover:border-primary/50"
+				className="hover:shadow-md transition-all duration-200 hover:border-primary/50 rounded-none border-border
+				"
 			>
-				<div className="p-4 space-y-4">
+				<div className="px-4 space-y-4">
 					{/* Header con nombre y favorito */}
 					<div className="flex items-start justify-between gap-3">
 						<Link 
