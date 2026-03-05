@@ -15,7 +15,7 @@ export default function WorkoutsPage() {
 		<div className="space-y-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-4xl font-bebas tracking-widest uppercase text-foreground">
+				<h1 className="text-4xl font-bebas tracking-[2px] uppercase text-foreground">
 					Workouts
 				</h1>
 			</div>
@@ -26,13 +26,13 @@ export default function WorkoutsPage() {
 					<TabsList className="w-full max-w-md bg-muted/20 p-1 h-auto">
 						<TabsTrigger
 							value="sessions"
-						className="flex-1 uppercase font-barlow font-semibold tracking-[2.5px] text-sm rounded-none focus:border-b-primary "
+						className="flex-1 uppercase font-barlow font-semibold tracking-[3px] text-sm rounded-none focus:border-b-primary "
 						>
 							Sesiones
 						</TabsTrigger>
 						<TabsTrigger
 							value="templates"
-							className="flex-1 uppercase font-barlow font-semibold tracking-[2.5px] text-sm rounded-none"
+							className="flex-1 uppercase font-barlow font-semibold tracking-[3px] text-sm rounded-none"
 						>
 							Plantillas
 						</TabsTrigger>

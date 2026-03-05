@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWorkoutSessions } from '../hooks/useWorkoutSessions';
 import type { WorkoutSessionWithMetrics } from '@/types';
+import { Separator } from '@/components/ui/separator';
 
 export default function SessionsList() {
 	const { data, isLoading } = useWorkoutSessions({ limit: 100 });
@@ -88,12 +89,11 @@ export default function SessionsList() {
 					{Array.from(sessionsByMonth.entries()).map(([ monthKey, monthSessions ]) => (
 						<div key={monthKey} className="space-y-3">
 							{/* Divisor de mes */}
-							<div className="flex items-center gap-3">
-								<h3 className="text-sm font-bebas tracking-widest text-muted-foreground uppercase">
+							
+								<h3 className="text-sm font-bebas tracking-[3px] text-muted-foreground uppercase mb-2">
 									{monthKey}
 								</h3>
-								<div className="flex-1 h-px bg-border" />
-							</div>
+							<Separator className="mb-4" />
 
 							{/* Sesiones del mes */}
 							<div className="space-y-3">

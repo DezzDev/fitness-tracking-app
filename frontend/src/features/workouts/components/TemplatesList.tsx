@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-	useWorkoutTemplates, 
-	useToggleFavorite, 
-	useDuplicateTemplate 
+import {
+	useWorkoutTemplates,
+	useToggleFavorite,
+	useDuplicateTemplate
 } from '../hooks/useWorkoutTemplates';
 import type { WorkoutTemplate } from '@/types';
+import { Separator } from '@/components/ui/separator';
 
 export default function TemplatesList() {
 	const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function TemplatesList() {
 		});
 
 		return { favorites: favs, nonFavorites: nonFavs };
-	}, [templates]);
+	}, [ templates ]);
 
 	const handleStartSession = (templateId: string) => {
 		navigate(`/workouts/sessions/start?templateId=${templateId}`);
@@ -60,21 +61,22 @@ export default function TemplatesList() {
 		const exerciseCount = template.exercises?.length || 0;
 		const firstThreeExercises = template.exercises?.slice(0, 3) || [];
 		const remainingCount = exerciseCount > 3 ? exerciseCount - 3 : 0;
+		console.log({template})
 
 		return (
-			<Card 
-				key={template.id} 
+			<Card
+				key={template.id}
 				className="hover:shadow-md transition-all duration-200 hover:border-primary/50 rounded-none border-border
 				"
 			>
 				<div className="px-4 space-y-4">
 					{/* Header con nombre y favorito */}
 					<div className="flex items-start justify-between gap-3">
-						<Link 
+						<Link
 							to={`/workouts/templates/${template.id}`}
 							className="flex-1 min-w-0 group"
 						>
-							<h3 className="font-bebas tracking-wide text-xl text-foreground group-hover:text-primary transition-colors">
+							<h3 className="font-bebas tracking-[2px] text-xl text-foreground group-hover:text-primary transition-colors">
 								{template.name}
 							</h3>
 						</Link>
@@ -84,12 +86,11 @@ export default function TemplatesList() {
 							className="shrink-0 p-1 hover:scale-110 transition-transform"
 							aria-label="Marcar como favorito"
 						>
-							<Star 
-								className={`h-5 w-5 ${
-									template.isFavorite 
-										? 'fill-primary text-primary' 
+							<Star
+								className={`h-5 w-5 ${template.isFavorite
+										? 'fill-primary text-primary'
 										: 'text-muted-foreground'
-								}`} 
+									}`}
 							/>
 						</button>
 					</div>
@@ -98,17 +99,17 @@ export default function TemplatesList() {
 					{exerciseCount > 0 && (
 						<div className="flex flex-wrap gap-2">
 							{firstThreeExercises.map((ex) => (
-								<Badge 
-									key={ex.id} 
-									variant="secondary" 
-									className="font-barlow text-xs uppercase tracking-wide"
+								<Badge
+									key={ex.id}
+									variant="secondary"
+									className="font-barlow text-xs uppercase tracking-[2px] rounded-none"
 								>
-									{ex.exercise?.name || 'Ejercicio'}
+									{ex.exerciseName || 'Ejercicio'}
 								</Badge>
 							))}
 							{remainingCount > 0 && (
-								<Badge 
-									variant="outline" 
+								<Badge
+									variant="outline"
 									className="font-barlow text-xs font-semibold"
 								>
 									+{remainingCount}
@@ -118,13 +119,14 @@ export default function TemplatesList() {
 					)}
 
 					{/* Acciones */}
-					<div className="flex gap-2 pt-2">
+					<div className="flex gap-4 text-2xl">
 						<Button
 							onClick={() => handleStartSession(template.id)}
 							size="sm"
-							className="flex-1 uppercase font-barlow font-semibold tracking-wide text-xs"
+							variant="ghost"
+							className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-0"
 						>
-							<Play className="h-4 w-4 mr-1.5" />
+						
 							Iniciar
 						</Button>
 
@@ -132,9 +134,9 @@ export default function TemplatesList() {
 							onClick={() => handleEdit(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-wide text-xs"
+							className="uppercase font-barlow font-semibold tracking-[3px] px-0"
 						>
-							<Pencil className="h-4 w-4 mr-1.5" />
+							
 							Editar
 						</Button>
 
@@ -142,9 +144,9 @@ export default function TemplatesList() {
 							onClick={() => handleDuplicate(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-wide text-xs"
+							className="uppercase font-barlow font-semibold tracking-[3px] px-0"
 						>
-							<Copy className="h-4 w-4 mr-1.5" />
+						
 							Duplicar
 						</Button>
 					</div>
@@ -186,28 +188,28 @@ export default function TemplatesList() {
 					{/* Sección FAVORITAS */}
 					{favorites.length > 0 && (
 						<div className="space-y-4">
-							<div className="flex items-center gap-3">
-								<h2 className="text-sm font-bebas tracking-widest text-muted-foreground uppercase">
-									Favoritas
-								</h2>
-								<div className="flex-1 h-px bg-border" />
-							</div>
+
+							<h3 className="text-sm font-bebas tracking-[3px] text-muted-foreground uppercase mb-2">
+								Favoritas
+							</h3>
+
+							<Separator className="mb-4"/>
 
 							<div className="grid gap-4 sm:grid-cols-2">
 								{favorites.map(renderTemplate)}
 							</div>
+
 						</div>
 					)}
 
 					{/* Sección TODAS */}
 					{nonFavorites.length > 0 && (
 						<div className="space-y-4">
-							<div className="flex items-center gap-3">
-								<h2 className="text-sm font-bebas tracking-widest text-muted-foreground uppercase">
-									Todas
-								</h2>
-								<div className="flex-1 h-px bg-border" />
-							</div>
+
+							<h2 className="text-sm font-bebas tracking-widest text-muted-foreground uppercase">
+								Todas
+							</h2>
+							<Separator />
 
 							<div className="grid gap-4 sm:grid-cols-2">
 								{nonFavorites.map(renderTemplate)}

@@ -89,12 +89,12 @@ export default function SessionDetailPage() {
 				<div className="space-y-4">
 
 					{/* Fecha tag */}
-					<div
+					<h2
 						className="font-barlow uppercase tracking-[3px] text-xs text-primary mb-2"
 					>
 						{format(sessionDate, "d 'de' MMMM, yyyy", { locale: es })}
 						{session.templateName ? ` - ${session.templateName}` : ''}
-					</div>
+					</h2>
 
 
 					{/* Título */}
@@ -125,6 +125,7 @@ export default function SessionDetailPage() {
 					</div>
 				</div>
 
+				<Separator />
 
 				{/* Estadisticas de comparacion */}
 				<p>Estadísticas de comparación</p>

@@ -12,8 +12,8 @@ export interface User {
 	role: 'user' | 'admin';
 	profileImage?: string;
 	isActive: boolean;
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 }
 
 
@@ -51,7 +51,7 @@ export interface Exercise {
 	difficulty?: ExerciseDifficulty;
 	muscleGroup?: string;
 	type?: ExerciseType;
-	createdAt: Date;
+	createdAt: string;
 }
 
 export interface ExerciseWithTags extends Exercise {
@@ -76,22 +76,27 @@ export interface WorkoutTemplate {
 	description?: string;
 	scheduledDayOfWeek?: number;
 	exercises: WorkoutTemplateExercise[];
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt: string;
+	updatedAt: string;
 	isFavorite?: boolean;
 	usageCount?: number;
-	lastUsedAt?: Date;
+	lastUsedAt?: string;
 }
 
-export interface WorkoutTemplateExercise {
+export type WorkoutTemplateExercise = {
 	id: string;
 	templateId: string;
 	exerciseId: string;
 	orderIndex: number;
-	exercise: Exercise;
-	suggestedSets?: number; // Número sugerido de sets
-	suggestedReps?: number; // Número sugerido de reps
-	notes?: string;	// Notas del ejercicio en la plantilla
+	suggestedSets?: number;
+	suggestedReps?: number;
+	notes?: string;
+	// join with exercise
+	exerciseName: string;
+	exerciseDescription?: string;
+	difficulty?: string;
+	muscleGroup?: string;
+	type?: string;
 }
 
 // Para crear template
