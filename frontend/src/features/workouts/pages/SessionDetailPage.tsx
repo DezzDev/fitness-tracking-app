@@ -23,7 +23,7 @@ export default function SessionDetailPage() {
 	const { mutate: deleteSession, isPending: isDeleting } = useDeleteSession();
 	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
 
-	
+
 	const session = response || null;
 
 	const handleDelete = () => {
@@ -58,7 +58,7 @@ export default function SessionDetailPage() {
 
 	const sessionDate = new Date(session.sessionDate);
 	const exercises = session.exercises || [];
-	
+
 
 	// Calcular métricas
 	const totalSets = exercises.reduce((sum: number, ex: WorkoutSessionExercise) => sum + (ex.sets?.length || 0), 0);
@@ -79,7 +79,7 @@ export default function SessionDetailPage() {
 					variant="ghost"
 					size="sm"
 					onClick={() => navigate('/workouts')}
-					className="font-barlow uppercase tracking-wide text-xs"
+					className="font-barlow uppercase tracking-[2px] text-xs"
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />
 					Workouts
@@ -87,13 +87,15 @@ export default function SessionDetailPage() {
 
 				{/* Header */}
 				<div className="space-y-4">
+
 					{/* Fecha tag */}
-					<Badge 
-						variant="outline" 
-						className="font-barlow uppercase tracking-wide text-xs"
+					<div
+						className="font-barlow uppercase tracking-[3px] text-xs text-primary mb-2"
 					>
 						{format(sessionDate, "d 'de' MMMM, yyyy", { locale: es })}
-					</Badge>
+						{session.templateName ? ` - ${session.templateName}` : ''}
+					</div>
+
 
 					{/* Título */}
 					<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
@@ -103,55 +105,42 @@ export default function SessionDetailPage() {
 					{/* Stats row */}
 					<div className="flex items-center gap-6 text-sm font-barlow">
 						{session.durationMinutes && (
-							<div className="flex items-center gap-2">
-								<Clock className="h-4 w-4 text-primary" />
-								<span className="text-foreground font-semibold">{session.durationMinutes}</span>
-								<span className="text-muted-foreground">minutos</span>
+							<div className="flex flex-col items-center">
+								<span className="text-foreground font-semibold text-lg">{session.durationMinutes}</span>
+								<span className="text-muted-foreground uppercase text-sm tracking-[2px] ">min</span>
 							</div>
 						)}
-						
-						<div className="flex items-center gap-2">
-							<Dumbbell className="h-4 w-4 text-primary" />
-							<span className="text-foreground font-semibold">{totalSets}</span>
-							<span className="text-muted-foreground">series</span>
+
+						<div className="flex flex-col items-center">
+							<span className="text-foreground font-semibold text-lg">{totalSets}</span>
+							<span className="text-muted-foreground uppercase text-sm tracking-[2px]">series</span>
 						</div>
 
 						{totalVolume > 0 && (
-							<div className="flex items-center gap-2">
-								<TrendingUp className="h-4 w-4 text-primary" />
-								<span className="text-foreground font-semibold">{Math.round(totalVolume)}</span>
-								<span className="text-muted-foreground">kg</span>
+							<div className="flex flex-col items-center">
+								<span className="text-foreground font-semibold text-lg">{Math.round(totalVolume)}</span>
+								<span className="text-muted-foreground uppercase text-sm tracking-[2px]">kg</span>
 							</div>
 						)}
 					</div>
 				</div>
 
-				{/* Título de sesión */}
-				{session.title && (
-					<Card className="bg-muted/10">
-						<div className="p-4">
-							<h2 className="font-bebas tracking-wide text-xl text-foreground">
-								{session.title}
-							</h2>
-							{session.notes && (
-								<p className="text-muted-foreground font-barlow mt-2 text-sm">
-									{session.notes}
-								</p>
-							)}
-						</div>
-					</Card>
-				)}
 
+				{/* Estadisticas de comparacion */}
+				<p>Estadísticas de comparación</p>
 				{/* Comparación de volumen (placeholder) */}
 				{/* TODO: Implementar gráfico de comparación vs sesión anterior */}
 
-				{/* Ejercicios */}
-				<Card>
-					<div className="p-6 space-y-6">
-						<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
-							Ejercicios ({exercises.length})
-						</h2>
+				<Separator />
+				
 
+				{/* Ejercicios */}
+				<div>
+					<div className="space-y-6">
+						<h2 className="text-lg font-bebas tracking-[2px] uppercase text-foreground">
+							Ejercicios
+						</h2>
+						<Separator />
 						{exercises.length === 0 ? (
 							<div className="text-center py-8 text-muted-foreground">
 								<Dumbbell className='h-12 w-12 mx-auto mb-3 opacity-50' />
@@ -162,37 +151,32 @@ export default function SessionDetailPage() {
 								{exercises.map((workoutExercise: WorkoutSessionExercise, index: number) => (
 									<div key={workoutExercise.id}>
 										{index > 0 && <Separator className="my-6" />}
-										
+
 										<div className="space-y-4">
 											{/* Ejercicio info */}
-											<div className="flex items-start gap-3">
-												<div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-													<span className="text-sm font-bebas text-primary">
-														{index + 1}
-													</span>
-												</div>
+											<div className="flex flex-col items-start gap-1">
+
+												{workoutExercise.muscleGroup && (
+													<div
+														className="font-barlow uppercase text-xs tracking-[2px] text-primary"
+													>
+														{workoutExercise.muscleGroup}
+													</div>
+												)}
 
 												<div className="flex-1 min-w-0 space-y-1">
-													<h3 className="font-bebas tracking-wide text-lg text-foreground">
+													<h3 className="font-bebas tracking-[2px] text-2xl text-foreground">
 														{workoutExercise.exerciseName || 'Ejercicio'}
 													</h3>
-													
-													{workoutExercise.muscleGroup && (
-														<Badge 
-															variant="secondary" 
-															className="font-barlow uppercase text-xs tracking-wide"
-														>
-															{workoutExercise.muscleGroup}
-														</Badge>
-													)}
+
 												</div>
 											</div>
 
 											{/* Series */}
 											{workoutExercise.sets && workoutExercise.sets.length > 0 && (
-												<div className="ml-11 space-y-2">
+												<div className="space-y-2">
 													{workoutExercise.sets.map((set: WorkoutSessionSet) => (
-														<div 
+														<div
 															key={set.setNumber}
 															className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg"
 														>
@@ -238,7 +222,7 @@ export default function SessionDetailPage() {
 							</div>
 						)}
 					</div>
-				</Card>
+				</div>
 
 				{/* Acciones */}
 				<div className="flex gap-3 pt-4">
@@ -246,7 +230,7 @@ export default function SessionDetailPage() {
 						variant="outline"
 						size="lg"
 						className="uppercase font-barlow font-semibold tracking-wide"
-						onClick={() => {/* TODO: Implementar duplicar */}}
+						onClick={() => {/* TODO: Implementar duplicar */ }}
 					>
 						<Copy className="h-5 w-5 mr-2" />
 						Duplicar
@@ -272,7 +256,7 @@ export default function SessionDetailPage() {
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle className="flex items-center gap-2 text-destructive">
-							<AlertTriangle className="h-5 w-5"/>
+							<AlertTriangle className="h-5 w-5" />
 							¿Eliminar sesión?
 						</DialogTitle>
 						<DialogDescription>
