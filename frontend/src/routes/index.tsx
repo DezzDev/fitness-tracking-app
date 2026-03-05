@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
 								element: <WorkoutsPage />
 							},
 							{
-								path: 'workouts/new',
+								path: 'workouts/templates/new',
 								element: <CreateWorkoutPage />
 							},
 							{
