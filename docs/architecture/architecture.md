@@ -20,4 +20,3 @@ Comprehensive architecture documentation for the full-stack fitness tracking app
 5. [Domain Model](./05-domain-model.md) -- Entity relationship diagram, core entities reference
 6. [Testing](./06-testing.md) -- Test structure, utilities, configuration, commands
 7. [Design Decisions](./07-design-decisions.md) -- Key architectural decisions and rationale, environment config, full dependency list
-8. [Design System](./08-design-system.md) -- Color palette, typography, spacing, responsive breakpoints, component library, domain patterns, glow effects, icons, forms, toasts, animation, navigation
