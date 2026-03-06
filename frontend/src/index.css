@@ -50,21 +50,22 @@
 	--radius: 0.5rem;
 
 	/* Core palette */
-	--bg: #08080a;
-	--surface: #111114;
-	--surface-elevated: #18181c;
-	--border: #232328;
-	--border-strong: #2e2e35;
+	--bg: #121212;
+	--surface: #1A1A1A;
+	--surface-elevated: #222222;
+	--border: #2A2A2A;
+	--border-strong: #333333;
 
 	/* Orange accent system */
-	--orange: #E85D04;
-	--orange-warm: #F4845F;
-	--orange-muted: #9e4a1c;
-	--orange-glow: rgba(232, 93, 4, 0.35);
-	--orange-subtle: rgba(232, 93, 4, 0.08);
+	--orange: #FF6F3C;
+	--orange-warm: #FFC18E;
+	--orange-muted: #cc5930;
+	--orange-glow: rgba(255, 111, 60, 0.35);
+	--orange-subtle: rgba(255, 111, 60, 0.08);
+	--border-warm: rgba(255, 111, 60, 0.25);
 
 	/* Neutral tones */
-	--white: #F0EBE3;
+	--white: #E0E0E0;
 	--gray-light: #A8A29E;
 	--gray-mid: #6B6560;
 	--gray-dark: #2A2A2F;
@@ -73,25 +74,25 @@
 	--destructive: #DC2626;
 	--success: #16A34A;
 	--warning: #D97706;
-	--input: #232328;
-	--ring: #E85D04;
+	--input: #2A2A2A;
+	--ring: #FF6F3C;
 
 	/* Charts */
-	--chart-1: #E85D04;
-	--chart-2: #F4845F;
+	--chart-1: #FF6F3C;
+	--chart-2: #FFC18E;
 	--chart-3: #16A34A;
 	--chart-4: #D97706;
 	--chart-5: #A855F7;
 
 	/* Sidebar */
-	--sidebar: #0c0c0f;
-	--sidebar-foreground: #F0EBE3;
-	--sidebar-primary: #E85D04;
-	--sidebar-primary-foreground: #08080a;
-	--sidebar-accent: rgba(232, 93, 4, 0.08);
-	--sidebar-accent-foreground: #F0EBE3;
-	--sidebar-border: #232328;
-	--sidebar-ring: #E85D04;
+	--sidebar: #151515;
+	--sidebar-foreground: #E0E0E0;
+	--sidebar-primary: #FF6F3C;
+	--sidebar-primary-foreground: #121212;
+	--sidebar-accent: rgba(255, 111, 60, 0.08);
+	--sidebar-accent-foreground: #E0E0E0;
+	--sidebar-border: #2A2A2A;
+	--sidebar-ring: #FF6F3C;
 }
 
 
@@ -120,7 +121,7 @@
   }
 
   .glow-orange {
-    box-shadow: 0 0 20px var(--orange-glow), 0 0 60px rgba(232, 93, 4, 0.1);
+    box-shadow: 0 0 20px var(--orange-glow), 0 0 60px rgba(255, 111, 60, 0.1);
   }
 
   .glow-orange-sm {
@@ -129,7 +130,7 @@
 
   .border-glow {
     border-color: var(--orange);
-    box-shadow: 0 0 8px var(--orange-glow), inset 0 0 8px rgba(232, 93, 4, 0.05);
+    box-shadow: 0 0 8px var(--orange-glow), inset 0 0 8px rgba(255, 111, 60, 0.05);
   }
 
   .surface-noise {

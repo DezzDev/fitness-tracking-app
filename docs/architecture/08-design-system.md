@@ -1,6 +1,6 @@
 # Design System
 
-Dark-only fitness tracking UI built on shadcn/ui (New York style), Tailwind CSS v4, and two custom fonts. The entire visual language revolves around an orange accent on near-black surfaces with warm off-white text.
+Dark-only fitness tracking UI built on shadcn/ui (New York style), Tailwind CSS v4, and two custom fonts. The visual language is **dark & sophisticated**: deep near-black backgrounds, warm off-white text, and a bold orange accent system. Feedback is fast and punchy (game-like), avoiding long smooth animations.
 
 ---
 
@@ -10,27 +10,28 @@ Dark-only fitness tracking UI built on shadcn/ui (New York style), Tailwind CSS 
 
 | Token               | CSS Variable          | Hex / Value                  | Usage                     |
 |----------------------|-----------------------|------------------------------|---------------------------|
-| `--bg`               | `--color-background`  | `#08080a`                    | Page background           |
-| `--surface`          | `--color-card`        | `#111114`                    | Cards, panels, muted bg   |
-| `--surface-elevated` | `--color-popover`     | `#18181c`                    | Popovers, elevated panels |
+| `--bg`               | `--color-background`  | `#121212`                    | Page background (near-black) |
+| `--surface`          | `--color-card`        | `#1A1A1A`                    | Cards, panels, muted bg   |
+| `--surface-elevated` | `--color-popover`     | `#222222`                    | Popovers, elevated panels |
 | `--gray-dark`        | `--color-secondary`   | `#2A2A2F`                    | Secondary background      |
-| `--sidebar`          | `--color-sidebar`     | `#0c0c0f`                    | Sidebar background        |
+| `--sidebar`          | `--color-sidebar`     | `#151515`                    | Sidebar background        |
 
 ### Orange Accent System
 
 | Token              | Hex / Value                  | Usage                                    |
 |--------------------|------------------------------|------------------------------------------|
-| `--orange`         | `#E85D04`                    | Primary brand, buttons, focus rings      |
-| `--orange-warm`    | `#F4845F`                    | Accent, gradient endpoint, chart-2       |
-| `--orange-muted`   | `#9e4a1c`                    | Dark muted orange (not Tailwind-mapped)  |
-| `--orange-glow`    | `rgba(232, 93, 4, 0.35)`    | Glow shadow effect                       |
-| `--orange-subtle`  | `rgba(232, 93, 4, 0.08)`    | Active sidebar state, subtle tints       |
+| `--orange`         | `#FF6F3C`                    | Primary brand, buttons, focus rings, highlights |
+| `--orange-warm`    | `#FFC18E`                    | Secondary accent, micro-details, interactions, gradient endpoint |
+| `--orange-muted`   | `#cc5930`                    | Dark muted orange (not Tailwind-mapped)  |
+| `--orange-glow`    | `rgba(255, 111, 60, 0.35)`  | Glow shadow effect                       |
+| `--orange-subtle`  | `rgba(255, 111, 60, 0.08)`  | Active sidebar state, subtle tints       |
+| `--border-warm`    | `rgba(255, 111, 60, 0.25)`  | Warm semi-transparent borders/shadows    |
 
 ### Neutral Tones
 
 | Token          | Hex       | Tailwind Mapping            | Usage                    |
 |----------------|-----------|-----------------------------|--------------------------|
-| `--white`      | `#F0EBE3` | `--color-foreground`        | Primary text (warm off-white) |
+| `--white`      | `#E0E0E0` | `--color-foreground`        | Primary text (light gray, legible) |
 | `--gray-light` | `#A8A29E` | `--color-secondary-foreground` | Secondary text          |
 | `--gray-mid`   | `#6B6560` | `--color-muted-foreground`  | Muted/placeholder text   |
 
@@ -41,17 +42,17 @@ Dark-only fitness tracking UI built on shadcn/ui (New York style), Tailwind CSS 
 | `--destructive`  | `#DC2626` | Errors, delete actions |
 | `--success`      | `#16A34A` | Success states, beginner difficulty |
 | `--warning`      | `#D97706` | Warnings, intermediate difficulty |
-| `--border`       | `#232328` | Standard borders     |
-| `--border-strong`| `#2e2e35` | Emphasized borders (not Tailwind-mapped) |
-| `--input`        | `#232328` | Input borders/bg     |
-| `--ring`         | `#E85D04` | Focus ring           |
+| `--border`       | `#2A2A2A` | Standard borders     |
+| `--border-strong`| `#333333` | Emphasized borders (not Tailwind-mapped) |
+| `--input`        | `#2A2A2A` | Input borders/bg     |
+| `--ring`         | `#FF6F3C` | Focus ring           |
 
 ### Chart Palette
 
 | Token       | Hex       | Color     |
 |-------------|-----------|-----------|
-| `--chart-1` | `#E85D04` | Orange    |
-| `--chart-2` | `#F4845F` | Warm orange |
+| `--chart-1` | `#FF6F3C` | Orange    |
+| `--chart-2` | `#FFC18E` | Warm orange |
 | `--chart-3` | `#16A34A` | Green     |
 | `--chart-4` | `#D97706` | Amber     |
 | `--chart-5` | `#A855F7` | Purple    |
@@ -59,12 +60,12 @@ Dark-only fitness tracking UI built on shadcn/ui (New York style), Tailwind CSS 
 ### Tailwind Token Mapping Summary
 
 ```
-primary           -> --orange (#E85D04)
-primary-foreground -> --bg (#08080a)
-accent            -> --orange-warm (#F4845F)
-accent-foreground -> --white (#F0EBE3)
+primary           -> --orange (#FF6F3C)
+primary-foreground -> --bg (#121212)
+accent            -> --orange-warm (#FFC18E)
+accent-foreground -> --white (#E0E0E0)
 destructive       -> --destructive (#DC2626)
-muted             -> --surface (#111114)
+muted             -> --surface (#1A1A1A)
 muted-foreground  -> --gray-mid (#6B6560)
 ```
 
@@ -287,7 +288,7 @@ Card              -> rounded-xl border shadow-sm, bg-card
 
 ```css
 .glow-orange {
-  box-shadow: 0 0 20px var(--orange-glow), 0 0 60px rgba(232,93,4,0.1);
+  box-shadow: 0 0 20px var(--orange-glow), 0 0 60px rgba(255,111,60,0.1);
 }
 
 .glow-orange-sm {
