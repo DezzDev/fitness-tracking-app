@@ -28,13 +28,13 @@ export default function CreateWorkoutPage() {
 
 		createWorkout(workoutData, {
 			onSuccess: () => {
-				navigate('/workouts');
+				navigate('/workouts?tab=templates');
 			},
 		});
 	};
 
 	const handleCancel = () => {
-		navigate('/workouts');
+		navigate('/workouts?tab=templates');
 	};
 
 	return (
@@ -43,8 +43,8 @@ export default function CreateWorkoutPage() {
 			<Button
 				variant="ghost"
 				size="sm"
-				onClick={() => navigate('/workouts')}
-				className="font-barlow uppercase tracking-wide text-xs"
+				onClick={() => navigate('/workouts?tab=templates')}
+				className="font-barlow uppercase  tracking-[2px] text-xs"
 			>
 				<ArrowLeft className="h-4 w-4 mr-2" />
 				Workouts
@@ -52,11 +52,11 @@ export default function CreateWorkoutPage() {
 
 			{/* Header */}
 			<div>
-				<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
+				<h1 className="text-4xl font-bebas tracking-[2px] uppercase text-foreground">
 					Nuevo Entrenamiento
 				</h1>
 				<p className='text-muted-foreground mt-2 font-barlow'>
-					Registra tu sesión de entrenamiento
+					Crea un nuevo entrenamiento agregando ejercicios, series y repeticiones. Puedes guardar el entrenamiento para realizarlo más tarde o empezar de inmediato.
 				</p>
 			</div>
 

@@ -23,7 +23,7 @@ Dark-only fitness tracking UI built on shadcn/ui (New York style), Tailwind CSS 
 | `--orange`         | `#E85D04`                    | Primary brand, buttons, focus rings      |
 | `--orange-warm`    | `#F4845F`                    | Accent, gradient endpoint, chart-2       |
 | `--orange-muted`   | `#9e4a1c`                    | Dark muted orange (not Tailwind-mapped)  |
-| `--orange-glow`    | `rgba(232, 93, 4, 0.35)`    | Glow shadow effect                       |
+| `--orange-glow`    | `rgba(232, 93, 4, 0.35)`    | Glow shadow effect                        |
 | `--orange-subtle`  | `rgba(232, 93, 4, 0.08)`    | Active sidebar state, subtle tints       |
 
 ### Neutral Tones
@@ -353,6 +353,7 @@ Used on the auth layout decorative panel for texture.
 React Hook Form + Zod resolver + shadcn/ui components. Two patterns coexist:
 
 **Pattern A -- Direct `register()` (most common)**:
+
 ```tsx
 const { register, handleSubmit, formState: { errors } } = useForm<T>({
   resolver: zodResolver(schema),
@@ -430,6 +431,7 @@ A themed wrapper exists at `components/ui/sonner.tsx` with custom Lucide icons p
 | `loading` | `Loader2` + `animate-spin` |
 
 Style overrides match the theme:
+
 ```
 --normal-bg:     var(--popover)
 --normal-text:   var(--popover-foreground)
@@ -438,6 +440,7 @@ Style overrides match the theme:
 ```
 
 **Usage pattern**: called in React Query mutation hooks:
+
 ```tsx
 onSuccess: () => toast.success('Perfil actualizado correctamente'),
 onError: (error) => toast.error(handleApiError(error, 'Error al actualizar')),
@@ -452,6 +455,7 @@ Only `toast.success()` and `toast.error()` are used across the codebase.
 **Library**: `tw-animate-css` (imported in `index.css`)
 
 Provides classes used by shadcn/ui components:
+
 - `animate-in` / `animate-out`
 - `fade-in-0` / `fade-out-0`
 - `zoom-in-95` / `zoom-out-95`

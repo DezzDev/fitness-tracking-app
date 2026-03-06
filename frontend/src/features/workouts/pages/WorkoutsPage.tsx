@@ -1,6 +1,5 @@
 // src/features/workouts/pages/WorkoutsPage.tsx
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,12 @@ import TemplatesList from '../components/TemplatesList';
 import SessionsList from '../components/SessionsList';
 
 export default function WorkoutsPage() {
-	const [ activeTab, setActiveTab ] = useState<'sessions' | 'templates'>('sessions');
+	const [searchParams, setSearchParams] = useSearchParams();
+	const activeTab = (searchParams.get('tab') === 'templates') ? 'templates' : 'sessions';
+
+	const setActiveTab = (tab: string) => {
+		setSearchParams(tab === 'sessions' ? {} : { tab }, { replace: true });
+	};
 
 	return (
 		<div className="space-y-6">
@@ -22,7 +26,7 @@ export default function WorkoutsPage() {
 
 			{/* Tabs */}
 			
-				<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+				<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as string)}>
 					<TabsList className="w-full max-w-md bg-muted/20 p-1 h-auto">
 						<TabsTrigger
 							value="sessions"

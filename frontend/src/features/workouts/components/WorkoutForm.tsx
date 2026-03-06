@@ -254,16 +254,6 @@ export default function WorkoutForm({
 					)}
 				</Button>
 
-				<Button
-					type='button'
-					variant={'outline'}
-					size={'lg'}
-					onClick={() => onCancel()}
-					disabled={isSubmitting}
-					className="uppercase font-barlow font-semibold tracking-wide"
-				>
-					Cancelar
-				</Button>
 			</div>
 		</form>
 	)
