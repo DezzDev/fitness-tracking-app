@@ -70,7 +70,7 @@ export default function TemplateDetailPage() {
 			<Button
 				variant="ghost"
 				size="sm"
-				onClick={() => navigate('/workouts')}
+				onClick={() => navigate('/workouts?tab=templates')}
 				className="font-barlow uppercase tracking-wide text-xs"
 			>
 				<ArrowLeft className="h-4 w-4 mr-2" />

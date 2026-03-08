@@ -44,7 +44,7 @@ export default function ExerciseSelector({
 				className="w-full border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-colors uppercase font-barlow font-semibold tracking-wide"
 			>
 				<Plus className="h-5 w-5 mr-2" />
-				Añadir Ejercicio
+				<span className="tracking-[2px]">Añadir Ejercicio</span>
 			</Button>
 		);
 	}

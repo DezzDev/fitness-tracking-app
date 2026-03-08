@@ -22,7 +22,6 @@ import ExerciseInfo from "./ExerciseInfo";
 interface WorkoutFormProps {
 	initialData?: WorkoutWithExercises | WorkoutSessionWithExercises;
 	onSubmit: (data: CreateWorkoutFormData) => void;
-	onCancel: () => void;
 	isSubmitting?: boolean;
 	submitLabel?: string;
 }
@@ -30,7 +29,6 @@ interface WorkoutFormProps {
 export default function WorkoutForm({
 	initialData,
 	onSubmit,
-	onCancel,
 	isSubmitting = false,
 	submitLabel = 'Guardar Entrenamiento'
 }: WorkoutFormProps) {
@@ -125,7 +123,7 @@ export default function WorkoutForm({
 			)}
 			
 			{/* Información básica */}
-			<Card className="p-6 space-y-4">
+			<Card className="p-6 space-y-4 rounded-none border-border">
 				{/* Título */}
 				<div className='space-y-2'>
 					<Label 
@@ -138,7 +136,7 @@ export default function WorkoutForm({
 						id='title'
 						placeholder='Ej: Pecho y Tríceps - Día 1'
 						disabled={isSubmitting}
-						className="font-barlow"
+						className="font-barlow rounded-none"
 						{...register('title')}
 					/>
 					{errors.title && (
@@ -159,7 +157,7 @@ export default function WorkoutForm({
 						placeholder='Agrega notas sobre tu entrenamiento...'
 						rows={3}
 						disabled={isSubmitting}
-						className="font-barlow resize-none"
+						className="font-barlow resize-none rounded-none"
 						{...register('notes')}
 					/>
 					{errors.notes && (
@@ -237,12 +235,12 @@ export default function WorkoutForm({
 			)}
 
 			{/* Botones de acción */}
-			<div className='flex flex-col sm:flex-row gap-3 pt-4'>
+
 				<Button
 					type='submit'
 					size={'lg'}
 					disabled={isSubmitting || fields.length === 0}
-					className="flex-1 uppercase font-barlow font-semibold tracking-wide"
+					className="w-full text-lg text-primary-foreground uppercase font-barlow font-semibold tracking-[2px] rounded-none  mx-auto block"
 				>
 					{isSubmitting ? (
 						<>
@@ -253,8 +251,6 @@ export default function WorkoutForm({
 						submitLabel
 					)}
 				</Button>
-
-			</div>
 		</form>
 	)
 }

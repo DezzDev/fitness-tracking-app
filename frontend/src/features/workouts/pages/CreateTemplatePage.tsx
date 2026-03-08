@@ -33,10 +33,6 @@ export default function CreateWorkoutPage() {
 		});
 	};
 
-	const handleCancel = () => {
-		navigate('/workouts?tab=templates');
-	};
-
 	return (
 		<div className='max-w-4xl mx-auto space-y-6'>
 			{/* Back Button */}
@@ -56,14 +52,13 @@ export default function CreateWorkoutPage() {
 					Nuevo Entrenamiento
 				</h1>
 				<p className='text-muted-foreground mt-2 font-barlow'>
-					Crea un nuevo entrenamiento agregando ejercicios, series y repeticiones. Puedes guardar el entrenamiento para realizarlo más tarde o empezar de inmediato.
+					Crea un nuevo entrenamiento agregando ejercicios, series y repeticiones.
 				</p>
 			</div>
 
 			{/* Formulario */}
 			<WorkoutForm 
 				onSubmit={handleSubmit}
-				onCancel={handleCancel}
 				isSubmitting={isPending}
 				submitLabel='Guardar Entrenamiento'
 			/>
