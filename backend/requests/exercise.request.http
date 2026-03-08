@@ -43,7 +43,7 @@ GET {{baseUrl}}/exercises?page=1&limit=5 HTTP/1.1
 GET {{baseUrl}}/exercises?difficulty=intermediate&type=strength HTTP/1.1
 
 ### GET /exercises/:id - Obtener ejercicio por ID
-GET {{baseUrl}}/exercises/{{exerciseId.response.body.data.id}} HTTP/1.1
+GET {{baseUrl}}/exercises/07bd7be2-315c-48e2-b4b2-210161d79f2f HTTP/1.1
 
 ### GET /exercises/stats - Obtener estadísticas de los ejercicios
 GET {{baseUrl}}/exercises/stats HTTP/1.1
