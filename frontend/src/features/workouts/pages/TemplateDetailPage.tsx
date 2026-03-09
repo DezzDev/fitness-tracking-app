@@ -12,6 +12,7 @@ import {
 	useToggleFavorite, 
 	useDuplicateTemplate 
 } from '../hooks/useWorkoutTemplates';
+import type { WorkoutTemplateExercise } from '@/types';
 
 export default function TemplateDetailPage() {
 	const { id } = useParams<{ id: string }>();
@@ -23,6 +24,8 @@ export default function TemplateDetailPage() {
 	const { mutate: duplicateTemplate } = useDuplicateTemplate();
 
 	const template = response || null;
+
+	console.log(template)
 
 	const handleStartSession = () => {
 		navigate(`/workouts/sessions/start?templateId=${templateId}`);
@@ -177,7 +180,7 @@ export default function TemplateDetailPage() {
 						</div>
 					) : (
 						<div className="space-y-4">
-							{template.exercises?.map((templateExercise: any, index: number) => (
+							{template.exercises?.map((templateExercise: WorkoutTemplateExercise, index: number) => (
 								<div key={templateExercise.id}>
 									{index > 0 && <Separator className="my-4" />}
 									
@@ -192,15 +195,15 @@ export default function TemplateDetailPage() {
 
 											<div className="flex-1 min-w-0 space-y-1">
 												<h3 className="font-bebas tracking-wide text-lg text-foreground">
-													{templateExercise.exercise?.name || 'Ejercicio'}
+													{templateExercise.exerciseName || 'Ejercicio'}
 												</h3>
 												
-												{templateExercise.exercise?.muscleGroup && (
+												{templateExercise?.muscleGroup && (
 													<Badge 
 														variant="secondary" 
 														className="font-barlow uppercase text-xs tracking-wide"
 													>
-														{templateExercise.exercise.muscleGroup}
+														{templateExercise?.muscleGroup}
 													</Badge>
 												)}
 											</div>

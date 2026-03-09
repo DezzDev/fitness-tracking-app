@@ -66,7 +66,7 @@ export const createExercise = asyncHandler(
  */
 export const getExercise = asyncHandler(
 	async (req: Request, res: Response): Promise<undefined> => {
-		const exerciseId = extractExerciseId(req.params);
+		const exerciseId = extractExerciseId(req.validatedParams as Record<string, string>);
 
 		const exercise = await exerciseService.findById(exerciseId);
 
@@ -115,7 +115,7 @@ export const listExercises = asyncHandler(
  */
 export const updateExercise = asyncHandler(
 	async (req: Request, res: Response): Promise<undefined> => {
-		const exerciseId = extractExerciseId(req.params);
+		const exerciseId = extractExerciseId(req.validatedParams as Record<string, string>);
 		const data = req.validatedBody as UpdateExerciseInput;
 
 		const exercise = await exerciseService.update(exerciseId, data);
@@ -131,7 +131,7 @@ export const updateExercise = asyncHandler(
  */
 export const deleteExercise = asyncHandler(
 	async (req: Request, res: Response): Promise<undefined> => {
-		const exerciseId = extractExerciseId(req.params);
+		const exerciseId = extractExerciseId(req.validatedParams as Record<string, string>);
 
 		await exerciseService.delete(exerciseId);
 
@@ -174,7 +174,7 @@ export const createTag = asyncHandler(
  */
 export const getTag = asyncHandler(
 	async(req:Request, res:Response): Promise<undefined> =>{
-		const tagId = extractTagId(req.params);
+		const tagId = extractTagId(req.validatedParams as Record<string, string>);
 
 		const tag = await tagService.findById(tagId);
 
@@ -200,7 +200,7 @@ export const listTags = asyncHandler(
  */
 export const deleteTag = asyncHandler(
 	async(req:Request, res: Response): Promise<undefined> =>{
-		const tagId = extractTagId(req.params);
+		const tagId = extractTagId(req.validatedParams as Record<string, string>);
 
 		await tagService.delete(tagId);
 

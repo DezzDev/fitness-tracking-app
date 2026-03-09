@@ -39,9 +39,9 @@ export default function ExerciseInfo({
 	// Fallback si har error o no se encuentra
 	if(isError || !exercise) {
 		return (
-		<div className="flex items-center gap-3 p-3 bg-[var(--warning)]/10 rounded-lg border border-[var(--warning)]/20 ">
-			<div className="w-10 h-10 bg-[var(--warning)]/20 rounded-lg flex items-center justify-center">
-				<Dumbbell className="h-5 w-5 text-[var(--warning)]"/>
+		<div className="flex items-center gap-3 p-3 bg-(--warning)/10 rounded-lg border border-(--warning)/20 ">
+			<div className="w-10 h-10 bg-(--warning)/20 rounded-lg flex items-center justify-center">
+				<Dumbbell className="h-5 w-5 text-(--warning)"/>
 			</div>
 			<div>
 				<h4 className="font-medium text-foreground">
@@ -50,7 +50,7 @@ export default function ExerciseInfo({
 				<p className="text-xs text-muted-foreground">
 					 {exercise?.name || 'Ejercicio desconocido'}
 				</p>
-				<p className="text-xs text-[var(--warning)] mt-1 flex items-center gap-1">
+				<p className="text-xs text-(--warning) mt-1 flex items-center gap-1">
 						<Info className="h-3 w-3" />
 						Ejercicio no encontrado
 					</p>
