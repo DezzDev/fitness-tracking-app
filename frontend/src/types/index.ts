@@ -83,6 +83,16 @@ export interface WorkoutTemplate {
 	lastUsedAt?: string;
 }
 
+export interface WorkoutTemplateSet {
+	id: string;
+	templateExerciseId: string;
+	setNumber: number;
+	targetReps?: number;
+	targetWeight?: number;
+	targetDurationSeconds?: number;
+	targetRestSeconds?: number;
+}
+
 export type WorkoutTemplateExercise = {
 	id: string;
 	templateId: string;
@@ -91,6 +101,7 @@ export type WorkoutTemplateExercise = {
 	suggestedSets?: number;
 	suggestedReps?: number;
 	notes?: string;
+	sets?: WorkoutTemplateSet[];
 	// join with exercise
 	exerciseName: string;
 	exerciseDescription?: string;
@@ -110,6 +121,13 @@ export interface CreateWorkoutTemplateData {
 		suggestedSets?: number;
 		suggestedReps?: number;
 		notes?: string;
+		sets?: {
+			setNumber: number;
+			targetReps?: number;
+			targetWeight?: number;
+			targetDurationSeconds?: number;
+			targetRestSeconds?: number;
+		}[];
 	}[]
 }
 
