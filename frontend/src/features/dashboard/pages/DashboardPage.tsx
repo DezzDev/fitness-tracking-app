@@ -4,7 +4,7 @@ import EntryScreen from "../components/EntryScreen";
 import ActiveSession from "../components/ActiveSession";
 import CompletionScreen from "../components/CompletionScreen";
 import { useScheduledTemplate } from "@/features/workouts/hooks/useWorkoutTemplates";
-import { useCreateSessionFromTemplate } from "@/features/workouts/hooks/useWorkoutSessions";
+import { useCreateSessionFromTemplate, useDeleteSession } from "@/features/workouts/hooks/useWorkoutSessions";
 import type { WorkoutSessionWithExercises, WorkoutTemplate } from "@/types";
 
 type ScreenType = "loading" | "entry" | "active" | "complete" | "entry-done";
@@ -18,6 +18,7 @@ function DashboardPage() {
 	// Fetch today's scheduled template
 	const { data: templates, isLoading, error } = useScheduledTemplate();
 	const createSessionMutation = useCreateSessionFromTemplate();
+	const deleteSessionMutation = useDeleteSession();
 
 	// Get first template (should only be one scheduled per day)
 	const scheduledTemplate: WorkoutTemplate | undefined = templates?.[0];
@@ -53,6 +54,21 @@ function DashboardPage() {
 	const handleComplete = (sets: boolean[][]) => {
 		setCompletedSets(sets);
 		setScreen("complete");
+	};
+
+	const handleCancel = () => {
+		if (activeSession) {
+			deleteSessionMutation.mutate(activeSession.id, {
+				onSuccess: () => {
+					setActiveSession(null);
+					setCompletedSets(null);
+					setStartTime(null);
+					setScreen("entry");
+				},
+			});
+		} else {
+			setScreen("entry");
+		}
 	};
 
 	const handleReturn = () => {
@@ -110,7 +126,12 @@ function DashboardPage() {
 			case "active":
 				if (!activeSession) return null;
 				return (
-					<ActiveSession session={activeSession} onComplete={handleComplete} />
+					<ActiveSession
+					session={activeSession}
+					onComplete={handleComplete}
+					onCancel={handleCancel}
+					isCancelling={deleteSessionMutation.isPending}
+				/>
 				);
 			case "complete":
 				if (!activeSession || !completedSets || !startTime) return null;

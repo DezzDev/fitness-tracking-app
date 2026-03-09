@@ -3,13 +3,12 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowLeft, Clock, Dumbbell, TrendingUp, Copy, Trash2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Dumbbell, Copy, Trash2, AlertTriangle } from "lucide-react";
 
 import { useWorkoutSession, useDeleteSession } from "../hooks/useWorkoutSessions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { WorkoutSessionExercise, WorkoutSessionSet } from "@/types";

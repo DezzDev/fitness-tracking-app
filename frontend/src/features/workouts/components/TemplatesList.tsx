@@ -1,7 +1,7 @@
 // src/features/workouts/components/TemplatesList.tsx
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Copy, Pencil, Star, Dumbbell } from 'lucide-react';
+import { Star, Dumbbell } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';

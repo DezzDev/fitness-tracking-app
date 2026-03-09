@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-import { useCreateSessionFromTemplate } from '../hooks/useWorkoutSessions';
+import { useCreateSessionFromTemplate, useDeleteSession } from '../hooks/useWorkoutSessions';
 import ActiveSession from '@/features/dashboard/components/ActiveSession';
 import CompletionScreen from '@/features/dashboard/components/CompletionScreen';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ export default function StartSessionPage() {
 	const [errorMessage, setErrorMessage] = useState<string>('');
 
 	const createSessionMutation = useCreateSessionFromTemplate();
+	const deleteSessionMutation = useDeleteSession();
 
 	// Crear sesión inmediatamente al montar
 	useEffect(() => {
@@ -55,6 +56,18 @@ export default function StartSessionPage() {
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [templateId]);
+
+	const handleCancel = () => {
+		if (activeSession) {
+			deleteSessionMutation.mutate(activeSession.id, {
+				onSuccess: () => {
+					navigate('/workouts');
+				},
+			});
+		} else {
+			navigate('/workouts');
+		}
+	};
 
 	const handleComplete = (sets: boolean[][]) => {
 		setCompletedSets(sets);
@@ -100,7 +113,14 @@ export default function StartSessionPage() {
 
 	// Active session
 	if (screen === 'active' && activeSession) {
-		return <ActiveSession session={activeSession} onComplete={handleComplete} />;
+		return (
+			<ActiveSession
+				session={activeSession}
+				onComplete={handleComplete}
+				onCancel={handleCancel}
+				isCancelling={deleteSessionMutation.isPending}
+			/>
+		);
 	}
 
 	// Completion screen

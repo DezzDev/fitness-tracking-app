@@ -81,7 +81,7 @@ export const router = createBrowserRouter([
 								element: <TemplateDetailPage />
 							},
 							{
-								path: 'workouts/:id/edit',
+								path: 'workouts/sessions/:id/edit',
 								element: <EditWorkoutPage />
 							},
 							{

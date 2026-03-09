@@ -1,14 +1,16 @@
 import type { WorkoutSessionWithExercises } from "@/types";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 
 interface ActiveSessionProps {
 	session: WorkoutSessionWithExercises;
 	onComplete: (completedSets: boolean[][]) => void;
+	onCancel?: () => void;
+	isCancelling?: boolean;
 }
 
-export default function ActiveSession({ session, onComplete }: ActiveSessionProps) {
-	console.log({session});
+export default function ActiveSession({ session, onComplete, onCancel, isCancelling = false }: ActiveSessionProps) {
 	{
 		const [ currentIdx, setCurrentIdx ] = useState(0);
 		const [ completedSets, setCompletedSets ] = useState(
@@ -18,6 +20,7 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 		const [ slideDir, setSlideDir ] = useState(0);
 		const [ pulse, setPulse ] = useState(false);
 		const [ visible, setVisible ] = useState(false);
+		const [ showCancelConfirm, setShowCancelConfirm ] = useState(false);
 
 		useEffect(() => {
 			setTimeout(() => setVisible(true), 50);
@@ -84,16 +87,62 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 							{session.title}
 						</div>
 					</div>
-					<div className="font-bebas text-[28px] text-primary">
-						{String(currentIdx + 1).padStart(2, "0")}
-						<span className="text-[16px] text-muted-foreground mx-0.5">
-							/
-						</span>
-						<span className="text-[16px] text-muted-foreground">
-							{session.exercises.length}
-						</span>
+					<div className="flex items-center gap-4">
+						<div className="font-bebas text-[28px] text-primary">
+							{String(currentIdx + 1).padStart(2, "0")}
+							<span className="text-[16px] text-muted-foreground mx-0.5">
+								/
+							</span>
+							<span className="text-[16px] text-muted-foreground">
+								{session.exercises.length}
+							</span>
+						</div>
+						{onCancel && (
+							<button
+								onClick={() => setShowCancelConfirm(true)}
+								className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+								aria-label="Cancelar sesión"
+							>
+								<X className="h-5 w-5" />
+							</button>
+						)}
 					</div>
 				</div>
+
+				{/* Cancel confirmation overlay */}
+				{showCancelConfirm && (
+					<div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+						<div className="mx-8 w-full max-w-sm border border-border bg-background p-8 space-y-6">
+							<div>
+								<div className="font-bebas text-2xl tracking-[2px] text-foreground mb-2">
+									CANCELAR SESIÓN
+								</div>
+								<p className="font-barlow text-sm text-muted-foreground">
+									Se perderá todo el progreso de esta sesión. Esta acción no se puede deshacer.
+								</p>
+							</div>
+							<div className="flex flex-col gap-3">
+								<button
+									onClick={() => {
+										setShowCancelConfirm(false);
+										onCancel?.();
+									}}
+									disabled={isCancelling}
+									className="w-full bg-destructive border-none text-destructive-foreground font-bebas text-[18px] tracking-[3px] py-4 cursor-pointer transition-colors hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
+								>
+									{isCancelling ? 'CANCELANDO...' : 'CANCELAR SESIÓN'}
+								</button>
+								<button
+									onClick={() => setShowCancelConfirm(false)}
+									disabled={isCancelling}
+									className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors disabled:opacity-50"
+								>
+									CONTINUAR ENTRENANDO
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 
 				{/* Exercise area */}
 				<div

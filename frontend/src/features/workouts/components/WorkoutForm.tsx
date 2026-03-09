@@ -22,6 +22,7 @@ import ExerciseInfo from "./ExerciseInfo";
 interface WorkoutFormProps {
 	initialData?: WorkoutWithExercises | WorkoutSessionWithExercises;
 	onSubmit: (data: CreateWorkoutFormData) => void;
+	onCancel?: () => void;
 	isSubmitting?: boolean;
 	submitLabel?: string;
 }
@@ -29,6 +30,7 @@ interface WorkoutFormProps {
 export default function WorkoutForm({
 	initialData,
 	onSubmit,
+	onCancel,
 	isSubmitting = false,
 	submitLabel = 'Guardar Entrenamiento'
 }: WorkoutFormProps) {
@@ -235,12 +237,12 @@ export default function WorkoutForm({
 			)}
 
 			{/* Botones de acción */}
-
+			<div className="space-y-3 mb-6">
 				<Button
 					type='submit'
 					size={'lg'}
 					disabled={isSubmitting || fields.length === 0}
-				className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-none mb-6"
+				className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-none"
 				>
 					{isSubmitting ? (
 						<>
@@ -251,6 +253,19 @@ export default function WorkoutForm({
 						submitLabel
 					)}
 				</Button>
+				{onCancel && (
+					<Button
+						type='button'
+						variant='ghost'
+						size='lg'
+						onClick={onCancel}
+						disabled={isSubmitting}
+						className="w-full font-barlow text-muted-foreground hover:text-foreground rounded-none"
+					>
+						Cancelar
+					</Button>
+				)}
+			</div>
 		</form>
 	)
 }

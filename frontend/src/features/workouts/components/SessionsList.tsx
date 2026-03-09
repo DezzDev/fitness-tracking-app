@@ -6,7 +6,6 @@ import { es } from 'date-fns/locale';
 import { Dumbbell, ArrowRight } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWorkoutSessions } from '../hooks/useWorkoutSessions';
 import type { WorkoutSessionWithMetrics } from '@/types';
