@@ -18,75 +18,354 @@ content-type: application/json
 # ============================================
 # WORKOUT TEMPLATE ROUTES
 # ============================================
-### POST /workoutTemplates - Crear nuevo template
+
+# ----------------------------------------
+# CREATE
+# ----------------------------------------
+
+### POST /workoutTemplates - Crear template (modo clásico: suggestedSets/suggestedReps)
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 
 {
-	"name": "template name test",
-	"description": "Test Workout Template Description 2",
+	"name": "Push Day (classic)",
+	"description": "Template usando suggestedSets/suggestedReps",
 	"scheduledDayOfWeek": 1,
 	"exercises": [
 		{
 			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
 			"orderIndex": 0,
-			"suggestedSets": 1,
+			"suggestedSets": 3,
 			"suggestedReps": 10,
-			"notes": "Test Exercise"
+			"notes": "Flexiones clásicas"
 		},
 		{
 			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
 			"orderIndex": 1,
-			"suggestedSets": 1,
-			"suggestedReps": 10,
-			"notes": "Test Exercise"
+			"suggestedSets": 4,
+			"suggestedReps": 8,
+			"notes": "Dips en paralelas"
 		}
 	]
 }
 
-### Obtener template por id
-GET {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+### POST /workoutTemplates - Crear template (modo detallado: sets individuales)
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
 
-### Obtener templates del usuario
+{
+	"name": "Pull Day (detailed sets)",
+	"description": "Template con sets individuales detallados",
+	"scheduledDayOfWeek": 2,
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"notes": "Progresión de peso ascendente",
+			"sets": [
+				{ "setNumber": 1, "targetReps": 12, "targetWeight": 0, "targetRestSeconds": 60 },
+				{ "setNumber": 2, "targetReps": 10, "targetWeight": 5, "targetRestSeconds": 90 },
+				{ "setNumber": 3, "targetReps": 8, "targetWeight": 10, "targetRestSeconds": 120 }
+			]
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 1,
+			"notes": "Isométrico + reps",
+			"sets": [
+				{ "setNumber": 1, "targetReps": 8, "targetDurationSeconds": 30 },
+				{ "setNumber": 2, "targetReps": 8, "targetDurationSeconds": 30 },
+				{ "setNumber": 3, "targetReps": 6, "targetDurationSeconds": 45, "targetRestSeconds": 120 }
+			]
+		}
+	]
+}
+
+### POST /workoutTemplates - Crear template (modo mixto: algunos ejercicios con sets, otros sin)
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Full Body (mixed)",
+	"description": "Mezcla de ejercicios con y sin sets detallados",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"suggestedSets": 3,
+			"suggestedReps": 15
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 1,
+			"notes": "Sets detallados con peso",
+			"sets": [
+				{ "setNumber": 1, "targetReps": 10, "targetWeight": 20, "targetRestSeconds": 60 },
+				{ "setNumber": 2, "targetReps": 8, "targetWeight": 25, "targetRestSeconds": 90 },
+				{ "setNumber": 3, "targetReps": 6, "targetWeight": 30, "targetRestSeconds": 120 },
+				{ "setNumber": 4, "targetReps": 6, "targetWeight": 30 }
+			]
+		}
+	]
+}
+
+### POST /workoutTemplates - Error: sin ejercicios
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Template vacío",
+	"exercises": []
+}
+
+### POST /workoutTemplates - Error: nombre muy corto
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "ab",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0
+		}
+	]
+}
+
+### POST /workoutTemplates - Error: orderIndex duplicado
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Template con orderIndex duplicado",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 0
+		}
+	]
+}
+
+### POST /workoutTemplates - Error: setNumber duplicado dentro de un ejercicio
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Template con setNumber duplicado",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"sets": [
+				{ "setNumber": 1, "targetReps": 10 },
+				{ "setNumber": 1, "targetReps": 8 }
+			]
+		}
+	]
+}
+
+### POST /workoutTemplates - Error: ejercicio inexistente
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Template con ejercicio inexistente",
+	"exercises": [
+		{
+			"exerciseId": "00000000-0000-0000-0000-000000000000",
+			"orderIndex": 0
+		}
+	]
+}
+
+### POST /workoutTemplates - Error: sin token (401)
+POST {{baseUrl}}/workoutTemplates HTTP/1.1
+content-type: application/json
+
+{
+	"name": "Template sin auth",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0
+		}
+	]
+}
+
+# ----------------------------------------
+# READ
+# ----------------------------------------
+
+### GET /workoutTemplates - Listar templates (defaults: page=1, limit=10)
 GET {{baseUrl}}/workoutTemplates HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
-### Actualizar template
+### GET /workoutTemplates - Listar con paginación
+GET {{baseUrl}}/workoutTemplates?page=1&limit=5 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates - Buscar por nombre
+GET {{baseUrl}}/workoutTemplates?searchTerm=Push HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates - Solo favoritos
+GET {{baseUrl}}/workoutTemplates?favoritesOnly=true HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates - Combinando filtros
+GET {{baseUrl}}/workoutTemplates?page=1&limit=5&searchTerm=Day&favoritesOnly=false HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates/:id - Obtener template por ID
+GET {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates/:id - Error: ID inexistente (404)
+GET {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates/:id - Error: ID inválido (422)
+GET {{baseUrl}}/workoutTemplates/not-a-uuid HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workoutTemplates/today - Templates programados para hoy
+GET {{baseUrl}}/workoutTemplates/today HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+# ----------------------------------------
+# UPDATE
+# ----------------------------------------
+
+### PATCH /workoutTemplates/:id - Actualizar solo nombre y descripción
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 
 {
-	"name": "Test Workout Template Updated",
-	"description": "Test Workout Template Description Updated",
+	"name": "Push Day Updated",
+	"description": "Descripción actualizada"
+}
+
+### PATCH /workoutTemplates/:id - Actualizar ejercicios (modo clásico)
+PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
 	"exercises": [
 		{
 			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
 			"orderIndex": 0,
-			"suggestedSets": 1,
-			"suggestedReps": 10,
-			"notes": "Test Exercise"
-		},
-		{
-			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
-			"orderIndex": 1,
-			"suggestedSets": 1,
-			"suggestedReps": 10,
-			"notes": "Test Exercise"
+			"suggestedSets": 4,
+			"suggestedReps": 12,
+			"notes": "Aumentar volumen"
 		}
 	]
 }
 
-### Eliminar template
+### PATCH /workoutTemplates/:id - Actualizar ejercicios con sets detallados
+PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Push Day v3 (detailed)",
+	"exercises": [
+		{
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
+			"orderIndex": 0,
+			"notes": "Pirámide ascendente",
+			"sets": [
+				{ "setNumber": 1, "targetReps": 15, "targetWeight": 0, "targetRestSeconds": 45 },
+				{ "setNumber": 2, "targetReps": 12, "targetWeight": 5, "targetRestSeconds": 60 },
+				{ "setNumber": 3, "targetReps": 10, "targetWeight": 10, "targetRestSeconds": 90 },
+				{ "setNumber": 4, "targetReps": 8, "targetWeight": 15, "targetRestSeconds": 120 }
+			]
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 1,
+			"sets": [
+				{ "setNumber": 1, "targetReps": 10, "targetRestSeconds": 60 },
+				{ "setNumber": 2, "targetReps": 10, "targetRestSeconds": 60 },
+				{ "setNumber": 3, "targetReps": 8, "targetRestSeconds": 90 }
+			]
+		}
+	]
+}
+
+### PATCH /workoutTemplates/:id - Actualizar scheduledDayOfWeek
+PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"scheduledDayOfWeek": 3
+}
+
+### PATCH /workoutTemplates/:id - Error: campo desconocido (strict mode)
+PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "Valid name",
+	"unknownField": "should fail"
+}
+
+### PATCH /workoutTemplates/:id - Error: ID inexistente (404)
+PATCH {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "No existe"
+}
+
+# ----------------------------------------
+# DELETE
+# ----------------------------------------
+
+### DELETE /workoutTemplates/:id - Eliminar template
 DELETE {{baseUrl}}/workoutTemplates/c8928807-9322-4e74-8d1b-da1a88794044 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
-### Duplicar template
+### DELETE /workoutTemplates/:id - Error: ID inexistente (404)
+DELETE {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+# ----------------------------------------
+# DUPLICATE
+# ----------------------------------------
+
+### POST /workoutTemplates/:id/duplicate - Duplicar template (copia sets también)
 POST {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9/duplicate HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
-### Agregar/Quitar favorito de un template
+### POST /workoutTemplates/:id/duplicate - Error: ID inexistente (404)
+POST {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000/duplicate HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+# ----------------------------------------
+# FAVORITE
+# ----------------------------------------
+
+### PATCH /workoutTemplates/:id/favorite - Toggle favorito
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9/favorite HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### PATCH /workoutTemplates/:id/favorite - Error: ID inexistente (404)
+PATCH {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000/favorite HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}

@@ -106,6 +106,17 @@ CREATE TABLE workout_template_exercises (
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
+CREATE TABLE workout_template_sets (
+  id TEXT PRIMARY KEY,
+  template_exercise_id TEXT NOT NULL,
+  set_number INTEGER NOT NULL,
+  target_reps INTEGER,
+  target_weight REAL,
+  target_duration_seconds INTEGER,
+  target_rest_seconds INTEGER,
+  FOREIGN KEY (template_exercise_id) REFERENCES workout_template_exercises(id) ON DELETE CASCADE
+);
+
 CREATE TABLE template_favorites (
   user_id TEXT NOT NULL,
   template_id TEXT NOT NULL,

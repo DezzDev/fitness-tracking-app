@@ -52,7 +52,10 @@ export type {
 	WorkoutTemplateExerciseRow,
 	WorkoutTemplateExerciseCreateData,
 	WorkoutTemplateFilters,
-	TemplateUsageStats
+	TemplateUsageStats,
+	WorkoutTemplateSet,
+	WorkoutTemplateSetRow,
+	WorkoutTemplateSetCreateData
 } from './entities/workoutTemplate.types';
 
 export type {

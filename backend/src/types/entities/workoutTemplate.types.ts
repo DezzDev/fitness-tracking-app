@@ -13,6 +13,16 @@ export type WorkoutTemplate = {
 	deletedAt?: Date;
 }
 
+export type WorkoutTemplateSet = {
+	id: string;
+	templateExerciseId: string;
+	setNumber: number;
+	targetReps?: number;
+	targetWeight?: number;
+	targetDurationSeconds?: number;
+	targetRestSeconds?: number;
+}
+
 export type WorkoutTemplateExercise = {
 	id: string;
 	templateId: string;
@@ -21,6 +31,7 @@ export type WorkoutTemplateExercise = {
 	suggestedSets?: number;
 	suggestedReps?: number;
 	notes?: string;
+	sets: WorkoutTemplateSet[];
 	// join with exercise
 	exerciseName: string;
 	exerciseDescription?: string;
@@ -29,7 +40,7 @@ export type WorkoutTemplateExercise = {
 	type?: string;
 }
 
-export type WorkoutTemplateWithExercises = WorkoutTemplate &{
+export type WorkoutTemplateWithExercises = WorkoutTemplate & {
 	exercises: WorkoutTemplateExercise[];
 	isFavorite?: boolean;
 	usageCount?: number;
@@ -38,12 +49,21 @@ export type WorkoutTemplateWithExercises = WorkoutTemplate &{
 
 // CREATE/UPDATE TYPES
 
-export type WorkoutTemplateExerciseCreateData = {	
+export type WorkoutTemplateSetCreateData = {
+	setNumber: number;
+	targetReps?: number;
+	targetWeight?: number;
+	targetDurationSeconds?: number;
+	targetRestSeconds?: number;
+}
+
+export type WorkoutTemplateExerciseCreateData = {
 	exerciseId: string;
 	orderIndex: number;
 	suggestedSets?: number;
 	suggestedReps?: number;
 	notes?: string;
+	sets?: WorkoutTemplateSetCreateData[];
 }
 
 export type WorkoutTemplateCreateData = {
@@ -88,6 +108,16 @@ export type WorkoutTemplateExerciseRow = {
 	difficulty?: string;
 	muscle_group?: string;
 	type?: string;
+}
+
+export type WorkoutTemplateSetRow = {
+	id: string;
+	template_exercise_id: string;
+	set_number: number;
+	target_reps: number | null;
+	target_weight: number | null;
+	target_duration_seconds: number | null;
+	target_rest_seconds: number | null;
 }
 
 export type TemplateFavoriteRow = {

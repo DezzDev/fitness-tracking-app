@@ -1,5 +1,37 @@
 import z from 'zod';
 
+export const WorkoutTemplateSetSchema = z.object({
+	setNumber: z
+		.number()
+		.int('Set number must be an integer')
+		.min(1, 'Set number must be at least 1')
+		.max(20, 'Set number cannot exceed 20'),
+
+	targetReps: z
+		.int('Target reps must be an integer')
+		.min(1)
+		.max(500)
+		.optional(),
+
+	targetWeight: z
+		.number()
+		.nonnegative('Target weight must be a positive number')
+		.max(1000, 'Target weight cannot exceed 1000')
+		.optional(),
+
+	targetDurationSeconds: z
+		.int('Target duration must be an integer')
+		.min(1)
+		.max(7200, 'Target duration cannot exceed 7200 seconds')
+		.optional(),
+
+	targetRestSeconds: z
+		.int('Target rest must be an integer')
+		.min(0)
+		.max(600, 'Target rest cannot exceed 600 seconds')
+		.optional(),
+});
+
 export const WorkoutTemplateExerciseSchema = z.object({
 	exerciseId: z.uuid('Invalid exercise ID format'),
 
@@ -22,6 +54,15 @@ export const WorkoutTemplateExerciseSchema = z.object({
 		.optional(),
 
 	notes: z.string().max(500, 'Notes cannot exceed 500 characters').trim().optional(),
+
+	sets: z
+		.array(WorkoutTemplateSetSchema)
+		.max(20, { error: 'Cannot have more than 20 sets per exercise' })
+		.refine((sets) => {
+			const numbers = sets.map(s => s.setNumber);
+			return new Set(numbers).size === numbers.length;
+		}, { error: 'Set numbers must be unique' })
+		.optional(),
 })
 
 export const CreateWorkoutTemplateSchema = z.object({
@@ -70,7 +111,7 @@ export const WorkoutTemplateFiltersSchema = z.object({
 	page: z.string().default('1').transform(Number).pipe(z.number().int().min(1)),
 	limit: z.string().default('10').transform(Number).pipe(z.number().int().min(1).max(100)),
 	searchTerm: z.string().max(100).trim().optional(),
-	favoritesOnly: z.boolean().optional(),
+	favoritesOnly: z.string().transform(val => val === 'true').pipe(z.boolean()).optional(),
 })
 
 // ============================================
@@ -81,3 +122,4 @@ export const WorkoutTemplateFiltersSchema = z.object({
  export type WorkoutTemplateIdParam = z.infer<typeof WorkoutTemplateIdSchema>;
  export type WorkoutTemplateFiltersInput = z.infer<typeof WorkoutTemplateFiltersSchema>;
  export type WorkoutTemplateExerciseInput = z.infer<typeof WorkoutTemplateExerciseSchema>;
+ export type WorkoutTemplateSetInput = z.infer<typeof WorkoutTemplateSetSchema>;

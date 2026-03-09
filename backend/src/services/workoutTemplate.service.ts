@@ -259,6 +259,15 @@ export const workoutTemplateService = {
 				suggestedSets: exercise.suggestedSets,
 				suggestedReps: exercise.suggestedReps,
 				notes: exercise.notes,
+				sets: exercise.sets.length > 0
+					? exercise.sets.map((set) => ({
+						setNumber: set.setNumber,
+						targetReps: set.targetReps,
+						targetWeight: set.targetWeight,
+						targetDurationSeconds: set.targetDurationSeconds,
+						targetRestSeconds: set.targetRestSeconds,
+					}))
+					: undefined,
 			}))
 		}
 

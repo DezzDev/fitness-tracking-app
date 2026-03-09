@@ -7,6 +7,8 @@ import {
 	WorkoutTemplateExerciseRow,
 	WorkoutTemplateFilters,
 	WorkoutTemplateRow,
+	WorkoutTemplateSet,
+	WorkoutTemplateSetRow,
 	WorkoutTemplateUpdateData,
 	WorkoutTemplateWithExercises
 } from "@/types";
@@ -62,11 +64,22 @@ const mapRowToWorkoutTemplateExercise = (row: WorkoutTemplateExerciseRow): Worko
 	suggestedSets: row.suggested_sets ?? undefined,
 	suggestedReps: row.suggested_reps ?? undefined,
 	notes: row.notes ?? undefined,
+	sets: [],
 	exerciseName: row.exercise_name,
 	exerciseDescription: row.exercise_description ?? undefined,
 	difficulty: row.difficulty ?? undefined,
 	muscleGroup: row.muscle_group ?? undefined,
 	type: row.type ?? undefined,
+})
+
+const mapRowToWorkoutTemplateSet = (row: WorkoutTemplateSetRow): WorkoutTemplateSet => ({
+	id: row.id,
+	templateExerciseId: row.template_exercise_id,
+	setNumber: row.set_number,
+	targetReps: row.target_reps ?? undefined,
+	targetWeight: row.target_weight ?? undefined,
+	targetDurationSeconds: row.target_duration_seconds ?? undefined,
+	targetRestSeconds: row.target_rest_seconds ?? undefined,
 })
 
 const mapRowToUsageStats = (result: ResultSet): usageStats => {
@@ -213,6 +226,48 @@ const queries = {
 		args: (templateId: string) => [ templateId ]
 	},
 
+	// crear un set de template exercise
+	createTemplateSet: {
+		sql: `
+			INSERT INTO workout_template_sets (id, template_exercise_id, set_number, target_reps, target_weight, target_duration_seconds, target_rest_seconds)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+			RETURNING *
+		`,
+		args: (
+			id: string,
+			templateExerciseId: string,
+			setNumber: number,
+			targetReps: number | null,
+			targetWeight: number | null,
+			targetDurationSeconds: number | null,
+			targetRestSeconds: number | null,
+		) => [
+				id, templateExerciseId, setNumber, targetReps, targetWeight, targetDurationSeconds, targetRestSeconds
+			]
+	},
+
+	// buscar sets de un template exercise
+	findTemplateSets: {
+		sql: `
+			SELECT *
+			FROM workout_template_sets
+			WHERE template_exercise_id = ?
+			ORDER BY set_number ASC
+		`,
+		args: (templateExerciseId: string) => [ templateExerciseId ]
+	},
+
+	// buscar sets de múltiples template exercises a la vez
+	findTemplateSetsByExerciseIds: {
+		sql: (exerciseIds: string[]) => `
+			SELECT *
+			FROM workout_template_sets
+			WHERE template_exercise_id IN (${exerciseIds.map(() => '?').join(', ')})
+			ORDER BY template_exercise_id, set_number ASC
+		`,
+		args: (exerciseIds: string[]) => exerciseIds
+	},
+
 	// eliminar workout template (cascade eliminará templateExercises)
 	deleteWorkoutTemplate: {
 		sql: `DELETE FROM workout_templates WHERE id = ? AND user_id = ?`,
@@ -276,6 +331,34 @@ const queries = {
 }
 
 // ============================================
+// HELPERS - Enrich exercises with sets
+// ============================================
+
+const enrichExercisesWithSets = async (exercises: WorkoutTemplateExercise[]): Promise<WorkoutTemplateExercise[]> => {
+	if (exercises.length === 0) return exercises;
+
+	const exerciseIds = exercises.map(e => e.id);
+
+	const setsResult = await execute({
+		sql: queries.findTemplateSetsByExerciseIds.sql(exerciseIds),
+		args: queries.findTemplateSetsByExerciseIds.args(exerciseIds)
+	});
+
+	const setsByExerciseId = new Map<string, WorkoutTemplateSet[]>();
+	for (const row of setsResult.rows) {
+		const set = mapRowToWorkoutTemplateSet(row as unknown as WorkoutTemplateSetRow);
+		const existing = setsByExerciseId.get(set.templateExerciseId) ?? [];
+		existing.push(set);
+		setsByExerciseId.set(set.templateExerciseId, existing);
+	}
+
+	return exercises.map(exercise => ({
+		...exercise,
+		sets: setsByExerciseId.get(exercise.id) ?? [],
+	}));
+}
+
+// ============================================
 // REPOSITORY
 // ============================================
 
@@ -297,26 +380,60 @@ export const workoutTemplateRepository = {
 		const template = mapRowToWorkoutTemplate(templateResult.rows[ 0 ] as unknown as WorkoutTemplateRow);
 
 		// Crear template exercises (ejercicios del template) 
-		const allQueries: Array<{ sql: string, args: any[] }> = []
+		const exerciseQueries: Array<{ sql: string, args: any[] }> = []
+		const exerciseIdMap: Array<{ tempId: string, exercise: typeof data.exercises[number] }> = []
+
 		for (const exercise of data.exercises) {
 			const templateExerciseId = uuidv4();
+			exerciseIdMap.push({ tempId: templateExerciseId, exercise });
+
+			// Si se envían sets detallados, derivar suggestedSets del length
+			const suggestedSets = exercise.sets && exercise.sets.length > 0
+				? exercise.sets.length
+				: exercise.suggestedSets ?? null;
+
 			// query para crear template exercise
-			allQueries.push({
+			exerciseQueries.push({
 				sql: queries.createWorkoutTemplateExercise.sql,
 				args: queries.createWorkoutTemplateExercise.args(
 					templateExerciseId,
 					template.id,
 					exercise.exerciseId,
 					exercise.orderIndex,
-					exercise.suggestedSets ?? null,
+					suggestedSets,
 					exercise.suggestedReps ?? null,
 					exercise.notes ?? null
 				)
 			})
 		}
 
-		// ejecutar todas las queries en batch
-		await batch(allQueries)
+		// ejecutar todas las queries de exercises en batch
+		await batch(exerciseQueries)
+
+		// Crear template sets (sets individuales por ejercicio)
+		const setQueries: Array<{ sql: string, args: any[] }> = []
+		for (const { tempId, exercise } of exerciseIdMap) {
+			if (exercise.sets && exercise.sets.length > 0) {
+				for (const set of exercise.sets) {
+					setQueries.push({
+						sql: queries.createTemplateSet.sql,
+						args: queries.createTemplateSet.args(
+							uuidv4(),
+							tempId,
+							set.setNumber,
+							set.targetReps ?? null,
+							set.targetWeight ?? null,
+							set.targetDurationSeconds ?? null,
+							set.targetRestSeconds ?? null,
+						)
+					})
+				}
+			}
+		}
+
+		if (setQueries.length > 0) {
+			await batch(setQueries)
+		}
 
 		// Obtener template completo con ejercicios
 		const templateWithExercises = await workoutTemplateRepository.findById(template.id)
@@ -352,6 +469,9 @@ export const workoutTemplateRepository = {
 			row => mapRowToWorkoutTemplateExercise(row as unknown as WorkoutTemplateExerciseRow)
 		)
 
+		// Enriquecer ejercicios con sus sets
+		const exercisesWithSets = await enrichExercisesWithSets(templateExercises);
+
 		// Comprobar si el template es favorito
 		const isFavoriteResult = await execute({
 			sql: queries.isFavorite.sql,
@@ -371,7 +491,7 @@ export const workoutTemplateRepository = {
 
 		return {
 			...workoutTemplate,
-			exercises: templateExercises,
+			exercises: exercisesWithSets,
 			isFavorite,
 			usageCount: usageStats.usageCount,
 			lastUsedAt: usageStats.lastUsedAt
@@ -473,26 +593,64 @@ export const workoutTemplateRepository = {
 		}
 
 		if (data.exercises) {
+			// Al borrar exercises, los sets se eliminan por CASCADE
 			await execute({
 				sql: queries.deleteWorkoutTemplateExercises.sql,
 				args: queries.deleteWorkoutTemplateExercises.args(id)
 			});
 
-			const exerciseQueries = data.exercises.map((exercise) => ({
-				sql: queries.createWorkoutTemplateExercise.sql,
-				args: queries.createWorkoutTemplateExercise.args(
-					uuidv4(),
-					id,
-					exercise.exerciseId,
-					exercise.orderIndex,
-					exercise.suggestedSets ?? null,
-					exercise.suggestedReps ?? null,
-					exercise.notes ?? null,
-				)
-			}));
+			const exerciseIdMap: Array<{ tempId: string, exercise: typeof data.exercises[number] }> = []
+
+			const exerciseQueries = data.exercises.map((exercise) => {
+				const templateExerciseId = uuidv4();
+				exerciseIdMap.push({ tempId: templateExerciseId, exercise });
+
+				// Si se envían sets detallados, derivar suggestedSets del length
+				const suggestedSets = exercise.sets && exercise.sets.length > 0
+					? exercise.sets.length
+					: exercise.suggestedSets ?? null;
+
+				return {
+					sql: queries.createWorkoutTemplateExercise.sql,
+					args: queries.createWorkoutTemplateExercise.args(
+						templateExerciseId,
+						id,
+						exercise.exerciseId,
+						exercise.orderIndex,
+						suggestedSets,
+						exercise.suggestedReps ?? null,
+						exercise.notes ?? null,
+					)
+				};
+			});
 
 			if (exerciseQueries.length > 0) {
 				await batch(exerciseQueries);
+			}
+
+			// Crear template sets
+			const setQueries: Array<{ sql: string, args: any[] }> = []
+			for (const { tempId, exercise } of exerciseIdMap) {
+				if (exercise.sets && exercise.sets.length > 0) {
+					for (const set of exercise.sets) {
+						setQueries.push({
+							sql: queries.createTemplateSet.sql,
+							args: queries.createTemplateSet.args(
+								uuidv4(),
+								tempId,
+								set.setNumber,
+								set.targetReps ?? null,
+								set.targetWeight ?? null,
+								set.targetDurationSeconds ?? null,
+								set.targetRestSeconds ?? null,
+							)
+						})
+					}
+				}
+			}
+
+			if (setQueries.length > 0) {
+				await batch(setQueries);
 			}
 		}
 
@@ -557,6 +715,9 @@ export const workoutTemplateRepository = {
 					row => mapRowToWorkoutTemplateExercise(row as unknown as WorkoutTemplateExerciseRow)
 				);
 
+				// Enriquecer ejercicios con sus sets
+				const exercisesWithSets = await enrichExercisesWithSets(exercises);
+
 				// Comprobar si es favorito
 				const isFavoriteResult = await execute({
 					sql: queries.isFavorite.sql,
@@ -576,7 +737,7 @@ export const workoutTemplateRepository = {
 
 				return {
 					...template,
-					exercises,
+					exercises: exercisesWithSets,
 					isFavorite,
 					usageCount: usageStats.usageCount,
 					lastUsedAt: usageStats.lastUsedAt
