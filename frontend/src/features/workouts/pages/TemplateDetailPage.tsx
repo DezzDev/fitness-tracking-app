@@ -42,7 +42,7 @@ export default function TemplateDetailPage() {
 
 	if (isLoading) {
 		return (
-			<div className="max-w-4xl mx-auto space-y-6">
+			<div className="max-w-4xl mx-auto space-y-6 w-full">
 				<Skeleton className="h-10 w-3/4" />
 				<Skeleton className="h-64 w-full" />
 			</div>
@@ -51,7 +51,7 @@ export default function TemplateDetailPage() {
 
 	if (isError || !template) {
 		return (
-			<Card className="p-12 text-center max-w-md mx-auto">
+			<Card className="p-12 text-center max-w-md mx-auto w-full">
 				<p className="text-muted-foreground mb-4">
 					Plantilla no encontrada
 				</p>
@@ -65,7 +65,7 @@ export default function TemplateDetailPage() {
 	const exerciseCount = template.exercises?.length || 0;
 
 	return (
-		<div className="max-w-4xl mx-auto space-y-6">
+		<div className="max-w-4xl mx-auto space-y-6 w-full">
 			{/* Back Button */}
 			<Button
 				variant="ghost"
@@ -119,7 +119,7 @@ export default function TemplateDetailPage() {
 				</div>
 
 				{/* Stats */}
-				<Card className="bg-muted/10">
+				<Card className="bg-muted/10 w-full">
 					<div className="p-4 grid grid-cols-3 gap-4">
 						{/* Usos */}
 						<div className="text-center space-y-1">
@@ -164,7 +164,7 @@ export default function TemplateDetailPage() {
 			</div>
 
 			{/* ESTRUCTURA - Lista de ejercicios */}
-			<Card>
+			<Card className="w-full">
 				<div className="p-6 space-y-6">
 					<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
 						Estructura
