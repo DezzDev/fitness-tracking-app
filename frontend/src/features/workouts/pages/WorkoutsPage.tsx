@@ -16,7 +16,7 @@ export default function WorkoutsPage() {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 w-full">
 			{/* Header */}
 			<div>
 				<h1 className="text-4xl font-bebas tracking-[2px] uppercase text-foreground">
@@ -43,7 +43,7 @@ export default function WorkoutsPage() {
 					</TabsList>
 
 					{/* Tab: SESIONES */}
-					<TabsContent value="sessions" className="mt-6 space-y-6">
+					<TabsContent value="sessions" className="my-6 space-y-6">
 						<SessionsList />
 
 						{/* Bottom CTA */}
@@ -61,7 +61,7 @@ export default function WorkoutsPage() {
 					</TabsContent>
 
 					{/* Tab: PLANTILLAS */}
-					<TabsContent value="templates" className="mt-6 space-y-6">
+					<TabsContent value="templates" className="my-6 space-y-6">
 						<TemplatesList />
 
 						{/* Bottom CTA */}

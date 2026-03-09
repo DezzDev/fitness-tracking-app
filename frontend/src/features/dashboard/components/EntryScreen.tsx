@@ -30,14 +30,14 @@ export default function EntryScreen({
 
 	return (
 		<div
-			className="flex flex-col h-full justify-between transition-all duration-500 ease-out"
+			className="flex flex-col h-full w-full justify-between transition-all duration-500 ease-out"
 			style={{
 				opacity: visible ? 1 : 0,
 				transform: visible ? "none" : "translateY(20px)",
 			}}
 		>
 			{/* Top section */}
-			<div className="flex-1 flex flex-col justify-center px-8 pt-10">
+			<div className="flex-1 flex flex-col px-8 pt-10">
 				<div className="font-barlow text-[11px] tracking-[4px] text-primary mb-4 font-semibold">
 					{completed ? "SESIÓN DEL DÍA" : "SESIÓN PROGRAMADA"}
 				</div>

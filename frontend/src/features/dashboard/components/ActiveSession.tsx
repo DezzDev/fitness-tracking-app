@@ -1,5 +1,6 @@
 import type { WorkoutSessionWithExercises } from "@/types";
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface ActiveSessionProps {
 	session: WorkoutSessionWithExercises;
@@ -7,7 +8,7 @@ interface ActiveSessionProps {
 }
 
 export default function ActiveSession({ session, onComplete }: ActiveSessionProps) {
-	console.log({session})
+	console.log({session});
 	{
 		const [ currentIdx, setCurrentIdx ] = useState(0);
 		const [ completedSets, setCompletedSets ] = useState(
@@ -68,61 +69,27 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 
 		return (
 			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					height: "100%",
-					opacity: visible ? 1 : 0,
-					transition: "opacity 0.4s ease",
-				}}
+				className={cn(
+					"flex flex-col h-full w-full transition-opacity duration-400 ease-in-out",
+					visible ? "opacity-100" : "opacity-0"
+				)}
 			>
 				{/* Header */}
-				<div
-					style={{
-						padding: "20px 32px 16px",
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-						borderBottom: "1px solid var(--border)",
-					}}
-				>
+				<div className="px-8 pt-5 pb-4 flex justify-between items-center border-b border-border">
 					<div>
-						<div
-							style={{
-								fontFamily: "'Barlow Condensed', sans-serif",
-								fontSize: "11px",
-								letterSpacing: "3px",
-								color: "var(--gray-mid)",
-							}}
-						>
+						<div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground">
 							{new Date(session.sessionDate).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
 						</div>
-						<div
-							style={{
-								fontFamily: "'Barlow Condensed', sans-serif",
-								fontSize: "15px",
-								letterSpacing: "2px",
-								color: "var(--gray-light)",
-								fontWeight: 600,
-							}}
-						>
+						<div className="font-barlow text-[15px] tracking-[2px] text-secondary-foreground font-semibold">
 							{session.title}
 						</div>
 					</div>
-					<div
-						style={{
-							fontFamily: "'Bebas Neue', cursive",
-							fontSize: "28px",
-							color: "var(--orange)",
-						}}
-					>
+					<div className="font-bebas text-[28px] text-primary">
 						{String(currentIdx + 1).padStart(2, "0")}
-						<span
-							style={{ fontSize: "16px", color: "var(--gray-mid)", margin: "0 2px" }}
-						>
+						<span className="text-[16px] text-muted-foreground mx-0.5">
 							/
 						</span>
-						<span style={{ fontSize: "16px", color: "var(--gray-mid)" }}>
+						<span className="text-[16px] text-muted-foreground">
 							{session.exercises.length}
 						</span>
 					</div>
@@ -130,160 +97,88 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 
 				{/* Exercise area */}
 				<div
+					className={cn(
+						"flex-1 flex flex-col justify-center p-8 overflow-hidden transition-all duration-300 ease-in-out",
+						animating ? "opacity-0" : "opacity-100"
+					)}
 					style={{
-						flex: 1,
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						padding: "32px",
-						overflow: "hidden",
 						transform: animating
 							? `translateX(${slideDir * -60}px)`
 							: "translateX(0)",
-						opacity: animating ? 0 : 1,
-						transition: "transform 0.3s ease, opacity 0.3s ease",
 					}}
 				>
 					{/* Muscle group tag */}
-					<div
-						style={{
-							fontFamily: "'Barlow Condensed', sans-serif",
-							fontSize: "10px",
-							letterSpacing: "4px",
-							color: "var(--orange)",
-							fontWeight: 600,
-							marginBottom: "12px",
-						}}
-					>
+					<div className="font-barlow text-[10px] tracking-[4px] text-primary font-semibold mb-3">
 						{exercise.muscleGroup}
 					</div>
 
 					{/* Exercise name */}
 					<div
-						style={{
-							fontFamily: "'Bebas Neue', cursive",
-							fontSize: "clamp(52px, 13vw, 80px)",
-							lineHeight: 0.9,
-							color: exCompleted ? "var(--gray-mid)" : "var(--white)",
-							letterSpacing: "2px",
-							marginBottom: "36px",
-							transition: "color 0.3s ease",
-						}}
+						className={cn(
+							"font-bebas text-[clamp(52px,13vw,80px)] leading-[0.9] tracking-[2px] mb-9 transition-colors duration-300 ease-in-out",
+							exCompleted ? "text-muted-foreground" : "text-foreground"
+						)}
 					>
 						{exercise.exerciseName}
 					</div>
 
 					{/* Metrics */}
-					<div
-						style={{
-							display: "flex",
-							gap: "40px",
-							marginBottom: "40px",
-							alignItems: "flex-end",
-						}}
-					>
+					<div className="flex gap-10 mb-10 items-end">
 						{exercise.sets[ displaySetIdx ].weight && exercise.sets[ displaySetIdx ].weight > 0 && (
 							<div>
-								<div
-									style={{
-										fontFamily: "'Bebas Neue', cursive",
-										fontSize: "52px",
-										lineHeight: 1,
-										color: "var(--white)",
-									}}
-								>
+								<div className="font-bebas text-[52px] leading-none text-foreground">
 									{exercise.sets[ displaySetIdx ].weight || 0}
-									<span
-										style={{
-											fontSize: "22px",
-											color: "var(--gray-mid)",
-											marginLeft: "4px",
-										}}
-									>
+									<span className="text-[22px] text-muted-foreground ml-1">
 										KG
 									</span>
 								</div>
-								<div
-									style={{
-										fontFamily: "'Barlow Condensed', sans-serif",
-										fontSize: "10px",
-										letterSpacing: "3px",
-										color: "var(--gray-dark)",
-										marginTop: "4px",
-									}}
-								>
+								<div className="font-barlow text-[10px] tracking-[3px] text-secondary mt-1">
 									PESO
 								</div>
 							</div>
 						)}
 						<div>
 							<div
-								style={{
-									fontFamily: "'Bebas Neue', cursive",
-									fontSize: exercise.sets[ displaySetIdx ].reps ? exercise.sets[ displaySetIdx ].reps > 0 ? "36px" : "52px" : "52px",
-									lineHeight: 1,
-									color: "var(--gray-light)",
-								}}
+								className={cn(
+									"font-bebas leading-none text-secondary-foreground",
+									exercise.sets[ displaySetIdx ].reps && exercise.sets[ displaySetIdx ].reps > 0
+										? "text-[36px]"
+										: "text-[52px]"
+								)}
 							>
 								{exercise.sets[ displaySetIdx ].reps}
 							</div>
-							<div
-								style={{
-									fontFamily: "'Barlow Condensed', sans-serif",
-									fontSize: "10px",
-									letterSpacing: "3px",
-									color: "var(--gray-dark)",
-									marginTop: "4px",
-								}}
-							>
+							<div className="font-barlow text-[10px] tracking-[3px] text-secondary mt-1">
 								REPS
 							</div>
 						</div>
 					</div>
 
 					{/* Sets */}
-					<div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+					<div className="flex flex-col gap-2.5">
 						{exercise.sets &&
 							Array.from({ length: exercise.sets.length }).map((_, i) => (
 								<div
 									key={i}
-									style={{
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "space-between",
-										padding: "10px 0",
-										borderBottom: "1px solid var(--border)",
-									}}
+									className="flex items-center justify-between py-2.5 border-b border-border"
 								>
 									<div
-										style={{
-											fontFamily: "'Barlow Condensed', sans-serif",
-											fontSize: "12px",
-											letterSpacing: "3px",
-											color: completedSets[ currentIdx ][ i ]
-												? "var(--gray-mid)"
-												: "var(--gray-light)",
-											fontWeight: 600,
-										}}
+										className={cn(
+											"font-barlow text-[12px] tracking-[3px] font-semibold",
+											completedSets[ currentIdx ][ i ]
+												? "text-muted-foreground"
+												: "text-secondary-foreground"
+										)}
 									>
 										SET {i + 1}
 									</div>
 									<div
-										style={{
-											width: "10px",
-											height: "10px",
-											borderRadius: "50%",
-											background: completedSets[ currentIdx ][ i ]
-												? "var(--orange)"
-												: "transparent",
-											border: completedSets[ currentIdx ][ i ]
-												? "none"
-												: "1.5px solid var(--border)",
-											transition: "background 0.2s ease, border 0.2s ease",
-											boxShadow: completedSets[ currentIdx ][ i ]
-												? "0 0 8px var(--orange-glow)"
-												: "none",
-										}}
+										className={cn(
+											"w-2.5 h-2.5 rounded-full transition-all duration-200 ease-in-out",
+											completedSets[ currentIdx ][ i ]
+												? "bg-primary shadow-[0_0_8px_var(--orange-glow)]"
+												: "bg-transparent border-[1.5px] border-border"
+										)}
 									/>
 								</div>
 							))}
@@ -291,144 +186,78 @@ export default function ActiveSession({ session, onComplete }: ActiveSessionProp
 				</div>
 
 				{/* Navigation dots */}
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						gap: "6px",
-						padding: "0 32px 12px",
-					}}
-				>
+				<div className="flex justify-center gap-1.5 px-8 pb-3">
 					{session.exercises.map((_, i) => (
 						<div
 							key={i}
 							onClick={() => goTo(i, i > currentIdx ? 1 : -1)}
-							style={{
-								width: i === currentIdx ? "20px" : "6px",
-								height: "4px",
-								borderRadius: "2px",
-								background:
-									i === currentIdx
-										? "var(--orange)"
-										: completedSets[ i ].every(Boolean)
-											? "var(--gray-mid)"
-											: "var(--border)",
-								cursor: "pointer",
-								transition: "all 0.2s ease",
-							}}
+							className={cn(
+								"h-1 rounded-sm cursor-pointer transition-all duration-200 ease-in-out",
+								i === currentIdx
+									? "w-5 bg-primary"
+									: completedSets[ i ].every(Boolean)
+										? "w-1.5 bg-muted-foreground"
+										: "w-1.5 bg-border"
+							)}
 						/>
 					))}
 				</div>
 
 				{/* CTA Button */}
-				<div style={{ padding: "0 32px 20px" }}>
+				<div className="px-8 pb-5">
 					<button
 						onClick={completeSet}
 						disabled={exCompleted}
-						style={{
-							width: "100%",
-							background: exCompleted ? "transparent" : "var(--orange)",
-							border: exCompleted ? "1px solid var(--border)" : "none",
-							color: exCompleted ? "var(--gray-mid)" : "#000",
-							fontFamily: "'Bebas Neue', cursive",
-							fontSize: "20px",
-							letterSpacing: "4px",
-							padding: "18px",
-							cursor: exCompleted ? "default" : "pointer",
-							transform: pulse ? "scale(0.97)" : "scale(1)",
-							transition:
-								"transform 0.1s ease, background 0.3s ease, color 0.3s ease",
-						}}
+						className={cn(
+							"w-full font-bebas text-[20px] tracking-[4px] py-[18px] transition-all duration-300 ease-in-out",
+							exCompleted
+								? "bg-transparent border border-border text-muted-foreground cursor-default"
+								: "bg-primary border-none text-black cursor-pointer",
+							pulse ? "scale-[0.97]" : "scale-100"
+						)}
 					>
 						{exCompleted ? "EJERCICIO COMPLETADO" : "+ COMPLETAR SET"}
 					</button>
 				</div>
 
 				{/* Progress bar */}
-				<div style={{ padding: "0 32px 28px" }}>
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "space-between",
-							marginBottom: "8px",
-						}}
-					>
-						<div
-							style={{
-								fontFamily: "'Barlow Condensed', sans-serif",
-								fontSize: "10px",
-								letterSpacing: "3px",
-								color: "var(--gray-dark)",
-							}}
-						>
+				<div className="px-8 pb-7">
+					<div className="flex justify-between mb-2">
+						<div className="font-barlow text-[10px] tracking-[3px] text-secondary">
 							{totalCompleted} / {session.exercises.length} EJERCICIOS
 						</div>
 					</div>
-					<div
-						style={{
-							height: "2px",
-							background: "var(--border)",
-							borderRadius: "1px",
-							overflow: "hidden",
-						}}
-					>
+					<div className="h-0.5 bg-border rounded-sm overflow-hidden">
 						<div
-							style={{
-								height: "100%",
-								width: `${progress}%`,
-								background: "var(--orange)",
-								borderRadius: "1px",
-								transition: "width 0.4s ease",
-								boxShadow: "0 0 6px var(--orange-glow)",
-							}}
+							className="h-full bg-primary rounded-sm transition-[width] duration-400 ease-in-out shadow-[0_0_6px_var(--orange-glow)]"
+							style={{ width: `${progress}%` }}
 						/>
 					</div>
 				</div>
 
 				{/* Swipe hint */}
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "space-between",
-						padding: "0 32px 16px",
-					}}
-				>
+				<div className="flex justify-between px-8 pb-4">
 					<button
 						onClick={() => goTo(currentIdx - 1, -1)}
 						disabled={currentIdx === 0}
-						style={{
-							background: "none",
-							border: "none",
-							color:
-								currentIdx === 0 ? "var(--border)" : "var(--gray-mid)",
-							fontFamily: "'Barlow Condensed', sans-serif",
-							fontSize: "11px",
-							letterSpacing: "2px",
-							cursor: currentIdx === 0 ? "default" : "pointer",
-							padding: 0,
-						}}
+						className={cn(
+							"bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0",
+							currentIdx === 0
+								? "text-border cursor-default"
+								: "text-muted-foreground cursor-pointer"
+						)}
 					>
 						← ANTERIOR
 					</button>
 					<button
 						onClick={() => goTo(currentIdx + 1, 1)}
 						disabled={currentIdx === session.exercises.length - 1}
-						style={{
-							background: "none",
-							border: "none",
-							color:
-								currentIdx === session.exercises.length - 1
-									? "var(--border)"
-									: "var(--gray-mid)",
-							fontFamily: "'Barlow Condensed', sans-serif",
-							fontSize: "11px",
-							letterSpacing: "2px",
-							cursor:
-								currentIdx === session.exercises.length - 1
-									? "default"
-									: "pointer",
-							padding: 0,
-						}}
+						className={cn(
+							"bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0",
+							currentIdx === session.exercises.length - 1
+								? "text-border cursor-default"
+								: "text-muted-foreground cursor-pointer"
+						)}
 					>
 						SIGUIENTE →
 					</button>

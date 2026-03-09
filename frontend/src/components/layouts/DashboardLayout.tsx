@@ -42,9 +42,9 @@ function DashboardLayout() {
 	];
 
 	return (
-		<div className="min-h-screen bg-background text-foreground">
+		<div className="h-screen flex flex-col bg-background text-foreground">
 			{/* Header */}
-			<header className="bg-[var(--surface)] border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-opacity-90">
+			<header className="bg-(--surface) border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-opacity-90">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex justify-between items-center h-16">
 						{/* Logo */}
@@ -99,7 +99,7 @@ function DashboardLayout() {
 								<DropdownMenuSeparator />
 								<DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
 									<LogOut className="mr-2 h-4 w-4" />
-									Cerrar sesi&oacute;n
+									Cerrar sesión
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
@@ -107,11 +107,11 @@ function DashboardLayout() {
 				</div>
 			</header>
 
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				<div className="flex gap-8">
+			<div className="flex flex-1 w-full min-h-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				<div className="flex flex-1 gap-8 w-full">
 					{/* Sidebar - Desktop */}
 					<aside className="hidden lg:block w-64 shrink-0">
-						<nav className="space-y-1 bg-[var(--surface)] rounded-lg p-3 border border-border">
+						<nav className="space-y-1 bg-(--surface) rounded-lg p-3 border border-border">
 							{menuItems.map(item => {
 								const Icon = item.icon;
 								const isActive = location.pathname === item.path;
@@ -122,8 +122,8 @@ function DashboardLayout() {
 										to={item.path}
 										className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
 											isActive 
-											? 'bg-[var(--orange-subtle)] text-primary font-semibold border-l-2 border-primary'
-											: 'text-muted-foreground hover:bg-[var(--surface-elevated)] hover:text-foreground'
+											? 'bg-(--orange-subtle) text-primary font-semibold border-l-2 border-primary'
+											: 'text-muted-foreground hover:bg-popover hover:text-foreground'
 											}`}
 									>
 										<Icon size={20}/>
@@ -137,7 +137,7 @@ function DashboardLayout() {
 					{/* Sidebar -Mobile */}
 					{sidebarOpen && (
 						<div className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={()=> setSidebarOpen(false)}>
-							<aside className="absolute left-0 top-0 bottom-0 w-64 bg-[var(--surface)] border-r border-border p-6" onClick={e => e.stopPropagation()}>
+							<aside className="absolute left-0 top-0 bottom-0 w-64 bg-(--surface) border-r border-border p-6" onClick={e => e.stopPropagation()}>
 								<nav className="space-y-1">
 									{menuItems.map((item) => {
 										const Icon = item.icon;
@@ -150,8 +150,8 @@ function DashboardLayout() {
 												onClick={()=> setSidebarOpen(false)}
 												className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
 														isActive
-														? 'bg-[var(--orange-subtle)] text-primary font-semibold'
-														: 'text-muted-foreground hover:bg-[var(--surface-elevated)] hover:text-foreground'
+														? 'bg-(--orange-subtle) text-primary font-semibold'
+														: 'text-muted-foreground hover:bg-popover hover:text-foreground'
 													}`}
 											>
 												<Icon size={20} />
@@ -165,11 +165,13 @@ function DashboardLayout() {
 					)}
 
 					{/* Main Content */}
-					<main className="flex-1 min-w-0">
+					<main className="flex-1 min-w-0 flex min-h-0 max-w-4xl">
 						<Outlet />
 					</main>
 				</div>
 			</div>
+
+			
 		</div>
 	)
 }

@@ -137,7 +137,7 @@ function DashboardPage() {
 	};
 
 	return (
-		<div className="overflow-hidden font-barlow">
+		<div className="overflow-hidden font-barlow flex flex-1">
 			<div className="flex-1 overflow-hidden relative bg-background">
 				{renderDashboard()}
 			</div>

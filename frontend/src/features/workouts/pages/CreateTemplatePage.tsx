@@ -34,7 +34,7 @@ export default function CreateWorkoutPage() {
 	};
 
 	return (
-		<div className='max-w-4xl mx-auto space-y-6'>
+		<div className='max-w-4xl mx-auto space-y-6 w-full'>
 			{/* Back Button */}
 			<Button
 				variant="ghost"
