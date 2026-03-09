@@ -1,18 +1,19 @@
 // src/features/workouts/pages/TemplateDetailPage.tsx
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, Play, Pencil, Copy, TrendingUp, Clock, Dumbbell } from 'lucide-react';
+import { ArrowLeft, Star, Play, Pencil, Copy, Dumbbell } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { 
-	useWorkoutTemplate, 
-	useToggleFavorite, 
-	useDuplicateTemplate 
+import {
+	useWorkoutTemplate,
+	useToggleFavorite,
+	useDuplicateTemplate
 } from '../hooks/useWorkoutTemplates';
-import type { WorkoutTemplateExercise } from '@/types';
+import type { WorkoutTemplateExercise, WorkoutTemplateSet } from '@/types';
+
+const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 export default function TemplateDetailPage() {
 	const { id } = useParams<{ id: string }>();
@@ -24,8 +25,6 @@ export default function TemplateDetailPage() {
 	const { mutate: duplicateTemplate } = useDuplicateTemplate();
 
 	const template = response || null;
-
-	console.log(template)
 
 	const handleStartSession = () => {
 		navigate(`/workouts/sessions/start?templateId=${templateId}`);
@@ -65,7 +64,11 @@ export default function TemplateDetailPage() {
 		);
 	}
 
-	const exerciseCount = template.exercises?.length || 0;
+	const exercises = template.exercises || [];
+	const totalSets = exercises.reduce(
+		(sum: number, ex: WorkoutTemplateExercise) => sum + (ex.sets?.length || ex.suggestedSets || 0),
+		0
+	);
 
 	return (
 		<div className="max-w-4xl mx-auto space-y-6 w-full">
@@ -74,7 +77,7 @@ export default function TemplateDetailPage() {
 				variant="ghost"
 				size="sm"
 				onClick={() => navigate('/workouts?tab=templates')}
-				className="font-barlow uppercase tracking-wide text-xs"
+				className="font-barlow uppercase tracking-[2px] text-xs"
 			>
 				<ArrowLeft className="h-4 w-4 mr-2" />
 				Plantillas
@@ -82,154 +85,173 @@ export default function TemplateDetailPage() {
 
 			{/* Header */}
 			<div className="space-y-4">
-				<div className="flex items-start justify-between gap-4">
-					<div className="flex-1 space-y-3">
-						{/* Tag */}
-						<Badge 
-							variant="outline" 
-							className="font-barlow uppercase tracking-wide text-xs"
-						>
-							Plantilla
-						</Badge>
 
-						{/* Nombre */}
-						<div className="flex items-center gap-3">
-							<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
-								{template.name}
-							</h1>
-							<button
-								onClick={handleToggleFavorite}
-								className="shrink-0 p-1 hover:scale-110 transition-transform"
-								aria-label="Marcar como favorito"
-							>
-								<Star 
-									className={`h-6 w-6 ${
-										template.isFavorite 
-											? 'fill-primary text-primary' 
-											: 'text-muted-foreground'
-									}`} 
-								/>
-							</button>
-						</div>
+				{/* Tag */}
+				<h2 className="font-barlow uppercase tracking-[3px] text-xs text-primary mb-2">
+					Plantilla
+					{template.scheduledDayOfWeek !== undefined && template.scheduledDayOfWeek !== null
+						? ` - ${DAY_NAMES[template.scheduledDayOfWeek]}`
+						: ''}
+				</h2>
 
-						{/* Descripción */}
-						{template.description && (
-							<p className="text-muted-foreground font-barlow">
-								{template.description}
-							</p>
-						)}
-					</div>
+				{/* Nombre + Favorito */}
+				<div className="flex items-center gap-3">
+					<h1 className="text-4xl font-bebas tracking-wide uppercase text-foreground">
+						{template.name}
+					</h1>
+					<button
+						onClick={handleToggleFavorite}
+						className="shrink-0 p-1 hover:scale-110 transition-transform"
+						aria-label="Marcar como favorito"
+					>
+						<Star
+							className={`h-6 w-6 ${
+								template.isFavorite
+									? 'fill-primary text-primary'
+									: 'text-muted-foreground'
+							}`}
+						/>
+					</button>
 				</div>
 
-				{/* Stats */}
-				<Card className="bg-muted/10 w-full">
-					<div className="p-4 grid grid-cols-3 gap-4">
-						{/* Usos */}
-						<div className="text-center space-y-1">
-							<div className="flex items-center justify-center gap-2">
-								<TrendingUp className="h-4 w-4 text-primary" />
-								<span className="text-2xl font-bebas text-foreground">
-									{template.usageCount || 0}
-								</span>
-							</div>
-							<p className="text-xs text-muted-foreground uppercase font-barlow tracking-wide">
-								Usos
-							</p>
-						</div>
+				{/* Descripción */}
+				{template.description && (
+					<p className="text-muted-foreground font-barlow">
+						{template.description}
+					</p>
+				)}
 
-						{/* Duración promedio (placeholder - necesitaríamos datos del backend) */}
-						<div className="text-center space-y-1">
-							<div className="flex items-center justify-center gap-2">
-								<Clock className="h-4 w-4 text-primary" />
-								<span className="text-2xl font-bebas text-foreground">
-									--
-								</span>
-							</div>
-							<p className="text-xs text-muted-foreground uppercase font-barlow tracking-wide">
-								Min promedio
-							</p>
-						</div>
-
-						{/* Volumen promedio (placeholder - necesitaríamos datos del backend) */}
-						<div className="text-center space-y-1">
-							<div className="flex items-center justify-center gap-2">
-								<Dumbbell className="h-4 w-4 text-primary" />
-								<span className="text-2xl font-bebas text-foreground">
-									--
-								</span>
-							</div>
-							<p className="text-xs text-muted-foreground uppercase font-barlow tracking-wide">
-								Kg promedio
-							</p>
-						</div>
+				{/* Stats row */}
+				<div className="flex items-center gap-6 text-sm font-barlow">
+					<div className="flex flex-col items-center">
+						<span className="text-foreground font-semibold text-lg">{exercises.length}</span>
+						<span className="text-muted-foreground uppercase text-sm tracking-[2px]">ejercicios</span>
 					</div>
-				</Card>
+
+					<div className="flex flex-col items-center">
+						<span className="text-foreground font-semibold text-lg">{totalSets}</span>
+						<span className="text-muted-foreground uppercase text-sm tracking-[2px]">series</span>
+					</div>
+
+					<div className="flex flex-col items-center">
+						<span className="text-foreground font-semibold text-lg">{template.usageCount || 0}</span>
+						<span className="text-muted-foreground uppercase text-sm tracking-[2px]">usos</span>
+					</div>
+				</div>
 			</div>
 
-			{/* ESTRUCTURA - Lista de ejercicios */}
-			<Card className="w-full">
-				<div className="p-6 space-y-6">
-					<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
-						Estructura
-					</h2>
+			<Separator />
 
-					{exerciseCount === 0 ? (
+			{/* Ejercicios */}
+			<div>
+				<div className="space-y-6">
+					<h2 className="text-lg font-bebas tracking-[2px] uppercase text-foreground">
+						Ejercicios
+					</h2>
+					<Separator />
+					{exercises.length === 0 ? (
 						<div className="text-center py-8 text-muted-foreground">
 							<Dumbbell className="h-12 w-12 mx-auto mb-3 opacity-50" />
 							<p className="font-barlow">No hay ejercicios en esta plantilla</p>
 						</div>
 					) : (
-						<div className="space-y-4">
-							{template.exercises?.map((templateExercise: WorkoutTemplateExercise, index: number) => (
+						<div className="space-y-6">
+							{exercises.map((templateExercise: WorkoutTemplateExercise, index: number) => (
 								<div key={templateExercise.id}>
-									{index > 0 && <Separator className="my-4" />}
-									
-									<div className="space-y-3">
+									{index > 0 && <Separator className="my-6" />}
+
+									<div className="space-y-4">
 										{/* Ejercicio info */}
-										<div className="flex items-start gap-3">
-											<div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-												<span className="text-sm font-bebas text-primary">
-													{index + 1}
-												</span>
-											</div>
+										<div className="flex flex-col items-start gap-1">
+
+											{templateExercise.muscleGroup && (
+												<div
+													className="font-barlow uppercase text-xs tracking-[2px] text-primary"
+												>
+													{templateExercise.muscleGroup}
+												</div>
+											)}
 
 											<div className="flex-1 min-w-0 space-y-1">
-												<h3 className="font-bebas tracking-wide text-lg text-foreground">
+												<h3 className="font-bebas tracking-[2px] text-2xl text-foreground">
 													{templateExercise.exerciseName || 'Ejercicio'}
 												</h3>
-												
-												{templateExercise?.muscleGroup && (
-													<Badge 
-														variant="secondary" 
-														className="font-barlow uppercase text-xs tracking-wide"
-													>
-														{templateExercise?.muscleGroup}
-													</Badge>
-												)}
 											</div>
 										</div>
 
-										{/* Sets sugeridos */}
-										{(templateExercise.suggestedSets || templateExercise.suggestedReps) && (
-											<div className="ml-11 space-y-1">
-												<p className="text-xs text-muted-foreground uppercase font-barlow tracking-wide">
-													Sugerido
-												</p>
-												<p className="text-sm font-barlow text-foreground">
-													{templateExercise.suggestedSets && `${templateExercise.suggestedSets} series`}
-													{templateExercise.suggestedSets && templateExercise.suggestedReps && ' × '}
-													{templateExercise.suggestedReps && `${templateExercise.suggestedReps} reps`}
-												</p>
+										{/* Sets */}
+										{templateExercise.sets && templateExercise.sets.length > 0 ? (
+											<div className="space-y-2">
+												{templateExercise.sets.map((set: WorkoutTemplateSet) => (
+													<div
+														key={set.id}
+														className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg"
+													>
+														<span className="text-xs font-barlow font-bold uppercase text-muted-foreground tracking-wide min-w-[60px]">
+															Serie {set.setNumber}
+														</span>
+
+														<div className="flex items-center gap-4 flex-wrap text-sm font-barlow">
+															{set.targetReps !== null && set.targetReps !== undefined && (
+																<div>
+																	<span className="font-semibold text-foreground">{set.targetReps}</span>
+																	<span className="text-muted-foreground ml-1">reps</span>
+																</div>
+															)}
+
+															{set.targetWeight !== null && set.targetWeight !== undefined && set.targetWeight > 0 && (
+																<div>
+																	<span className="font-semibold text-foreground">{set.targetWeight}</span>
+																	<span className="text-muted-foreground ml-1">kg</span>
+																</div>
+															)}
+
+															{set.targetDurationSeconds !== null && set.targetDurationSeconds !== undefined && set.targetDurationSeconds > 0 && (
+																<div>
+																	<span className="font-semibold text-foreground">{set.targetDurationSeconds}</span>
+																	<span className="text-muted-foreground ml-1">seg</span>
+																</div>
+															)}
+
+															{set.targetRestSeconds !== null && set.targetRestSeconds !== undefined && set.targetRestSeconds > 0 && (
+																<div>
+																	<span className="font-semibold text-foreground">{set.targetRestSeconds}</span>
+																	<span className="text-muted-foreground ml-1">desc</span>
+																</div>
+															)}
+														</div>
+													</div>
+												))}
 											</div>
-										)}
+										) : (templateExercise.suggestedSets || templateExercise.suggestedReps) ? (
+											<div className="space-y-2">
+												{Array.from({ length: templateExercise.suggestedSets || 1 }).map((_, i) => (
+													<div
+														key={i}
+														className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg"
+													>
+														<span className="text-xs font-barlow font-bold uppercase text-muted-foreground tracking-wide min-w-[60px]">
+															Serie {i + 1}
+														</span>
+
+														<div className="flex items-center gap-4 flex-wrap text-sm font-barlow">
+															{templateExercise.suggestedReps && (
+																<div>
+																	<span className="font-semibold text-foreground">{templateExercise.suggestedReps}</span>
+																	<span className="text-muted-foreground ml-1">reps</span>
+																</div>
+															)}
+														</div>
+													</div>
+												))}
+											</div>
+										) : null}
 
 										{/* Notas */}
 										{templateExercise.notes && (
-											<div className="ml-11">
-												<p className="text-sm text-muted-foreground font-barlow">
-													{templateExercise.notes}
-												</p>
-											</div>
+											<p className="text-sm text-muted-foreground font-barlow">
+												{templateExercise.notes}
+											</p>
 										)}
 									</div>
 								</div>
@@ -237,14 +259,14 @@ export default function TemplateDetailPage() {
 						</div>
 					)}
 				</div>
-			</Card>
+			</div>
 
 			{/* Acciones */}
-			<div className="flex flex-col sm:flex-row gap-3 pt-4">
+			<div className="flex gap-3 pt-4">
 				<Button
 					onClick={handleStartSession}
 					size="lg"
-					className="flex-1 uppercase font-barlow font-semibold tracking-wide"
+					className="uppercase font-barlow font-semibold tracking-wide"
 				>
 					<Play className="h-5 w-5 mr-2" />
 					Iniciar Sesión
