@@ -1,5 +1,5 @@
 // src/features/workouts/pages/StartSessionPage.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
@@ -26,7 +26,9 @@ export default function StartSessionPage() {
 	const createSessionMutation = useCreateSessionFromTemplate();
 	const deleteSessionMutation = useDeleteSession();
 
-	// Crear sesión inmediatamente al montar
+	// Controlar que solo se dispare una vez, incluso con StrictMode
+	const calledRef = useRef(false);
+
 	useEffect(() => {
 		if (!templateId) {
 			setErrorMessage('No se especificó una plantilla');
@@ -34,26 +36,26 @@ export default function StartSessionPage() {
 			return;
 		}
 
-		createSessionMutation.mutate(
+		if (calledRef.current) return;
+		calledRef.current = true;
+
+		createSessionMutation.mutateAsync(
 			{
 				templateId,
 				sessionDate: new Date(),
 				notes: undefined,
 				durationMinutes: undefined,
 			},
-			{
-				onSuccess: (session) => {
-					setActiveSession(session);
-					setScreen('active');
-				},
-				onError: (error) => {
-					setErrorMessage(
-						error instanceof Error ? error.message : 'No se pudo crear la sesión'
-					);
-					setScreen('error');
-				},
-			}
-		);
+		).then((session) => {
+			setActiveSession(session);
+			setScreen('active');
+		}).catch((error) => {
+			calledRef.current = false;
+			setErrorMessage(
+				error instanceof Error ? error.message : 'No se pudo crear la sesión'
+			);
+			setScreen('error');
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [templateId]);
 
