@@ -84,7 +84,6 @@ export const WorkoutSessionExerciseSchema = z.object({
  */
 export const CreateWorkoutSessionSchema = z.object({
 	templateId: z
-		.string()
 		.uuid('Invalid template ID format')
 		.optional(),
 
@@ -113,7 +112,7 @@ export const CreateWorkoutSessionSchema = z.object({
 	durationMinutes: z
 		.number()
 		.int('Duration must be an integer')
-		.positive('Duration must be positive')
+		.nonnegative('Duration must be non-negative')
 		.max(720, 'Duration cannot exceed 12 hours')
 		.optional(),
 
@@ -292,7 +291,7 @@ export const CreateFromTemplateSchema = z.object({
 	durationMinutes: z
 		.number()
 		.int('Duration must be an integer')
-		.positive('Duration must be positive')
+		.nonnegative('Duration must be non-negative')
 		.max(720, 'Duration cannot exceed 12 hours')
 		.optional(),
 });

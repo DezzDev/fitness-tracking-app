@@ -165,7 +165,7 @@ GET {{baseUrl}}/workoutSessions/4567ce54-deb1-497e-a553-d33c28bba781 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### PATCH /sessions/:id - Actualizar sesión completa
-PATCH {{baseUrl}}/workoutSessions/f6f50fc0-5403-40b0-9a76-e73d10f60387 HTTP/1.1
+PATCH {{baseUrl}}/workoutSessions/e0955aaa-cef1-4990-8494-d9186a9fdff8 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 content-type: application/json
 

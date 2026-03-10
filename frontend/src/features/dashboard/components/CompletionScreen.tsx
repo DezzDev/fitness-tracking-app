@@ -1,9 +1,9 @@
-import type { WorkoutSessionWithExercises } from "@/types";
+import type { WorkoutSessionWithExercises, EditableSet } from "@/types";
 import { useEffect, useState } from "react";
 
 interface CompletionScreenProps {
 	session: WorkoutSessionWithExercises;
-	completedSets: boolean[][] | null;
+	completedSets: EditableSet[][] | null;
 	startTime: Date;
 	onReturn: () => void;
 }
@@ -33,19 +33,21 @@ export default function CompletionScreen({
 
 	// Calculate total completed sets
 	const totalSeries = completedSets
-		? completedSets.reduce((a, sets) => a + sets.filter(Boolean).length, 0)
+		? completedSets.reduce(
+			(a, sets) => a + sets.filter((s) => s.isCompleted).length,
+			0
+		)
 		: 0;
 
-	// Calculate total volume (weight × reps)
-	const volume = session.exercises.reduce((a, e, i) => {
-		const done = completedSets ? completedSets[i].filter(Boolean).length : 0;
-		const weightReps = e.sets.reduce(
-			(wr, s) => wr + (s.weight ?? 0) * (s.reps ?? 0),
-			0
-		);
-
-		return a + (done * weightReps) / e.sets.length;
-	}, 0);
+	// Calculate total volume from actual edited values (weight x reps per completed set)
+	const volume = completedSets
+		? completedSets.reduce((total, exerciseSets) => {
+			return total + exerciseSets.reduce((exTotal, set) => {
+				if (!set.isCompleted) return exTotal;
+				return exTotal + (set.weight ?? 0) * (set.reps ?? 0);
+			}, 0);
+		}, 0)
+		: 0;
 
 	const metrics = [
 		{ value: session.exercises.length, label: "EJERCICIOS" },

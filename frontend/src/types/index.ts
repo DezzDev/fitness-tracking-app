@@ -185,6 +185,20 @@ export interface WorkoutSessionSet {
 	createdAt: string;
 }
 
+/**
+ * Editable set used during active workout sessions.
+ * Initialized from WorkoutSessionSet template values, allows user overrides.
+ */
+export interface EditableSet {
+	setNumber: number;
+	reps?: number;
+	weight?: number;
+	durationSeconds?: number;
+	restSeconds?: number;
+	notes?: string;
+	isCompleted: boolean;
+}
+
 
 // Para crear session desde template
 export interface CreateWorkoutSessionData {
@@ -192,6 +206,7 @@ export interface CreateWorkoutSessionData {
 	title: string;
 	notes?: string;
 	sessionDate: string;
+	durationMinutes?: number;
 	exercises: {
 		exerciseId: string;
 		orderIndex: number;

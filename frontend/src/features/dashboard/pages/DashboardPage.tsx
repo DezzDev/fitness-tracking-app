@@ -4,21 +4,21 @@ import EntryScreen from "../components/EntryScreen";
 import ActiveSession from "../components/ActiveSession";
 import CompletionScreen from "../components/CompletionScreen";
 import { useScheduledTemplate } from "@/features/workouts/hooks/useWorkoutTemplates";
-import { useCreateSessionFromTemplate, useDeleteSession } from "@/features/workouts/hooks/useWorkoutSessions";
-import type { WorkoutSessionWithExercises, WorkoutTemplate } from "@/types";
+import { useCreateSession } from "@/features/workouts/hooks/useWorkoutSessions";
+import { templateToSession } from "../utils/templateToSession";
+import type { WorkoutSessionWithExercises, WorkoutTemplate, EditableSet } from "@/types";
 
 type ScreenType = "loading" | "entry" | "active" | "complete" | "entry-done";
 
 function DashboardPage() {
 	const [screen, setScreen] = useState<ScreenType>("loading");
-	const [activeSession, setActiveSession] = useState<WorkoutSessionWithExercises | null>(null);
-	const [completedSets, setCompletedSets] = useState<boolean[][] | null>(null);
+	const [localSession, setLocalSession] = useState<WorkoutSessionWithExercises | null>(null);
+	const [completedSets, setCompletedSets] = useState<EditableSet[][] | null>(null);
 	const [startTime, setStartTime] = useState<Date | null>(null);
 
 	// Fetch today's scheduled template
 	const { data: templates, isLoading, error } = useScheduledTemplate();
-	const createSessionMutation = useCreateSessionFromTemplate();
-	const deleteSessionMutation = useDeleteSession();
+	const createSessionMutation = useCreateSession();
 
 	// Get first template (should only be one scheduled per day)
 	const scheduledTemplate: WorkoutTemplate | undefined = templates?.[0];
@@ -32,43 +32,50 @@ function DashboardPage() {
 	const handleStart = () => {
 		if (!scheduledTemplate) return;
 
+		// Build a local session shape from the template — nothing is created in DB
+		const session = templateToSession(scheduledTemplate);
+		setLocalSession(session);
 		setStartTime(new Date());
-		
-		// Create session from template
-		createSessionMutation.mutate(
-			{
-				templateId: scheduledTemplate.id,
-				sessionDate: new Date(),
-				notes: undefined,
-				durationMinutes: undefined,
-			},
-			{
-				onSuccess: (session) => {
-					setActiveSession(session);
-					setScreen("active");
-				},
-			}
-		);
+		setScreen("active");
 	};
 
-	const handleComplete = (sets: boolean[][]) => {
+	const handleComplete = (sets: EditableSet[][]) => {
 		setCompletedSets(sets);
 		setScreen("complete");
+
+		// NOW create the session in the database with the actual values
+		if (localSession && scheduledTemplate && !createSessionMutation.isPending) {
+			const durationMinutes = startTime
+				? Math.round((Date.now() - startTime.getTime()) / 60000)
+				: undefined;
+
+			createSessionMutation.mutate({
+				templateId: scheduledTemplate.id,
+				title: localSession.title,
+				sessionDate: new Date().toISOString(),
+				...(durationMinutes !== undefined && { durationMinutes }),
+				exercises: localSession.exercises.map((ex, ei) => ({
+					exerciseId: ex.exerciseId,
+					orderIndex: ex.orderIndex,
+					sets: sets[ei].map((s) => ({
+						setNumber: s.setNumber,
+						reps: s.reps,
+						weight: s.weight,
+						durationSeconds: s.durationSeconds,
+						restSeconds: s.restSeconds,
+						notes: s.notes,
+					})),
+				})),
+			});
+		}
 	};
 
 	const handleCancel = () => {
-		if (activeSession) {
-			deleteSessionMutation.mutate(activeSession.id, {
-				onSuccess: () => {
-					setActiveSession(null);
-					setCompletedSets(null);
-					setStartTime(null);
-					setScreen("entry");
-				},
-			});
-		} else {
-			setScreen("entry");
-		}
+		// Nothing to delete — session was never created in the database
+		setLocalSession(null);
+		setCompletedSets(null);
+		setStartTime(null);
+		setScreen("entry");
 	};
 
 	const handleReturn = () => {
@@ -120,24 +127,22 @@ function DashboardPage() {
 						template={scheduledTemplate}
 						onStart={handleStart}
 						completed={false}
-						isCreatingSession={createSessionMutation.isPending}
 					/>
 				);
 			case "active":
-				if (!activeSession) return null;
+				if (!localSession) return null;
 				return (
 					<ActiveSession
-					session={activeSession}
-					onComplete={handleComplete}
-					onCancel={handleCancel}
-					isCancelling={deleteSessionMutation.isPending}
-				/>
+						session={localSession}
+						onComplete={handleComplete}
+						onCancel={handleCancel}
+					/>
 				);
 			case "complete":
-				if (!activeSession || !completedSets || !startTime) return null;
+				if (!localSession || !completedSets || !startTime) return null;
 				return (
 					<CompletionScreen
-						session={activeSession}
+						session={localSession}
 						completedSets={completedSets}
 						startTime={startTime}
 						onReturn={handleReturn}
@@ -149,7 +154,6 @@ function DashboardPage() {
 						template={scheduledTemplate}
 						onStart={handleStart}
 						completed={true}
-						isCreatingSession={createSessionMutation.isPending}
 					/>
 				);
 			default:
