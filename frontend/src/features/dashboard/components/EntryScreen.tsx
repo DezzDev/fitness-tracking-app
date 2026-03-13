@@ -1,6 +1,7 @@
 import type { WorkoutTemplate, WorkoutTemplateExercise } from "@/types";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface EntryScreenProps {
 	template: WorkoutTemplate;
@@ -16,6 +17,7 @@ export default function EntryScreen({
 	isCreatingSession = false,
 }: EntryScreenProps) {
 	const [visible, setVisible] = useState(false);
+	const navigate = useNavigate();
 	
 	useEffect(() => {
 		const timer = setTimeout(() => setVisible(true), 50);
@@ -82,26 +84,42 @@ export default function EntryScreen({
 			</div>
 
 			{/* Bottom CTA */}
-			<div className="p-8">
+			<div className="p-8 space-y-4">
 				{!completed ? (
-					<button
-						onClick={onStart}
-						disabled={isCreatingSession}
-						className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
-					>
-						{isCreatingSession ? (
-							<span className="flex items-center justify-center gap-2">
-								<Loader2 className="h-5 w-5 animate-spin" />
-								INICIANDO...
-							</span>
-						) : (
-							"INICIAR SESIÓN"
-						)}
-					</button>
+					<>
+						<button
+							onClick={onStart}
+							disabled={isCreatingSession}
+							className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{isCreatingSession ? (
+								<span className="flex items-center justify-center gap-2">
+									<Loader2 className="h-5 w-5 animate-spin" />
+									INICIANDO...
+								</span>
+							) : (
+								"INICIAR SESIÓN"
+							)}
+						</button>
+						<button
+							onClick={() => navigate('/workouts?tab=templates')}
+							className="w-full bg-transparent border-none text-muted-foreground font-barlow text-sm tracking-[3px] py-3 cursor-pointer hover:text-foreground transition-colors"
+						>
+							ELEGIR OTRA PLANTILLA
+						</button>
+					</>
 				) : (
-					<button className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-sm tracking-[3px] py-[18px] cursor-pointer hover:bg-muted/20 transition-colors">
-						VER DETALLE
-					</button>
+					<>
+						<button className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-sm tracking-[3px] py-[18px] cursor-pointer hover:bg-muted/20 transition-colors">
+							VER DETALLE
+						</button>
+						<button
+							onClick={() => navigate('/workouts?tab=templates')}
+							className="w-full bg-transparent border-none text-muted-foreground font-barlow text-sm tracking-[3px] py-3 cursor-pointer hover:text-foreground transition-colors"
+						>
+							ELEGIR OTRA PLANTILLA
+						</button>
+					</>
 				)}
 			</div>
 		</div>
