@@ -1,15 +1,25 @@
 // src/features/workouts/pages/TemplateDetailPage.tsx
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, Play, Pencil, Copy, Dumbbell } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Star, Play, Pencil, Copy, Dumbbell, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
+import {
 	useWorkoutTemplate,
 	useToggleFavorite,
-	useDuplicateTemplate
+	useDuplicateTemplate,
+	useDeleteTemplate
 } from '../hooks/useWorkoutTemplates';
 import type { WorkoutTemplateExercise, WorkoutTemplateSet } from '@/types';
 
@@ -23,6 +33,9 @@ export default function TemplateDetailPage() {
 	const { data: response, isLoading, isError } = useWorkoutTemplate(templateId);
 	const { mutate: toggleFavorite } = useToggleFavorite();
 	const { mutate: duplicateTemplate } = useDuplicateTemplate();
+	const deleteTemplateMutation = useDeleteTemplate();
+
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	const template = response || null;
 
@@ -36,6 +49,13 @@ export default function TemplateDetailPage() {
 
 	const handleDuplicate = () => {
 		duplicateTemplate(templateId);
+	};
+
+	const handleConfirmDelete = () => {
+		deleteTemplateMutation.mutate(templateId, {
+			onSuccess: () => navigate('/workouts?tab=templates'),
+			onSettled: () => setShowDeleteModal(false),
+		});
 	};
 
 	const handleToggleFavorite = () => {
@@ -71,6 +91,7 @@ export default function TemplateDetailPage() {
 	);
 
 	return (
+		<>
 		<div className="max-w-4xl mx-auto space-y-6 w-full">
 			{/* Back Button */}
 			<Button
@@ -291,7 +312,57 @@ export default function TemplateDetailPage() {
 					<Copy className="h-5 w-5 mr-2" />
 					Duplicar
 				</Button>
+
+				<Button
+					onClick={() => setShowDeleteModal(true)}
+					size="lg"
+					variant="outline"
+					className="uppercase font-barlow font-semibold tracking-wide text-destructive/70 hover:text-destructive border-destructive/30 hover:border-destructive/60 ml-auto"
+				>
+					<Trash2 className="h-5 w-5 mr-2" />
+					Eliminar
+				</Button>
 			</div>
 		</div>
+
+		{/* Modal de confirmacion de eliminacion */}
+		<Dialog
+			open={showDeleteModal}
+			onOpenChange={(open) => { if (!open) setShowDeleteModal(false); }}
+		>
+			<DialogContent showCloseButton={false} className="rounded-none">
+				<DialogHeader>
+					<DialogTitle className="font-bebas tracking-[2px] text-xl uppercase">
+						Eliminar plantilla
+					</DialogTitle>
+					<DialogDescription className="font-barlow">
+						Esta accion no se puede deshacer. Se eliminara la plantilla{' '}
+						<span className="font-semibold text-foreground">
+							{template.name}
+						</span>{' '}
+						permanentemente.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogFooter className="gap-2 sm:gap-0">
+					<Button
+						variant="ghost"
+						onClick={() => setShowDeleteModal(false)}
+						disabled={deleteTemplateMutation.isPending}
+						className="uppercase font-barlow font-semibold tracking-[3px] rounded-none"
+					>
+						Cancelar
+					</Button>
+					<Button
+						variant="destructive"
+						onClick={handleConfirmDelete}
+						disabled={deleteTemplateMutation.isPending}
+						className="uppercase font-barlow font-semibold tracking-[3px] rounded-none"
+					>
+						{deleteTemplateMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+		</>
 	);
 }

@@ -1,16 +1,25 @@
 // src/features/workouts/components/TemplatesList.tsx
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Star, Dumbbell } from 'lucide-react';
+import { Star, Dumbbell, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
+import {
 	useWorkoutTemplates,
 	useToggleFavorite,
-	useDuplicateTemplate
+	useDuplicateTemplate,
+	useDeleteTemplate
 } from '../hooks/useWorkoutTemplates';
 import type { WorkoutTemplate } from '@/types';
 import { Separator } from '@/components/ui/separator';
@@ -20,6 +29,10 @@ export default function TemplatesList() {
 	const { data, isLoading } = useWorkoutTemplates({ limit: 100 });
 	const { mutate: toggleFavorite } = useToggleFavorite();
 	const { mutate: duplicateTemplate } = useDuplicateTemplate();
+	const deleteTemplateMutation = useDeleteTemplate();
+
+	// ID of the template whose delete confirmation is currently open (null = none)
+	const [deletingId, setDeletingId] = useState<string | null>(null);
 
 	const templates = data?.data.items || [];
 
@@ -57,11 +70,29 @@ export default function TemplatesList() {
 		toggleFavorite(templateId);
 	};
 
+	const handleDeleteClick = (templateId: string) => {
+		setDeletingId(templateId);
+	};
+
+	const handleConfirmDelete = (templateId: string) => {
+		deleteTemplateMutation.mutate(templateId, {
+			onSettled: () => setDeletingId(null),
+		});
+	};
+
+	const handleCancelDelete = () => {
+		setDeletingId(null);
+	};
+
+	const deletingTemplateName = useMemo(() => {
+		if (!deletingId) return '';
+		return templates.find((t) => t.id === deletingId)?.name ?? '';
+	}, [deletingId, templates]);
+
 	const renderTemplate = (template: WorkoutTemplate) => {
 		const exerciseCount = template.exercises?.length || 0;
 		const firstThreeExercises = template.exercises?.slice(0, 3) || [];
 		const remainingCount = exerciseCount > 3 ? exerciseCount - 3 : 0;
-		console.log({template})
 
 		return (
 			<Card
@@ -126,7 +157,6 @@ export default function TemplatesList() {
 							variant="ghost"
 							className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-0"
 						>
-						
 							Iniciar
 						</Button>
 
@@ -136,7 +166,6 @@ export default function TemplatesList() {
 							variant="ghost"
 							className="uppercase font-barlow font-semibold tracking-[3px] px-0"
 						>
-							
 							Editar
 						</Button>
 
@@ -146,8 +175,16 @@ export default function TemplatesList() {
 							variant="ghost"
 							className="uppercase font-barlow font-semibold tracking-[3px] px-0"
 						>
-						
 							Duplicar
+						</Button>
+
+						<Button
+							onClick={() => handleDeleteClick(template.id)}
+							size="sm"
+							variant="ghost"
+							className="uppercase font-barlow font-semibold tracking-[3px] text-destructive/70 hover:text-destructive px-0 ml-auto"
+						>
+							<Trash2 className="h-4 w-4" />
 						</Button>
 					</div>
 				</div>
@@ -156,6 +193,7 @@ export default function TemplatesList() {
 	};
 
 	return (
+		<>
 		<div className="space-y-8">
 			{/* Loading */}
 			{isLoading ? (
@@ -219,5 +257,45 @@ export default function TemplatesList() {
 				</>
 			)}
 		</div>
+
+			{/* Modal de confirmacion de eliminacion */}
+			<Dialog
+				open={deletingId !== null}
+				onOpenChange={(open) => { if (!open) handleCancelDelete(); }}
+			>
+				<DialogContent showCloseButton={false} className="rounded-none">
+					<DialogHeader>
+						<DialogTitle className="font-bebas tracking-[2px] text-xl uppercase">
+							Eliminar plantilla
+						</DialogTitle>
+						<DialogDescription className="font-barlow">
+							Esta accion no se puede deshacer. Se eliminara la plantilla{' '}
+							<span className="font-semibold text-foreground">
+								{deletingTemplateName}
+							</span>{' '}
+							permanentemente.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter className="gap-2 sm:gap-0">
+						<Button
+							variant="ghost"
+							onClick={handleCancelDelete}
+							disabled={deleteTemplateMutation.isPending}
+							className="uppercase font-barlow font-semibold tracking-[3px] rounded-none"
+						>
+							Cancelar
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={() => deletingId && handleConfirmDelete(deletingId)}
+							disabled={deleteTemplateMutation.isPending}
+							className="uppercase font-barlow font-semibold tracking-[3px] rounded-none"
+						>
+							{deleteTemplateMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		</>
 	);
 }
