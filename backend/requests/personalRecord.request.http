@@ -1,0 +1,88 @@
+@baseUrl = http://localhost:3000/api
+### Login
+### POST /users/login - Admin (capturar token)
+# @name adminToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+###
+#=========================================
+# PERSONAL RECORD ROUTES
+#=========================================
+
+### POST /personal-records - Crear PR (reps)
+POST {{baseUrl}}/personal-records HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"exerciseId":"916135f4-4e11-43df-831e-5715f86879ad",
+	"maxReps":13
+}
+
+### POST /personal-records - Crear PR (duration)
+POST {{baseUrl}}/personal-records HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"exerciseId":"07bd7be2-315c-48e2-b4b2-210161d79f2f",
+	"maxDurationSeconds":20
+}
+
+### POST /personal-records - Crear PR (weight)
+POST {{baseUrl}}/personal-records HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"exerciseId":"f4d965c4-6b02-4917-89bc-b63cde23fa03",
+	"maxWeight":40
+}
+
+### POST /personal-records - Mejorar un PR existente
+POST {{baseUrl}}/personal-records HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"exerciseId":"916135f4-4e11-43df-831e-5715f86879ad",
+	"maxReps":15
+}
+
+### GET /personal-records/exercise/:exerciseId - Obtener PRs de un ejercicio específico
+@exerciseId =916135f4-4e11-43df-831e-5715f86879ad
+GET {{baseUrl}}/personal-records/exercise/{{exerciseId}} HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+
+### GET /personal-records - Listar Todos los PRs del usuario
+GET {{baseUrl}}/personal-records HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+
+### GET /personal-records - Obtener PRs de todos los ejercicios (con filtros)
+GET {{baseUrl}}/personal-records?muscleGroup=espalda&difficulty=beginner&page=1&limit=5 HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+
+### GET /personal-records/stats - Obtener estadísticas de PRs
+GET {{baseUrl}}/personal-records/stats HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+
+### PATH /personal-records/:prID - actualizar PR manualmente
+@prID =9c392edc-92f7-474d-a409-239c5d6ab0a0
+PATCH {{baseUrl}}/personal-records/{{prID}} HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"maxReps":16
+}
+
+### DELETE /personal-records/:prID - Eliminar PR
+DELETE {{baseUrl}}/personal-records/{{prID}} HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+

@@ -21,7 +21,7 @@ const extractId = (params: Record<string, string | undefined>): string => {
 	const { id } = params;
 
 	if (!id) {
-		throw createAppError('User ID is required', 400);
+		throw createAppError('User ID not found in request', 400);
 	}
 
 	return id;

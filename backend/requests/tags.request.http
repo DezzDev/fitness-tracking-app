@@ -1,0 +1,32 @@
+
+@baseUrl = http://localhost:4000/api
+### Login
+### POST /users/login - Admin (capturar token)
+# @name adminToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+###
+#=========================================
+# TAG ROUTES
+#=========================================
+
+### POST /tags - Crear tag (admin)
+POST {{baseUrl}}/tags HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"name": "test"
+}
+
+### GET /tags
+GET {{baseUrl}}/tags HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+Accept: application/json
+

@@ -1,17 +1,13 @@
 // src/types/index.ts
 
-// Re-export types common
 export type {ApiResponse} from './common/common.types';
 export {NodeEnv, LogLevel} from './common/common.types';
 
-// Re-export types error
 export type {AppError, ErrorCode} from './common/error.types';
 export { ErrorCodes } from './common/error.types';
 
-// Re-export types database
 export type {DatabaseConfig, QueryResult, TransactionFn} from './common/database.types';
 
-// Re-export types entities
 export type {
 	User, 
 	UserCreateData, 
@@ -19,17 +15,65 @@ export type {
 	UserRow, 
 	UserUpdateData
 } from './entities/user.types';
-export type{
-	Workout, 
-	WorkoutWithExercises, 
-	WorkoutExercise, 
-	WorkoutExerciseSet, 
-	WorkoutExerciseSetCreateData, 
-	WorkoutExerciseCreateData, 
-	WorkoutCreateData, 
-	WorkoutUpdateData, 
-	WorkoutRow, 
-	WorkoutExerciseRow, 
-	WorkoutExerciseSetRow,
-	WorkoutFilters
-} from './entities/workout.types';
+
+export type {
+	Exercise,
+	ExerciseWithTags,
+	Tag,
+	ExerciseDifficulty,
+	ExerciseType,
+	ExerciseCreateData,
+	ExerciseUpdateData,
+	ExerciseRow,
+	TagRow,
+	ExerciseTagRow,
+	ExerciseFilters,
+	ExerciseStats,
+} from './entities/exercise.types';
+
+export type {
+	PersonalRecord,
+	PersonalRecordWithExercise,
+	PersonalRecordCreateData,
+	PersonalRecordUpdateData,
+	PersonalRecordRow,
+	PersonalRecordWithExerciseRow,
+	PersonalRecordFilters,
+	PersonalRecordStats
+} from './entities/personalRecord.type';
+
+export type {
+	WorkoutTemplate,
+	WorkoutTemplateExercise,
+	WorkoutTemplateWithExercises,
+	WorkoutTemplateCreateData,
+	WorkoutTemplateUpdateData,
+	WorkoutTemplateRow,
+	WorkoutTemplateExerciseRow,
+	WorkoutTemplateExerciseCreateData,
+	WorkoutTemplateFilters,
+	TemplateUsageStats,
+	WorkoutTemplateSet,
+	WorkoutTemplateSetRow,
+	WorkoutTemplateSetCreateData
+} from './entities/workoutTemplate.types';
+
+export type {
+	WorkoutSession,
+	WorkoutSessionExercise,
+	WorkoutSessionWithExercises,
+	WorkoutSessionCreateData,
+	WorkoutSessionUpdateData,
+	WorkoutSessionRow,
+	WorkoutSessionExerciseRow,
+	WorkoutSessionExerciseCreateData,
+	WorkoutSessionSet,
+	WorkoutSessionSetRow,
+	WorkoutSessionSetCrateData,
+	WorkoutSessionFilters,
+	WorkoutSessionStats,
+	WorkoutSessionWithTemplateNameRow,
+	WorkoutSessionWithTemplateName,
+	WorkoutSessionWithMetrics,
+	WorkoutSessionWithMetricsRow
+} from './entities/workoutSession.type';

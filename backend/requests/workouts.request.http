@@ -1,0 +1,123 @@
+@baseUrl = http://localhost:3000/api
+
+# Variables de tokens capturados automáticamente
+# Ejecuta primero los logins en user.request.http para obtener estos tokens
+@workoutId = 4f6a8530-ec10-421d-b188-ff1bab04f807
+
+# ============================================
+# LOGIN ROUTES
+# ============================================
+### POST /users/login - Usuario regular (capturar token)
+# @name userToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+# ============================================
+# WORKOUT ROUTES
+# ============================================
+
+### POST /workouts
+# create workout
+POST {{baseUrl}}/workouts HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "pecho",
+	"notes": "Test Workout",
+	"exercises": [
+		{
+			"exerciseId": "658805c3-58d9-4a85-befb-fe373d1495bd",
+			"orderIndex": 0,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10,
+					"durationSeconds": 30,
+					"restSeconds": 30,
+					"weight": 100,
+					"notes": "Test Set"
+				},
+				{
+					"setNumber": 2,
+					"reps": 10,
+					"durationSeconds": 30,
+					"restSeconds": 30,
+					"weight": 100,
+					"notes": "Test Set"
+				}
+			]
+		},
+		{
+			"exerciseId": "456006d4-edb5-4c81-a065-c9fec1a77303",
+			"orderIndex": 1,
+			"sets": [
+				{
+					"setNumber": 1,
+					"reps": 10,
+					"restSeconds": 30,
+					"notes": "Test Set"
+				},
+				{
+					"setNumber": 2,
+					"reps": 10,
+					"restSeconds": 30,
+					"notes": "Test Set"
+				}
+			]
+		}
+	]
+}
+
+### Listar workouts del usuario
+GET {{baseUrl}}/workouts HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+#### Con paginación
+GET {{baseUrl}}/workouts?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+
+### Con filtros de fecha
+GET {{baseUrl}}/workouts?startDate=2025-01-01T00:00:00Z&endDate=2025-12-31T23:59:59Z HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+### Con búsqueda
+GET {{baseUrl}}/workouts?search=pecho HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+### Get workout/:id
+# get workout by id
+GET {{baseUrl}}/workouts/{{workoutId}} HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+### PATCH /workouts/:id
+PATCH {{baseUrl}}/workouts/{{workoutId}} HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"title": "pecho actualizado"
+}	
+
+### DELETE /workouts/:id
+DELETE {{baseUrl}}/workouts/{{workoutId}} HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+
+### GET /workouts/stats
+GET {{baseUrl}}/workouts/stats HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+
+

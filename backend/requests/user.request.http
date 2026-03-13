@@ -1,0 +1,99 @@
+
+@baseUrl = http://localhost:4000/api
+
+# ==========================================
+# PUBLIC ROUTES (No requieren autenticación)
+# ==========================================
+
+### Health Check
+# check server status
+GET http://localhost:4000/health
+
+### POST /users/register
+# registrar user
+
+POST {{baseUrl}}/users/register HTTP/1.1
+content-type: application/json
+
+{
+	"email": "alejandro7@email.com",
+	"password": "Zapata38",
+  "name": "alejandro",
+	"age": 15,
+	"acceptTerms": true
+}
+
+### POST /users/register
+# registrar user admin
+
+POST {{baseUrl}}/users/register HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38",
+  "name": "daniel",
+	"age": 31,
+	"acceptTerms": true,
+	"role": "admin"
+}
+
+### POST /users/login - Usuario regular (capturar token)
+# @name userToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "alejandro7@email.com",
+	"password": "Zapata39"
+}
+
+### POST /users/login - Admin (capturar token)
+# @name adminToken
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+	"email": "daniel@email.com",
+	"password": "Zapata38"
+}
+
+# ==========================================
+#  PROTECTED ROUTES (Usuario autenticado)
+# ==========================================
+
+### GET /users/me
+GET {{baseUrl}}/users/me HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+Accept: application/json
+
+
+
+### PATCH /users/me/password
+# Cambiar contraseña del usuario autenticado
+PATCH {{baseUrl}}/users/me/password HTTP/1.1
+Authorization: Bearer {{userToken.response.body.data.token}}
+content-type: application/json
+
+{
+	"oldPassword": "Zapata39",
+	"newPassword": "Zapata39"
+}
+
+
+
+# // ============================================
+# // ADMIN ROUTES
+# // ============================================
+
+### list users (requiere adminToken)
+GET {{baseUrl}}/users?page=1&limit=10 HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+Accept: application/json
+
+### DELETE /users/hardDelete:id
+# hard delete user by id
+DELETE {{baseUrl}}/users/hardDelete/394db242-5e3c-48db-8d0b-6762f0a3dce5 HTTP/1.1
+Authorization: Bearer {{adminToken.response.body.data.token}}
+Accept: application/json
+

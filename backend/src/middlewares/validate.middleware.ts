@@ -134,7 +134,7 @@ export const validateQuery = (schema: ZodType, options: ValidationOptions = {}) 
 	validate(schema, 'query', options);
 
 // ============================================
-// MIDDLEWARE: Multi-validación (Body + Query + Params)
+// MIDDLEWARE: Multi-validación (Body + Query + Params), no implementada correctamente 
 // ============================================
 
 interface MultiValidateSchemas {

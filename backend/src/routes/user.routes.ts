@@ -61,6 +61,19 @@ router.get(
 );
 
 /**
+ * PATCH /users/:id
+ * Actualizar usuario 
+ * Para admins y si el usuario es el propio
+ */
+router.patch(
+	'/:id',
+	requireAuth,
+	validateParams(UserIdSchema),
+	validateBody(UpdateUserSchema),
+	userController.updateUser
+);
+
+/**
  * PATCH /users/me/password
  * Cambiar contraseña del usuario autenticado
  */
@@ -97,18 +110,6 @@ router.get(
 	requireAdmin,
 	validateParams(UserIdSchema),
 	userController.getUser
-);
-
-/**
- * PATCH /users/:id
- * Actualizar usuario
- */
-router.patch(
-	'/:id',
-	requireAuth,
-	validateParams(UserIdSchema),
-	validateBody(UpdateUserSchema),
-	userController.updateUser
 );
 
 /**
