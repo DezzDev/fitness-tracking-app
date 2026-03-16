@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { format, isToday } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Dumbbell, ArrowRight } from 'lucide-react';
+import { Dumbbell } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -95,7 +95,7 @@ export default function SessionsList() {
 							<Separator className="mb-4" />
 
 							{/* Sesiones del mes */}
-							<div className="space-y-3">
+							<div className="grid gap-4 sm:grid-cols-2">
 								{monthSessions.map((session) => {
 									const sessionDate = new Date(session.sessionDate);
 									const isTodaySession = isToday(sessionDate);
@@ -140,9 +140,9 @@ export default function SessionsList() {
 															</div>
 														</div>
 
-														{/* Right side - Duration and arrow */}
+														{/* Right side - Duration */}
 														<div className="flex flex-col items-end gap-2 shrink-0">
-															<ArrowRight className="h-5 w-5 text-muted-foreground" />
+															
 															{session.durationMinutes && (
 																<div className="font-bebas text-base text-muted-foreground leading-none">
 																	{session.durationMinutes} MIN

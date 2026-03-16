@@ -142,7 +142,7 @@ function DashboardPage() {
 					{/* Bottom CTA */}
 					<div className="p-8">
 						<button
-							onClick={() => navigate('/workouts?tab=templates')}
+							onClick={() => navigate('/workouts')}
 							className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100"
 						>
 							ELEGIR PLANTILLA
