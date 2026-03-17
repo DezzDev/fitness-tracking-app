@@ -42,7 +42,7 @@ function DashboardLayout() {
 	];
 
 	return (
-		<div className="h-screen flex flex-col bg-background text-foreground">
+		<div className="flex flex-col flex-1 bg-background text-foreground min-h-screen">
 			{/* Header */}
 			<header className="bg-(--surface) border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-opacity-90">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,7 +165,7 @@ function DashboardLayout() {
 					)}
 
 					{/* Main Content */}
-					<main className="flex-1 min-w-0 flex min-h-0 max-w-4xl">
+					<main className="flex flex-1 min-w-0 min-h-0 max-w-4xl">
 						<Outlet />
 					</main>
 				</div>

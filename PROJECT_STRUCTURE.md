@@ -1,6 +1,6 @@
 # Project Structure - Fitness Tracker App
 
-```
+``` bash
 fitness-tracker-app/
 ├── backend/                      # Backend (Node.js + Express + TypeScript)
 │   ├── src/
@@ -201,7 +201,7 @@ fitness-tracker-app/
 
 ### Backend (Layered Architecture)
 
-```
+``` bash
 Request → Routes → Controllers → Services → Repositories → Database
                 ↓              ↓           ↓            ↓
             Middlewares    Validation  Business     Data Access
@@ -218,7 +218,7 @@ Request → Routes → Controllers → Services → Repositories → Database
 
 ### Frontend (Feature-Based Architecture)
 
-```
+``` bash
 src/
 ├── api/          # API communication layer
 ├── components/  # Shared UI components

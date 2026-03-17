@@ -1,11 +1,15 @@
 import type { WorkoutSessionWithExercises, EditableSet } from "@/types";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 interface CompletionScreenProps {
 	session: WorkoutSessionWithExercises;
 	completedSets: EditableSet[][] | null;
 	startTime: Date;
 	onReturn: () => void;
+	createdSessionId?: string;
+	isSaving?: boolean;
 }
 
 export default function CompletionScreen({
@@ -13,7 +17,10 @@ export default function CompletionScreen({
 	completedSets,
 	startTime,
 	onReturn,
+	createdSessionId,
+	isSaving = false,
 }: CompletionScreenProps) {
+	const navigate = useNavigate();
 	const [step, setStep] = useState(0);
 
 	useEffect(() => {
@@ -62,7 +69,7 @@ export default function CompletionScreen({
 	const today = new Date();
 
 	return (
-		<div className="flex flex-col h-full justify-between px-8 py-10 bg-black">
+		<div className="flex flex-col h-full justify-between px-8 py-10">
 			{/* Title */}
 			<div
 				className="transition-all duration-500 ease-out"
@@ -127,8 +134,19 @@ export default function CompletionScreen({
 					transform: step >= 4 ? "none" : "translateY(10px)",
 				}}
 			>
-				<button className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors">
-					VER DETALLE COMPLETO
+				<button 
+					onClick={() => createdSessionId && navigate(`/workouts/sessions/${createdSessionId}`)}
+					disabled={isSaving || !createdSessionId}
+					className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+				>
+					{isSaving ? (
+						<>
+							<Loader2 className="h-4 w-4 animate-spin" />
+							GUARDANDO...
+						</>
+					) : (
+						'VER DETALLE COMPLETO'
+					)}
 				</button>
 				<button
 					onClick={onReturn}

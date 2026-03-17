@@ -41,7 +41,7 @@ export default function WorkoutsPage() {
 						value="sessions"
 						className="flex-1 uppercase font-barlow font-semibold tracking-[3px] text-sm rounded-none focus:border-b-primary "
 					>
-						History
+						Historial
 					</TabsTrigger>
 
 				</TabsList>

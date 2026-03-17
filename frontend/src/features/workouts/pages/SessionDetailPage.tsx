@@ -48,8 +48,8 @@ export default function SessionDetailPage() {
 				<p className="text-muted-foreground mb-4">
 					Sesión no encontrada
 				</p>
-				<Button onClick={() => navigate('/workouts')}>
-					Volver a Workouts
+				<Button onClick={() => navigate('/workouts?tab=sessions')}>
+					Volver al historial
 				</Button>
 			</Card>
 		);
@@ -81,7 +81,7 @@ export default function SessionDetailPage() {
 					className="font-barlow uppercase tracking-[2px] text-xs"
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />
-					Workouts
+					Historial
 				</Button>
 
 				{/* Header */}

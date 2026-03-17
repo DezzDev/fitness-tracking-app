@@ -113,7 +113,7 @@ function DashboardPage() {
 			const today = new Date();
 			return (
 				<div
-					className="flex flex-col h-full w-full justify-between transition-all duration-500 ease-out"
+					className="flex flex-col h-full w-full min-h-screen justify-between transition-all duration-500 ease-out"
 				>
 					{/* Top section */}
 					<div className="flex-1 flex flex-col px-8 pt-10">
@@ -178,6 +178,8 @@ function DashboardPage() {
 						completedSets={completedSets}
 						startTime={startTime}
 						onReturn={handleReturn}
+						createdSessionId={createSessionMutation.data?.id}
+						isSaving={createSessionMutation.isPending}
 					/>
 				);
 			case "entry-done":
@@ -194,11 +196,11 @@ function DashboardPage() {
 	};
 
 	return (
-		<div className="overflow-hidden font-barlow flex flex-1">
-			<div className="flex-1 overflow-hidden relative bg-background">
+		
+			<div className="flex-1 overflow-hidden relative bg-background font-barlow">
 				{renderDashboard()}
 			</div>
-		</div>
+		
 	);
 }
 

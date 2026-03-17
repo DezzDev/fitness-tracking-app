@@ -130,6 +130,8 @@ export default function StartSessionPage() {
 				completedSets={completedSets}
 				startTime={startTime}
 				onReturn={handleReturn}
+				createdSessionId={createSessionMutation.data?.id}
+				isSaving={createSessionMutation.isPending}
 			/>
 		);
 	}

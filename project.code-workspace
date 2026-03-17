@@ -21,6 +21,8 @@
 			"frontend": true,
 			"backend": true
 		},
-	
+		"cSpell.words": [
+			"barlow"
+		],
 	}
 }
