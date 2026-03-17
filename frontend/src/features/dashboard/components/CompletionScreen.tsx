@@ -69,7 +69,7 @@ export default function CompletionScreen({
 	const today = new Date();
 
 	return (
-		<div className="flex flex-col h-full justify-between px-8 py-10">
+		<div className="flex flex-col flex-1 h-full justify-between px-8 py-10">
 			{/* Title */}
 			<div
 				className="transition-all duration-500 ease-out"
