@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import type { User } from '@/types';
 import { authApi } from '@/api/endpoints/auth';
+import { clearWorkoutStorage } from '@/lib/workoutStorage';
 import type { AxiosError } from 'axios';
 
 interface AuthState {
@@ -98,6 +99,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 	 */
 	logout: () => {
 		authApi.logout();
+		
+		// Clear active workout sessions
+		clearWorkoutStorage();
 
 		set({
 			user: null,

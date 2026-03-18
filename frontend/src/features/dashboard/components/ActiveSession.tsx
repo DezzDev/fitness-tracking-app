@@ -8,6 +8,9 @@ interface ActiveSessionProps {
   onComplete: (editedSets: EditableSet[][]) => void;
   onCancel?: () => void;
   isCancelling?: boolean;
+  initialEditableSets?: EditableSet[][];
+  initialExerciseIndex?: number;
+  onStateChange?: (sets: EditableSet[][], idx: number) => void;
 }
 
 /** Build initial editable state from the session's pre-populated sets. */
@@ -30,10 +33,13 @@ export default function ActiveSession({
   onComplete,
   onCancel,
   isCancelling = false,
+  initialEditableSets,
+  initialExerciseIndex,
+  onStateChange,
 }: ActiveSessionProps) {
-  const [currentIdx, setCurrentIdx] = useState(0);
+  const [currentIdx, setCurrentIdx] = useState(initialExerciseIndex ?? 0);
   const [editableSets, setEditableSets] = useState<EditableSet[][]>(() =>
-    buildEditableSets(session)
+    initialEditableSets ?? buildEditableSets(session)
   );
   const [animating, setAnimating] = useState(false);
   const [slideDir, setSlideDir] = useState(0);
@@ -62,6 +68,13 @@ export default function ActiveSession({
       activeSetRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [currentIdx, editableSets]);
+
+  // Call onStateChange callback when state changes (for persistence)
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange(editableSets, currentIdx);
+    }
+  }, [editableSets, currentIdx, onStateChange]);
 
   const exercise = session.exercises[currentIdx];
   const currentSets = editableSets[currentIdx];
