@@ -269,7 +269,7 @@ export default function ActiveSession({
                 )}
               >
                 {/* Main set row */}
-                <div className="flex items-center gap-2 px-3 py-2.5">
+                <div className="flex items-center gap-2 px-3 py-2.5"> 
                   {/* Set label */}
                   <div
                     className={cn(
