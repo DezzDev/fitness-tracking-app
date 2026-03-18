@@ -155,7 +155,7 @@ export default function TemplatesList() {
 							onClick={() => handleStartSession(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-0"
+							className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-2"
 						>
 							Iniciar
 						</Button>
@@ -164,7 +164,7 @@ export default function TemplatesList() {
 							onClick={() => handleEdit(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] px-0"
+							className="uppercase font-barlow font-semibold tracking-[3px] px-2"
 						>
 							Editar
 						</Button>
@@ -173,7 +173,7 @@ export default function TemplatesList() {
 							onClick={() => handleDuplicate(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] px-0"
+							className="uppercase font-barlow font-semibold tracking-[3px] px-2"
 						>
 							Duplicar
 						</Button>
@@ -182,7 +182,7 @@ export default function TemplatesList() {
 							onClick={() => handleDeleteClick(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] text-destructive/70 hover:text-destructive px-0 ml-auto"
+							className="uppercase font-barlow font-semibold tracking-[3px] text-destructive/70 hover:text-destructive px-2 ml-auto"
 						>
 							<Trash2 className="h-4 w-4" />
 						</Button>

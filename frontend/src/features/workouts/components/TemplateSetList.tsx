@@ -60,7 +60,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 				{fields.map((field, setIndex) => (
 					<div
 						key={field.id}
-						className="p-4 border rounded-lg bg-[var(--surface-elevated)] space-y-3"
+						className="p-4 border rounded-lg bg-popover space-y-3"
 					>
 						{/* Header de la serie */}
 						<div className="flex items-center justify-between">

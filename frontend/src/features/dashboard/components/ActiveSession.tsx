@@ -180,7 +180,7 @@ export default function ActiveSession({
             <button
               onClick={() => setShowCancelConfirm(true)}
               className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-              aria-label="Cancelar sesion"
+              aria-label="Cancelar sesión"
             >
               <X className="h-5 w-5" />
             </button>
@@ -194,10 +194,10 @@ export default function ActiveSession({
           <div className="mx-8 w-full max-w-sm border border-border bg-background p-8 space-y-6">
             <div>
               <div className="font-bebas text-2xl tracking-[2px] text-foreground mb-2">
-                CANCELAR SESION
+                CANCELAR SESIÓN
               </div>
               <p className="font-barlow text-sm text-muted-foreground">
-                Se perdera todo el progreso de esta sesion. Esta accion no se
+                Se perderá todo el progreso de esta sesión. Esta acción no se
                 puede deshacer.
               </p>
             </div>
@@ -210,7 +210,7 @@ export default function ActiveSession({
                 disabled={isCancelling}
                 className="w-full bg-destructive border-none text-destructive-foreground font-bebas text-[18px] tracking-[3px] py-4 cursor-pointer transition-colors hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isCancelling ? 'CANCELANDO...' : 'CANCELAR SESION'}
+                {isCancelling ? 'CANCELANDO...' : 'CANCELAR SESIÓN'}
               </button>
               <button
                 onClick={() => setShowCancelConfirm(false)}
@@ -284,17 +284,7 @@ export default function ActiveSession({
 
                   {/* Editable fields */}
                   <div className="flex items-center gap-2 flex-1 min-w-0 flex-wrap">
-                    {/* Weight */}
-                    <SetInput
-                      label="KG"
-                      value={set.weight}
-                      onChange={(v) =>
-                        updateSetField(currentIdx, i, 'weight', parseNumericInput(v, false))
-                      }
-                      step="0.5"
-                      integer={false}
-                    />
-
+                  
                     {/* Reps */}
                     <SetInput
                       label="REPS"
@@ -303,6 +293,17 @@ export default function ActiveSession({
                         updateSetField(currentIdx, i, 'reps', parseNumericInput(v, true))
                       }
                       integer
+                    />
+
+                     {/* Weight */}
+                    <SetInput
+                      label="KG"
+                      value={set.weight}
+                      onChange={(v) =>
+                        updateSetField(currentIdx, i, 'weight', parseNumericInput(v, false))
+                      }
+                      step="0.5"
+                      integer={false}
                     />
 
                     {/* Duration */}

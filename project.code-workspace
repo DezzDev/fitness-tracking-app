@@ -1,28 +1,29 @@
 {
-	"folders": [
-		{
-			"name": "frontend",
-			"path": "frontend"
-		},
-		{
-			"name": "backend",
-			"path": "backend"
-		},
-		{
-			"name": "root",
-			"path": "."
-		}
-	],
-	"settings": {
-		"files.exclude": {
-			"**/node_modules": true,
-			"**/dist": true,
-			"**/build": true,
-			"frontend": true,
-			"backend": true
-		},
-		"cSpell.words": [
-			"barlow"
-		],
-	}
+  "folders": [
+    {
+      "name": "frontend",
+      "path": "frontend"
+    },
+    {
+      "name": "backend",
+      "path": "backend"
+    },
+    {
+      "name": "root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "frontend": true,
+      "backend": true
+    },
+    "cSpell.words": [
+      "barlow",
+      "favs"
+    ],
+  }
 }

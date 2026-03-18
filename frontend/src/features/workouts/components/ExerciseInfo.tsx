@@ -174,7 +174,7 @@ export default function ExerciseInfo({
 				{exercise.muscleGroup && (
 					<Badge
 						variant="secondary"
-						className="text-xs font-medium bg-[var(--surface-elevated)] text-muted-foreground"
+						className="text-xs font-medium bg-popover text-muted-foreground"
 					>
 						🎯 {capitalize(exercise.muscleGroup)}
 					</Badge>
