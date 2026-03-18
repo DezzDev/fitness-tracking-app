@@ -152,7 +152,7 @@ export default function CompletionScreen({
 					onClick={onReturn}
 					className="w-full bg-primary hover:bg-primary/90 border-none text-black font-bebas text-xl tracking-[4px] py-[18px] cursor-pointer transition-colors"
 				>
-					VOLVER AL DASHBOARD
+					VOLVER
 				</button>
 			</div>
 		</div>

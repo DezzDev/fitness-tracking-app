@@ -1,20 +1,15 @@
 import type { WorkoutTemplate, WorkoutTemplateExercise } from "@/types";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface EntryScreenProps {
 	template: WorkoutTemplate;
-	onStart: () => void;
 	completed: boolean;
-	isCreatingSession?: boolean;
 }
 
 export default function EntryScreen({
 	template,
-	onStart,
 	completed,
-	isCreatingSession = false,
 }: EntryScreenProps) {
 	const [visible, setVisible] = useState(false);
 	const navigate = useNavigate();
@@ -88,18 +83,10 @@ export default function EntryScreen({
 				{!completed ? (
 					<>
 						<button
-							onClick={onStart}
-							disabled={isCreatingSession}
-							className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+							onClick={() => navigate(`/workouts/sessions/start?templateId=${template.id}`)}
+							className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100"
 						>
-							{isCreatingSession ? (
-								<span className="flex items-center justify-center gap-2">
-									<Loader2 className="h-5 w-5 animate-spin" />
-									INICIANDO...
-								</span>
-							) : (
-								"INICIAR SESIÓN"
-							)}
+							INICIAR SESIÓN
 						</button>
 						<button
 							onClick={() => navigate('/workouts?tab=templates')}

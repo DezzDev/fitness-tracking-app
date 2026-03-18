@@ -77,7 +77,7 @@ export default function StartSessionPage() {
 	};
 
 	const handleReturn = () => {
-		navigate('/workouts');
+		navigate(-1);
 	};
 
 	// Loading template
