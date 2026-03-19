@@ -102,7 +102,7 @@ export default function EditTemplatePage() {
 			<Button
 				variant="ghost"
 				size="sm"
-				onClick={() => navigate(`/workouts/templates/${templateId}`)}
+				onClick={() => navigate(-1)}
 				className="font-barlow uppercase tracking-[2px] text-xs"
 			>
 				<ArrowLeft className="h-4 w-4 mr-2" />

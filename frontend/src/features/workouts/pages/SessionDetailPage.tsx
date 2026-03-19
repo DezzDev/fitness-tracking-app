@@ -28,7 +28,7 @@ export default function SessionDetailPage() {
 	const handleDelete = () => {
 		deleteSession(sessionId, {
 			onSuccess: () => {
-				navigate('/workouts');
+				navigate(-1);
 			}
 		});
 	};
@@ -49,7 +49,7 @@ export default function SessionDetailPage() {
 					Sesión no encontrada
 				</p>
 				<Button onClick={() => navigate('/workouts?tab=sessions')}>
-					Volver al historial
+					Ir a historial
 				</Button>
 			</Card>
 		);
@@ -77,11 +77,11 @@ export default function SessionDetailPage() {
 				<Button
 					variant="ghost"
 					size="sm"
-					onClick={() => navigate('/workouts?tab=sessions')}
+					onClick={() => navigate(-1)}
 					className="font-barlow uppercase tracking-[2px] text-xs"
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />
-					Historial
+					Volver
 				</Button>
 
 

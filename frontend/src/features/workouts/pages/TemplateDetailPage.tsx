@@ -53,7 +53,7 @@ export default function TemplateDetailPage() {
 
 	const handleConfirmDelete = () => {
 		deleteTemplateMutation.mutate(templateId, {
-			onSuccess: () => navigate('/workouts?tab=templates'),
+			onSuccess: () => navigate('/workouts'),
 			onSettled: () => setShowDeleteModal(false),
 		});
 	};
@@ -78,7 +78,7 @@ export default function TemplateDetailPage() {
 					Plantilla no encontrada
 				</p>
 				<Button onClick={() => navigate('/workouts')}>
-					Volver a Workouts
+					Ir a entrenamientos
 				</Button>
 			</Card>
 		);
@@ -97,11 +97,11 @@ export default function TemplateDetailPage() {
 				<Button
 					variant="ghost"
 					size="sm"
-					onClick={() => navigate('/workouts')}
+					onClick={() => navigate(-1)}
 					className="font-barlow uppercase tracking-[2px] text-xs"
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />
-					Workouts
+					Volver
 				</Button>
 
 				{/* Header */}
