@@ -61,6 +61,22 @@ export function useWorkoutPersistence() {
     }, 500); // 500ms debounce
   }, []);
 
+  const saveStateNow = useCallback((state: PersistedWorkoutState) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    try {
+      const payload = {
+        ...state,
+        lastUpdated: new Date().toISOString(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (err) {
+      console.error('[useWorkoutPersistence] Error saving state immediately:', err);
+    }
+  }, []);
+
   const clearState = useCallback(() => {
     // Clear immediately (no debounce)
     if (saveTimeoutRef.current) {
@@ -82,6 +98,7 @@ export function useWorkoutPersistence() {
   return {
     loadPersistedState,
     saveState,
+    saveStateNow,
     clearState,
     hasPersistedState,
   };

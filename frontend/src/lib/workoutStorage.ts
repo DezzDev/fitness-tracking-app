@@ -20,6 +20,8 @@ export function validatePersistedState(data: any): data is PersistedWorkoutState
     data.localSession &&
     Array.isArray(data.editableSets) &&
     typeof data.currentExerciseIndex === 'number' &&
+    typeof data.accumulatedElapsedMs === 'number' &&
+    typeof data.lastResumedAt === 'string' &&
     typeof data.startTime === 'string' &&
     typeof data.lastUpdated === 'string' &&
     data.source === 'start'

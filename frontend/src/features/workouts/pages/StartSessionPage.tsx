@@ -1,5 +1,5 @@
 // src/features/workouts/pages/StartSessionPage.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
@@ -29,7 +29,12 @@ export default function StartSessionPage() {
 	const [localSession, setLocalSession] = useState<WorkoutSessionWithExercises | null>(null);
 	const [completedSets, setCompletedSets] = useState<EditableSet[][] | null>(null);
 	const [startTime, setStartTime] = useState<Date>(new Date());
+	const [accumulatedElapsedMs, setAccumulatedElapsedMs] = useState(0);
+	const [lastResumedAt, setLastResumedAt] = useState<Date>(new Date());
 	const [conflictData, setConflictData] = useState<ConflictData | null>(null);
+	const latestEditableSetsRef = useRef<EditableSet[][] | null>(null);
+	const latestExerciseIndexRef = useRef(0);
+	const isFinishingRef = useRef(false);
 
 	const createSessionMutation = useCreateSession();
 	const persistence = useWorkoutPersistence();
@@ -47,6 +52,10 @@ export default function StartSessionPage() {
 					// Same template: restore state
 					setLocalSession(persisted.localSession);
 					setStartTime(new Date(persisted.startTime));
+					latestEditableSetsRef.current = persisted.editableSets;
+					latestExerciseIndexRef.current = persisted.currentExerciseIndex;
+					setAccumulatedElapsedMs(persisted.accumulatedElapsedMs);
+					setLastResumedAt(new Date());
 					setScreen('restoring');
 					setTimeout(() => setScreen('active'), 1000);
 					return;
@@ -61,6 +70,11 @@ export default function StartSessionPage() {
 			// No persisted state: create new session
 			const session = templateToSession(template);
 			setLocalSession(session);
+			latestEditableSetsRef.current = null;
+			latestExerciseIndexRef.current = 0;
+			setStartTime(new Date());
+			setAccumulatedElapsedMs(0);
+			setLastResumedAt(new Date());
 			setScreen('active');
 		}
 	}, [template, screen, isLoading, persistence]);
@@ -69,15 +83,70 @@ export default function StartSessionPage() {
 		setScreen('error');
 	}
 
+	useEffect(() => {
+		if (screen !== 'active' || !localSession || !template) {
+			return;
+		}
+
+		const persistNow = () => {
+			if (isFinishingRef.current) {
+				return;
+			}
+
+			const now = Date.now();
+			const elapsedSinceResume = Math.max(0, now - lastResumedAt.getTime());
+			const frozenElapsed = accumulatedElapsedMs + elapsedSinceResume;
+
+			persistence.saveStateNow({
+				version: 1,
+				templateId: localSession.templateId ?? template.id,
+				localSession,
+				editableSets: latestEditableSetsRef.current ?? [],
+				currentExerciseIndex: latestExerciseIndexRef.current,
+				accumulatedElapsedMs: frozenElapsed,
+				lastResumedAt: new Date(now).toISOString(),
+				startTime: startTime.toISOString(),
+				lastUpdated: new Date(now).toISOString(),
+				source: 'start',
+			});
+		};
+
+		const handlePageHide = () => {
+			persistNow();
+		};
+
+		window.addEventListener('pagehide', handlePageHide);
+		window.addEventListener('beforeunload', handlePageHide);
+
+		return () => {
+			window.removeEventListener('pagehide', handlePageHide);
+			window.removeEventListener('beforeunload', handlePageHide);
+			persistNow();
+		};
+	}, [
+		screen,
+		localSession,
+		template,
+		accumulatedElapsedMs,
+		lastResumedAt,
+		startTime,
+		persistence,
+	]);
+
 	// Callback to persist state changes
 	const handleStateChange = (sets: EditableSet[][], idx: number) => {
+		latestEditableSetsRef.current = sets;
+		latestExerciseIndexRef.current = idx;
+
 		if (localSession && template) {
 			persistence.saveState({
 				version: 1,
-				templateId: template.id,
+				templateId: localSession.templateId ?? template.id,
 				localSession,
 				editableSets: sets,
 				currentExerciseIndex: idx,
+				accumulatedElapsedMs,
+				lastResumedAt: lastResumedAt.toISOString(),
 				startTime: startTime.toISOString(),
 				lastUpdated: new Date().toISOString(),
 				source: 'start',
@@ -86,12 +155,22 @@ export default function StartSessionPage() {
 	};
 
 	const handleCancel = () => {
+		isFinishingRef.current = true;
 		// Clear persisted state and navigate back
 		persistence.clearState();
 		navigate('/workouts');
 	};
 
 	const handleComplete = (sets: EditableSet[][]) => {
+		isFinishingRef.current = true;
+		latestEditableSetsRef.current = sets;
+
+		const now = Date.now();
+		const elapsedSinceResume = Math.max(0, now - lastResumedAt.getTime());
+		const totalElapsedMs = accumulatedElapsedMs + elapsedSinceResume;
+		const computedStartTime = new Date(now - totalElapsedMs);
+		setStartTime(computedStartTime);
+
 		// Clear persisted state immediately
 		persistence.clearState();
 		
@@ -100,9 +179,7 @@ export default function StartSessionPage() {
 
 		// NOW create the session in the database with actual values
 		if (localSession && template && !createSessionMutation.isPending) {
-			const durationMinutes = Math.round(
-				(Date.now() - startTime.getTime()) / 60000
-			);
+			const durationMinutes = Math.round(totalElapsedMs / 60000);
 
 			createSessionMutation.mutate({
 				templateId: localSession.templateId ?? template.id,
@@ -175,6 +252,10 @@ export default function StartSessionPage() {
 							onClick={() => {
 								setLocalSession(conflictData.persisted.localSession);
 								setStartTime(new Date(conflictData.persisted.startTime));
+								latestEditableSetsRef.current = conflictData.persisted.editableSets;
+								latestExerciseIndexRef.current = conflictData.persisted.currentExerciseIndex;
+								setAccumulatedElapsedMs(conflictData.persisted.accumulatedElapsedMs);
+								setLastResumedAt(new Date());
 								setConflictData(null);
 								setScreen('restoring');
 								navigate(`/workouts/sessions/start?templateId=${conflictData.persisted.templateId}`, { replace: true });
@@ -189,7 +270,11 @@ export default function StartSessionPage() {
 								persistence.clearState();
 								const session = templateToSession(template!);
 								setLocalSession(session);
+								latestEditableSetsRef.current = null;
+								latestExerciseIndexRef.current = 0;
 								setStartTime(new Date());
+								setAccumulatedElapsedMs(0);
+								setLastResumedAt(new Date());
 								setConflictData(null);
 								setScreen('active');
 							}}

@@ -139,14 +139,7 @@ Key libraries: React Query v5 (server state), Zustand v5 (client state), React H
 
 ## Testing
 
-- Tests live in `backend/src/__tests__/` organized as `unit/`, `integration/`, `e2e/`
-- Test files: `*.test.ts`
-- Framework: Jest 30 with ts-jest, 10s timeout, verbose output
-- Mocking: `jest-mock-extended`; unit tests use `jest.mock()` with `jest.Mocked<typeof ...>`
-- Test utilities: `src/test-utils/` (setup.ts, helpers.ts, fixtures.ts)
-- Setup sets `NODE_ENV=test`, `JWT_SECRET=test-secret`, `LOG_LEVEL=error`
-- Global teardown cleans mock users (`email LIKE 'mocked-%'`) from the database
-- Imports: Use `@jest/globals` for `describe`, `it`, `expect`, `jest`, `beforeEach`
+no hagas testing, aun no esta implementado
 
 ### ESLint
 
