@@ -51,7 +51,7 @@ function DashboardPage() {
 		// Error state
 		if (error) {
 			return (
-				<div className="flex flex-col items-center justify-center h-screen gap-4">
+				<div className="flex flex-col items-center justify-center gap-4">
 					<p className="text-destructive font-bebas text-xl tracking-wide">
 						ERROR AL CARGAR PLANTILLA
 					</p>
@@ -67,7 +67,7 @@ function DashboardPage() {
 			const today = new Date();
 			return (
 				<div
-					className="flex flex-col h-full w-full min-h-screen justify-between transition-all duration-500 ease-out"
+					className="flex flex-col h-full w-full justify-between transition-all duration-500 ease-out"
 				>
 					{/* Top section */}
 					<div className="flex-1 flex flex-col px-8 pt-10">
@@ -76,7 +76,7 @@ function DashboardPage() {
 						</div>
 
 						<div className="font-bebas text-[clamp(56px,12vw,88px)] leading-[0.9] text-foreground tracking-wide mb-2">
-							SIN PLANTILLA
+							SIN ENTRENAMIENTO
 						</div>
 
 						<div className="font-barlow text-lg text-muted-foreground tracking-[3px] font-medium mb-12">
@@ -87,7 +87,7 @@ function DashboardPage() {
 							<div className="flex items-center gap-3 text-muted-foreground">
 								<Calendar className="h-5 w-5" />
 								<span className="font-barlow text-sm">
-									No hay plantilla programada para hoy
+									No hay entrenamiento programado para hoy
 								</span>
 							</div>
 						</div>
@@ -99,7 +99,7 @@ function DashboardPage() {
 							onClick={() => navigate('/workouts')}
 							className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100"
 						>
-							ELEGIR PLANTILLA
+							ELEGIR ENTRENAMIENTO
 						</button>
 					</div>
 				</div>
@@ -121,7 +121,7 @@ function DashboardPage() {
 
 	return (
 		
-			<div className="flex-1 overflow-hidden relative bg-background font-barlow">
+			<div className="flex-1 font-barlow">
 				{renderDashboard()}
 			</div>
 		

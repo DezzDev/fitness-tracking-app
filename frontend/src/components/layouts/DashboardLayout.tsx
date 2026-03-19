@@ -165,7 +165,7 @@ function DashboardLayout() {
 					)}
 
 					{/* Main Content */}
-					<main className="flex flex-1 min-w-0 min-h-0 max-w-4xl">
+					<main className="flex flex-1 max-w-4xl mx-auto">
 						<Outlet />
 					</main>
 				</div>

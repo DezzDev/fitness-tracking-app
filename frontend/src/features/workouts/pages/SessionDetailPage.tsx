@@ -35,7 +35,7 @@ export default function SessionDetailPage() {
 
 	if (isLoading) {
 		return (
-			<div className="max-w-4xl mx-auto space-y-6 w-full">
+			<div className="mx-auto space-y-6 w-full">
 				<Skeleton className='h-10 w-3/4' />
 				<Skeleton className="h-64 w-full" />
 			</div>
@@ -44,7 +44,7 @@ export default function SessionDetailPage() {
 
 	if (isError || !session) {
 		return (
-			<Card className="p-12 text-center max-w-md mx-auto w-full">
+			<Card className="p-12 text-center mx-auto w-full">
 				<p className="text-muted-foreground mb-4">
 					Sesión no encontrada
 				</p>
@@ -72,7 +72,7 @@ export default function SessionDetailPage() {
 
 	return (
 		<>
-			<div className="max-w-4xl mx-auto space-y-6 w-full">
+			<div className="px-2 md:px-6 space-y-6 w-full">
 				{/* Back Button */}
 				<Button
 					variant="ghost"
@@ -83,6 +83,7 @@ export default function SessionDetailPage() {
 					<ArrowLeft className="h-4 w-4 mr-2" />
 					Historial
 				</Button>
+
 
 				{/* Header */}
 				<div className="space-y-4">
