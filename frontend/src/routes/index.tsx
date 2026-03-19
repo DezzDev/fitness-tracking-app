@@ -25,83 +25,83 @@ import NotFoundPage from '@/pages/NotFoundPage';
 
 
 export const router = createBrowserRouter([
-	{
-		path: '/',
-		element: <RootLayout />,
-		children: [
-			{
-				index: true,
-				element: <Navigate to="/dashboard" replace />
-			},
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" replace />
+      },
 
-			// Rutas públicas
-			{
-				element: <PublicRoute />,
-				children: [
-					{
-						path: 'login',
-						element: <LoginPage />
-					},
-					{
-						path: 'register',
-						element: <RegisterPage />
-					},
-				]
-			},
+      // Rutas públicas
+      {
+        element: <PublicRoute />,
+        children: [
+          {
+            path: 'login',
+            element: <LoginPage />
+          },
+          {
+            path: 'register',
+            element: <RegisterPage />
+          },
+        ]
+      },
 
-			// Rutas protegidas
-			{
-				element: <ProtectedRoute />,
-				children: [
-					{
-						element: <DashboardLayout />,
-						children: [
-							{
-								path: 'dashboard',
-								element: <DashboardPage />
-							},
-							{
-								path: 'workouts',
-								element: <WorkoutsPage />
-							},
-							{
-								path: 'workouts/templates/new',
-								element: <CreateWorkoutPage />
-							},
-						{
-							path: 'workouts/sessions/start',
-							element: <StartSessionPage />
-						},
-						{
-							path: 'workouts/sessions/:id',
-							element: <SessionDetailPage />
-						},
-						{
-							path: 'workouts/templates/:id',
-							element: <TemplateDetailPage />
-						},
-						{
-							path: 'workouts/templates/:id/edit',
-							element: <EditTemplatePage />
-						},
-							{
-								path: 'exercises',
-								element: <ExercisesPage />
-							},
-							{
-								path: 'profile',
-								element: <ProfilePage />
-							}
-						]
-					}
-				]
-			},
+      // Rutas protegidas
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            element: <DashboardLayout />,
+            children: [
+              {
+                path: 'dashboard',
+                element: <DashboardPage />
+              },
+              {
+                path: 'workouts',
+                element: <WorkoutsPage />
+              },
+              {
+                path: 'workouts/templates/new',
+                element: <CreateWorkoutPage />
+              },
+              {
+                path: 'workouts/sessions/start',
+                element: <StartSessionPage />
+              },
+              {
+                path: 'workouts/sessions/:id',
+                element: <SessionDetailPage />
+              },
+              {
+                path: 'workouts/templates/:id',
+                element: <TemplateDetailPage />
+              },
+              {
+                path: 'workouts/templates/:id/edit',
+                element: <EditTemplatePage />
+              },
+              {
+                path: 'exercises',
+                element: <ExercisesPage />
+              },
+              {
+                path: 'profile',
+                element: <ProfilePage />
+              }
+            ]
+          }
+        ]
+      },
 
-			// Página 404
-			{
-				path: '*',
-				element: <NotFoundPage />
-			} 
-		]
-	}
+      // Página 404
+      {
+        path: '*',
+        element: <NotFoundPage />
+      }
+    ]
+  }
 ])

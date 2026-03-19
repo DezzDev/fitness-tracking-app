@@ -107,8 +107,8 @@ function DashboardLayout() {
 				</div>
 			</header>
 
-			<div className="flex flex-1 w-full min-h-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				<div className="flex flex-1 gap-8 w-full">
+			<div className="flex flex-1 gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				
 					{/* Sidebar - Desktop */}
 					<aside className="hidden lg:block w-64 shrink-0">
 						<nav className="space-y-1 bg-(--surface) rounded-lg p-3 border border-border">
@@ -168,7 +168,7 @@ function DashboardLayout() {
 					<main className="flex flex-1 max-w-4xl mx-auto">
 						<Outlet />
 					</main>
-				</div>
+				
 			</div>
 
 			
