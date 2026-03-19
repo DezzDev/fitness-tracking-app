@@ -38,6 +38,8 @@ GET {{baseUrl}}/exercises?difficulty=beginner HTTP/1.1
 
 ### GET /exercises/ - Listar ejercicios con paginación
 GET {{baseUrl}}/exercises?page=1&limit=5 HTTP/1.1
+### GET /exercises/ - Listar ejercicios con paginación y filtro
+GET {{baseUrl}}/exercises?page=1&limit=12&muscleGroup=pecho HTTP/1.1
 
 ### GET /exercises - Combinar filtros
 GET {{baseUrl}}/exercises?difficulty=intermediate&type=strength HTTP/1.1

@@ -51,7 +51,7 @@ function DashboardLayout() {
 						<div className="flex items-center gap-3">
 							<button
 								onClick={() => setSidebarOpen(!sidebarOpen)}
-								className="lg:hidden p-2 rounded-lg hover:bg-[var(--surface-elevated)] text-muted-foreground hover:text-foreground transition-colors"
+								className="lg:hidden p-2 rounded-lg hover:bg-popover text-muted-foreground hover:text-foreground transition-colors"
 							>
 								{sidebarOpen ? <LucideSidebarClose size={24} /> : <Menu size={24} />}
 							</button>
@@ -72,7 +72,7 @@ function DashboardLayout() {
 						{/*  User Menu */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<button className="flex items-center gap-3 hover:bg-[var(--surface-elevated)] rounded-lg p-2 transition-colors">
+								<button className="flex items-center gap-3 hover:bg-popover rounded-lg p-2 transition-colors">
 									<div className="text-right hidden sm:block">
 										<p className="text-sm font-medium text-foreground">
 											{user?.name}

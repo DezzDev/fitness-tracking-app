@@ -27,7 +27,7 @@ export default function ExercisesPage() {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setDebouncedSearchTerm(searchTerm);
-			setPage(1); // Resetear a página 1 cuando cambia la búsqueda
+			setPage(1); // ir a página 1 cuando cambia la búsqueda
 		}, 300);
 
 		return () => clearTimeout(timer);
@@ -72,7 +72,7 @@ export default function ExercisesPage() {
 	}, [difficulty, type, muscleGroup]);
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 flex flex-1 flex-col">
 			{/* Header */}
 			<div>
 				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">
@@ -84,7 +84,7 @@ export default function ExercisesPage() {
 			</div>
 
 			{/* Stats Bar */}
-			<ExerciseStatsBar />
+			{/* <ExerciseStatsBar /> */}
 
 			{/* Filters Bar */}
 			<ExerciseFiltersBar
@@ -117,7 +117,7 @@ export default function ExercisesPage() {
 			) : exercises.length === 0 ? (
 				<Card className="p-12 text-center">
 					<div className="max-w-sm mx-auto space-y-4">
-						<div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto">
+						<div className="w-16 h-16 bg-popover rounded-full flex items-center justify-center mx-auto">
 							<Plus className="h-8 w-8 text-muted-foreground" />
 						</div>
 						<div>
