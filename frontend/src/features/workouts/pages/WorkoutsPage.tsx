@@ -21,7 +21,7 @@ export default function WorkoutsPage() {
 			{/* Header */}
 			<div>
 				<h1 className="text-4xl font-bebas tracking-[2px] uppercase text-foreground">
-					Workouts
+					ENTRENAMIENTOS
 				</h1>
 			</div>
 
@@ -34,7 +34,7 @@ export default function WorkoutsPage() {
 						value="workouts"
 						className="flex-1 uppercase font-barlow font-semibold tracking-[3px] text-sm rounded-none"
 					>
-						Workouts
+						ENTRENAMIENTOS
 					</TabsTrigger>
 
 					<TabsTrigger
@@ -58,7 +58,7 @@ export default function WorkoutsPage() {
 								className="w-full sm:w-auto uppercase font-barlow font-semibold tracking-wide"
 							>
 								<Plus className="mr-2 h-5 w-5" />
-								Nueva Plantilla
+								Nuevo Entrenamiento
 							</Button>
 						</Link>
 					</div>
