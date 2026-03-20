@@ -101,11 +101,10 @@ export default function ExercisesPage() {
 
 			{/* Exercise Grid - Three states: Loading | Empty | Data */}
 			{isLoading ? (
-				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+				<div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
 					{[...Array(12)].map((_, i) => (
-						<Card key={i} className="p-6 space-y-3">
+						<Card key={i} className="p-6 space-y-3 border-border rounded-none py-2 md:py-6 gap-0 md:gap-4">
 							<Skeleton className="h-6 w-3/4" />
-							<Skeleton className="h-16 w-full" />
 							<div className="flex gap-2">
 								<Skeleton className="h-6 w-20" />
 								<Skeleton className="h-6 w-20" />
@@ -115,16 +114,16 @@ export default function ExercisesPage() {
 					))}
 				</div>
 			) : exercises.length === 0 ? (
-				<Card className="p-12 text-center">
+				<Card className="p-12 text-center border-border rounded-none">
 					<div className="max-w-sm mx-auto space-y-4">
 						<div className="w-16 h-16 bg-popover rounded-full flex items-center justify-center mx-auto">
 							<Plus className="h-8 w-8 text-muted-foreground" />
 						</div>
 						<div>
-							<h3 className="text-lg font-semibold text-foreground">
+							<h3 className="text-lg font-semibold text-foreground tracking-widest">
 								No se encontraron ejercicios
 							</h3>
-							<p className="text-muted-foreground mt-1">
+							<p className="text-muted-foreground mt-1 tracking-widest">
 								{searchTerm || difficulty || type || muscleGroup
 									? 'Intenta ajustar los filtros de búsqueda'
 									: 'No hay ejercicios disponibles en este momento'}
@@ -134,7 +133,7 @@ export default function ExercisesPage() {
 				</Card>
 			) : (
 				<>
-					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+					<div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
 						{exercises.map((exercise) => (
 							<ExerciseCard
 								key={exercise.id}

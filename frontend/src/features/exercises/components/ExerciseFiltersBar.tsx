@@ -47,43 +47,7 @@ export default function ExerciseFiltersBar({
           />
         </div>
 
-        <div className="flex self-start flex-wrap items-center gap-4">
-          {/* Filtro de dificultad */}
-          <Select
-            value={difficulty || "all"}
-            onValueChange={(value) =>
-              onDifficultyChange(value === "all" ? undefined : value as ExerciseDifficulty)
-            }
-          >
-            <SelectTrigger className="">
-              <SelectValue placeholder="Dificultad" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las dificultades</SelectItem>
-              <SelectItem value="beginner">🟢 Principiante</SelectItem>
-              <SelectItem value="intermediate">🟡 Intermedio</SelectItem>
-              <SelectItem value="advanced">🔴 Avanzado</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Filtro de tipo */}
-          <Select
-            value={type || "all"}
-            onValueChange={(value) =>
-              onTypeChange(value === "all" ? undefined : value as ExerciseType)
-            }
-          >
-            <SelectTrigger className="">
-              <SelectValue placeholder="Tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los tipos</SelectItem>
-              <SelectItem value="strength">💪 Fuerza</SelectItem>
-              <SelectItem value="endurance">🏋️‍♀️ Resistencia</SelectItem>
-              <SelectItem value="skill">🧠 Habilidad</SelectItem>
-              <SelectItem value="explosive">💥 Explosivo</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex self-start flex-wrap items-center gap-1">
 
           {/* Filtro de grupo muscular */}
           <Select
@@ -92,11 +56,11 @@ export default function ExerciseFiltersBar({
               onMuscleGroupChange(value === "all" ? undefined : value)
             }
           >
-            <SelectTrigger className="">
+            <SelectTrigger className="tracking-[2px] rounded-none">
               <SelectValue placeholder="Grupo muscular" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los grupos</SelectItem>
+              <SelectItem value="all">Musculo</SelectItem>
               <SelectItem value="pecho">Pecho</SelectItem>
               <SelectItem value="espalda">Espalda</SelectItem>
               <SelectItem value="piernas">Piernas</SelectItem>
@@ -107,13 +71,52 @@ export default function ExerciseFiltersBar({
             </SelectContent>
           </Select>
 
+          {/* Filtro de dificultad */}
+          <Select
+            value={difficulty || "all"}
+            onValueChange={(value) =>
+              onDifficultyChange(value === "all" ? undefined : value as ExerciseDifficulty)
+            }
+          >
+            <SelectTrigger className="tracking-[2px] rounded-none">
+              <SelectValue placeholder="Dificultad" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Dificultad</SelectItem>
+              <SelectItem value="beginner">Principiante</SelectItem>
+              <SelectItem value="intermediate">Intermedio</SelectItem>
+              <SelectItem value="advanced">Avanzado</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Filtro de tipo */}
+          <Select
+            value={type || "all"}
+            onValueChange={(value) =>
+              onTypeChange(value === "all" ? undefined : value as ExerciseType)
+            }
+          >
+            <SelectTrigger className="tracking-[2px] rounded-none">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tipo</SelectItem>
+              <SelectItem value="strength">Fuerza</SelectItem>
+              <SelectItem value="endurance">Resistencia</SelectItem>
+              <SelectItem value="skill">Habilidad</SelectItem>
+              <SelectItem value="explosive">Explosivo</SelectItem>
+            </SelectContent>
+          </Select>
+
+
+
           {/* Botón limpiar filtros */}
           {hasActiveFilters && (
             <Button
               variant="outline"
               size="icon"
               onClick={onClearFilters}
-              className="shrink-0"
+              className="shrink-0 rounded-none"
               title="Limpiar filtros"
             >
               <X className="h-4 w-4" />

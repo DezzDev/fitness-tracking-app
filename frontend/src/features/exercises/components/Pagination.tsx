@@ -21,6 +21,7 @@ export default function Pagination({
 				size="sm"
 				onClick={() => onPageChange(currentPage - 1)}
 				disabled={currentPage === 1}
+        className="rounded-none"
 			>
 				<ChevronLeft className="h-4 w-4 mr-1" />
 				Anterior
@@ -36,6 +37,7 @@ export default function Pagination({
 				size="sm"
 				onClick={() => onPageChange(currentPage + 1)}
 				disabled={currentPage === totalPages}
+				className="rounded-none"
 			>
 				Siguiente
 				<ChevronRight className="h-4 w-4 ml-1" />
