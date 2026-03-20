@@ -1,7 +1,7 @@
 import type { WorkoutSessionWithExercises, EditableSet } from '@/types';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { X, MessageSquare } from 'lucide-react';
+import { X, MessageSquare, Trash2 } from 'lucide-react';
 
 interface ActiveSessionProps {
   session: WorkoutSessionWithExercises;
@@ -46,6 +46,10 @@ export default function ActiveSession({
   const [pulse, setPulse] = useState(false);
   const [visible, setVisible] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    exerciseIdx: number;
+    setIdx: number;
+  } | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
 
   // Ref for auto-scrolling to active set
@@ -145,6 +149,60 @@ export default function ActiveSession({
     setExpandedNotes((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const performDeleteSet = (exerciseIdx: number, setIdx: number) => {
+    setEditableSets((prev) =>
+      prev.map((sets, ei) => {
+        if (ei !== exerciseIdx || sets.length <= 1) {
+          return sets;
+        }
+
+        return sets
+          .filter((_, si) => si !== setIdx)
+          .map((set, index) => ({
+            ...set,
+            setNumber: index + 1,
+          }));
+      })
+    );
+
+    setDeleteConfirm(null);
+  };
+
+  const deleteSet = (exerciseIdx: number, setIdx: number) => {
+    const set = editableSets[exerciseIdx]?.[setIdx];
+    if (!set) {
+      return;
+    }
+
+    if (set.isCompleted) {
+      setDeleteConfirm({ exerciseIdx, setIdx });
+      return;
+    }
+
+    performDeleteSet(exerciseIdx, setIdx);
+  };
+
+  const addSet = (exerciseIdx: number) => {
+    setEditableSets((prev) =>
+      prev.map((sets, ei) =>
+        ei === exerciseIdx
+          ? [
+            ...sets,
+            {
+              setNumber: sets.length + 1,
+              reps: undefined,
+              weight: undefined,
+              durationSeconds: undefined,
+              restSeconds: undefined,
+              notes: undefined,
+              isCompleted: false,
+            },
+          ]
+          : sets
+      )
+    );
+  };
+
   const progress = (totalCompleted / session.exercises.length) * 100;
 
   // ── Helpers for numeric inputs ────────────────────────────
@@ -231,6 +289,38 @@ export default function ActiveSession({
                 className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors disabled:opacity-50"
               >
                 CONTINUAR ENTRENANDO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete set confirmation overlay */}
+      {deleteConfirm && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="mx-8 w-full max-w-sm border border-border bg-background p-8 space-y-6">
+            <div>
+              <div className="font-bebas text-2xl tracking-[2px] text-foreground mb-2">
+                ELIMINAR SET COMPLETADO
+              </div>
+              <p className="font-barlow text-sm text-muted-foreground">
+                Este set ya esta marcado como completado. Quieres eliminarlo?
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() =>
+                  performDeleteSet(deleteConfirm.exerciseIdx, deleteConfirm.setIdx)
+                }
+                className="w-full bg-destructive border-none text-destructive-foreground font-bebas text-[18px] tracking-[3px] py-4 cursor-pointer transition-colors hover:bg-destructive/90"
+              >
+                ELIMINAR SET
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors"
+              >
+                CANCELAR
               </button>
             </div>
           </div>
@@ -350,6 +440,16 @@ export default function ActiveSession({
                     />
                   </div>
 
+                  {currentSets.length > 1 && (
+                    <button
+                      onClick={() => deleteSet(currentIdx, i)}
+                      className="p-1 shrink-0 text-muted-foreground/40 hover:text-destructive transition-colors"
+                      aria-label="Eliminar set"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+
                   {/* Notes toggle */}
                   <button
                     onClick={() => toggleNotes(i)}
@@ -393,6 +493,14 @@ export default function ActiveSession({
               </div>
             );
           })}
+
+          <button
+            onClick={() => addSet(currentIdx)}
+            disabled={animating}
+            className="mt-2 w-full border border-dashed border-border rounded py-3 font-barlow text-[11px] tracking-[3px] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            + AGREGAR SET
+          </button>
         </div>
       </div>
 
