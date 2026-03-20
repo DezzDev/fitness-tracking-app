@@ -94,6 +94,54 @@
 	--sidebar-ring: #E85D04;
 }
 
+[data-theme='light'] {
+	--radius: 0.5rem;
+
+	/* Core palette */
+	--bg: #F2EDE6;
+	--surface: #EAE4DC;
+	--surface-elevated: #f8f4ee;
+	--border: #C8C0B5;
+	--border-strong: #b4ab9f;
+
+	/* Orange accent system */
+	--orange: #C94F00;
+	--orange-warm: #de640f;
+	--orange-muted: #9f4712;
+	--orange-glow: rgba(201, 79, 0, 0.35);
+	--orange-subtle: rgba(201, 79, 0, 0.08);
+
+	/* Neutral tones */
+	--white: #1A1714;
+	--gray-light: #3D3830;
+	--gray-mid: #7A7268;
+	--gray-dark: #B0A99F;
+
+	/* Semantic */
+	--destructive: #DC2626;
+	--success: #16A34A;
+	--warning: #D97706;
+	--input: #C8C0B5;
+	--ring: #C94F00;
+
+	/* Charts */
+	--chart-1: #C94F00;
+	--chart-2: #de640f;
+	--chart-3: #16A34A;
+	--chart-4: #D97706;
+	--chart-5: #7A7268;
+
+	/* Sidebar */
+	--sidebar: #EAE4DC;
+	--sidebar-foreground: #1A1714;
+	--sidebar-primary: #C94F00;
+	--sidebar-primary-foreground: #F2EDE6;
+	--sidebar-accent: rgba(201, 79, 0, 0.08);
+	--sidebar-accent-foreground: #1A1714;
+	--sidebar-border: #C8C0B5;
+	--sidebar-ring: #C94F00;
+}
+
 
 @layer base {
   body {

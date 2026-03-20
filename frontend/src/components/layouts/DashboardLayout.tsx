@@ -21,6 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 
 function DashboardLayout() {
@@ -69,40 +70,44 @@ function DashboardLayout() {
 							</Link>
 						</div>
 
-						{/*  User Menu */}
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<button className="flex items-center gap-3 hover:bg-popover rounded-lg p-2 transition-colors">
-									<div className="text-right hidden sm:block">
-										<p className="text-sm font-medium text-foreground">
-											{user?.name}
-										</p>
-										<p className="text-xs text-muted-foreground">
-											{user?.email}
-										</p>
-									</div>
-									<Avatar>
-										<AvatarImage src={user?.profileImage} />
-										<AvatarFallback className="bg-primary text-background font-bebas text-lg">
-											{user?.name?.charAt(0).toUpperCase()}
-										</AvatarFallback>
-									</Avatar>
-								</button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="w-56">
-								<DropdownMenuLabel> Mi cuenta </DropdownMenuLabel>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem onClick={() => navigate('/profile')}>
-									<User className="mr-2 h-4 w-4" />
-									Perfil
-								</DropdownMenuItem>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-									<LogOut className="mr-2 h-4 w-4" />
-									Cerrar sesión
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						<div className="flex items-center gap-2">
+							<ThemeToggle />
+
+							{/*  User Menu */}
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button className="flex items-center gap-3 hover:bg-popover rounded-lg p-2 transition-colors">
+										<div className="text-right hidden sm:block">
+											<p className="text-sm font-medium text-foreground">
+												{user?.name}
+											</p>
+											<p className="text-xs text-muted-foreground">
+												{user?.email}
+											</p>
+										</div>
+										<Avatar>
+											<AvatarImage src={user?.profileImage} />
+											<AvatarFallback className="bg-primary text-background font-bebas text-lg">
+												{user?.name?.charAt(0).toUpperCase()}
+											</AvatarFallback>
+										</Avatar>
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-56">
+									<DropdownMenuLabel> Mi cuenta </DropdownMenuLabel>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onClick={() => navigate('/profile')}>
+										<User className="mr-2 h-4 w-4" />
+										Perfil
+									</DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+										<LogOut className="mr-2 h-4 w-4" />
+										Cerrar sesión
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
 					</div>
 				</div>
 			</header>
