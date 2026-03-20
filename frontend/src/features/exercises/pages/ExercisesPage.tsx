@@ -3,7 +3,7 @@ import { useExercises } from "../hooks/useExercises";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus } from "lucide-react";
-import ExerciseStatsBar from "../components/ExerciseStatsBar";
+// import ExerciseStatsBar from "../components/ExerciseStatsBar";
 import ExerciseFiltersBar from "../components/ExerciseFiltersBar";
 import ExerciseCard from "../components/ExerciseCard";
 import ExerciseDetailDialog from "../components/ExerciseDetailDialog";

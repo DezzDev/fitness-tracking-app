@@ -1,10 +1,8 @@
 import { Search, X } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import type { ExerciseDifficulty, ExerciseType } from "@/types";
-import { useState } from "react";
 
 interface ExerciseFiltersBarProps {
   searchTerm: string;
@@ -30,8 +28,6 @@ export default function ExerciseFiltersBar({
   onClearFilters
 }: ExerciseFiltersBarProps) {
   const hasActiveFilters = searchTerm || difficulty || type || muscleGroup;
-  const [showActivityBar, setShowActivityBar] = useState(false)
-  const [showPanel, setShowPanel] = useState(false)
   return (
     <>
 
