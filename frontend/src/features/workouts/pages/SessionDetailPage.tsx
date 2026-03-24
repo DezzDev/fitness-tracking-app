@@ -28,7 +28,7 @@ export default function SessionDetailPage() {
 	const handleDelete = () => {
 		deleteSession(sessionId, {
 			onSuccess: () => {
-				navigate(-1);
+				navigate("/workouts?tab=sessions");
 			}
 		});
 	};
@@ -77,7 +77,7 @@ export default function SessionDetailPage() {
 				<Button
 					variant="ghost"
 					size="sm"
-					onClick={() => navigate(-1)}
+					onClick={() => navigate("/workouts?tab=sessions")}
 					className="font-barlow uppercase tracking-[2px] text-xs"
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />

@@ -372,107 +372,121 @@ export default function ActiveSession({
                 )}
               >
                 {/* Main set row */}
-                <div className="flex items-center gap-2 px-3 py-2.5"> 
+                <div className="flex flex-col sm:flex-row items-center  gap-2 px-3 py-2.5 sm:gap-6">
                   {/* Set label */}
                   <div
                     className={cn(
-                      'font-barlow text-[11px] tracking-[3px] font-semibold shrink-0 w-12',
+                      'font-barlow text-[11px] tracking-[3px] font-semibold flex self-start gap-2 items-center sm:self-auto ',
                       set.isCompleted
                         ? 'text-muted-foreground'
                         : 'text-secondary-foreground'
                     )}
-                  >
-                    SET {i + 1}
-                  </div>
+                  ><p className='flex items-center gap-2'>
+                      <span>SET</span>
+                      <span>
+                        {i + 1}
+                      </span>
+                    </p>
 
-                  {/* Editable fields */}
-                  <div className="flex items-center gap-2 flex-1 min-w-0 flex-wrap">
-                  
-                    {/* Reps */}
-                    <SetInput
-                      label="REPS"
-                      value={set.reps}
-                      onChange={(v) =>
-                        updateSetField(currentIdx, i, 'reps', parseNumericInput(v, true))
-                      }
-                      integer
-                    />
-
-                     {/* Weight */}
-                    <SetInput
-                      label="KG"
-                      value={set.weight}
-                      onChange={(v) =>
-                        updateSetField(currentIdx, i, 'weight', parseNumericInput(v, false))
-                      }
-                      step="0.5"
-                      integer={false}
-                    />
-
-                    {/* Duration */}
-                    <SetInput
-                      label="SEG"
-                      value={set.durationSeconds}
-                      onChange={(v) =>
-                        updateSetField(
-                          currentIdx,
-                          i,
-                          'durationSeconds',
-                          parseNumericInput(v, true)
-                        )
-                      }
-                      integer
-                    />
-
-                    {/* Rest */}
-                    <SetInput
-                      label="DESC"
-                      value={set.restSeconds}
-                      onChange={(v) =>
-                        updateSetField(
-                          currentIdx,
-                          i,
-                          'restSeconds',
-                          parseNumericInput(v, true)
-                        )
-                      }
-                      integer
+                    {/* Completion dot */}
+                    <div
+                      className={cn(
+                        'w-2.5 h-2.5 rounded-full transition-all duration-200 ease-in-out shrink-0',
+                        set.isCompleted
+                          ? 'bg-primary shadow-[0_0_8px_var(--orange-glow)]'
+                          : 'bg-transparent border-[1.5px] border-border'
+                      )}
                     />
                   </div>
 
-                  {currentSets.length > 1 && (
-                    <button
-                      onClick={() => deleteSet(currentIdx, i)}
-                      className="p-1 shrink-0 text-muted-foreground/40 hover:text-destructive transition-colors"
-                      aria-label="Eliminar set"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  )}
+                  <div className='flex justify-between w-full gap-6 '>
+                    {/* Editable fields */}
+                    <div className="min-w-0 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:flex-1 sm:flex-wrap">
 
-                  {/* Notes toggle */}
-                  <button
-                    onClick={() => toggleNotes(i)}
-                    className={cn(
-                      'p-1 shrink-0 transition-colors',
-                      set.notes
-                        ? 'text-primary'
-                        : 'text-muted-foreground/40 hover:text-muted-foreground'
-                    )}
-                    aria-label="Notas"
-                  >
-                    <MessageSquare className="h-3.5 w-3.5" />
-                  </button>
+                      {/* Reps */}
+                      <SetInput
+                        label="REPS"
+                        value={set.reps}
+                        onChange={(v) =>
+                          updateSetField(currentIdx, i, 'reps', parseNumericInput(v, true))
+                        }
+                        integer
+                      />
 
-                  {/* Completion dot */}
-                  <div
-                    className={cn(
-                      'w-2.5 h-2.5 rounded-full transition-all duration-200 ease-in-out shrink-0',
-                      set.isCompleted
-                        ? 'bg-primary shadow-[0_0_8px_var(--orange-glow)]'
-                        : 'bg-transparent border-[1.5px] border-border'
-                    )}
-                  />
+                      {/* Weight */}
+                      <SetInput
+                        label="KG"
+                        value={set.weight}
+                        onChange={(v) =>
+                          updateSetField(currentIdx, i, 'weight', parseNumericInput(v, false))
+                        }
+                        step="0.5"
+                        integer={false}
+                      />
+
+                      {/* Duration */}
+                      <SetInput
+                        label="SEG"
+                        value={set.durationSeconds}
+                        onChange={(v) =>
+                          updateSetField(
+                            currentIdx,
+                            i,
+                            'durationSeconds',
+                            parseNumericInput(v, true)
+                          )
+                        }
+                        integer
+                      />
+
+                      {/* Rest */}
+                      <SetInput
+                        label="DESC"
+                        value={set.restSeconds}
+                        onChange={(v) =>
+                          updateSetField(
+                            currentIdx,
+                            i,
+                            'restSeconds',
+                            parseNumericInput(v, true)
+                          )
+                        }
+                        integer
+                      />
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className='flex flex-col items-center justify-between gap-3 sm:flex-row'>
+                      {currentSets.length > 1 && (
+                        <button
+                          onClick={() => deleteSet(currentIdx, i)}
+                          className="p-1 shrink-0 text-muted-foreground/40 hover:text-destructive transition-colors"
+                          aria-label="Eliminar set"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+
+                      {/* Notes toggle */}
+                      <button
+                        onClick={() => toggleNotes(i)}
+                        className={cn(
+                          'p-1 shrink-0 transition-colors',
+                          set.notes
+                            ? 'text-primary'
+                            : 'text-muted-foreground/40 hover:text-muted-foreground'
+                        )}
+                        aria-label="Notas"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                      </button>
+
+                    </div>
+
+                  </div>
+
+
+
                 </div>
 
                 {/* Notes row (collapsible) */}

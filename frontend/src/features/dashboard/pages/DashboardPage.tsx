@@ -28,9 +28,29 @@ function DashboardPage() {
 		endDate: endOfDay,
 	});
 
-	const isCompletedToday = scheduledTemplate && todaySessions?.data?.items
-		? todaySessions.data.items.some((s: WorkoutSessionWithMetrics) => s.templateId === scheduledTemplate.id)
-		: false;
+	const completedTodaySessions = scheduledTemplate && todaySessions?.data?.items
+		? todaySessions.data.items.filter(
+			(s: WorkoutSessionWithMetrics) => s.templateId === scheduledTemplate.id
+		)
+		: [];
+
+	const isCompletedToday = completedTodaySessions.length > 0;
+
+	const latestCompletedSession = completedTodaySessions.reduce<WorkoutSessionWithMetrics | null>(
+		(latest, current) => {
+			if (!latest) {
+				return current;
+			}
+
+			const latestTimestamp = new Date(latest.createdAt ?? latest.sessionDate).getTime();
+			const currentTimestamp = new Date(current.createdAt ?? current.sessionDate).getTime();
+
+			return currentTimestamp > latestTimestamp ? current : latest;
+		},
+		null
+	);
+
+	const completedSessionId = latestCompletedSession?.id;
 
 	useEffect(() => {
 		if (!isLoading) {
@@ -112,6 +132,7 @@ function DashboardPage() {
 					<EntryScreen
 						template={scheduledTemplate}
 						completed={isCompletedToday}
+						completedSessionId={completedSessionId}
 					/>
 				);
 			default:

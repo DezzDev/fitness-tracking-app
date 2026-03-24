@@ -27,168 +27,93 @@ const tags = [
 // 2. Exercises
 
 const exercises = [
-	// push
+	// BÍCEPS
 	{
-		name: "Flexiones",
-		description: "Clásicas flexiones de pecho",
+		name: "Curl de bíceps en barra",
+		description: "Flexión de codos en barra baja con agarre supino enfocada en bíceps",
 		difficulty: "beginner",
-		muscle_group: "pecho",
+		muscle_group: "bíceps",
 		type: "strength"
 	},
 	{
-		name: "Flexiones diamante",
-		description: "Flexiones con manos juntas para tríceps",
+		name: "Curl de bíceps en anillas",
+		description: "Curl de bíceps usando anillas para mayor rango y activación",
 		difficulty: "intermediate",
-		muscle_group: "pecho",
+		muscle_group: "bíceps",
 		type: "strength"
 	},
+
+	// TRÍCEPS
 	{
-		name: "Flexiones pino asistidas",
-		description: "Flexión en vertical asistida contra pared",
-		difficulty: "intermediate",
-		muscle_group: "hombros",
-		type: "strength"
-	},
-	{
-		name: "Flexiones pino libres",
-		description: "Flexiones en pino sin apoyo",
-		difficulty: "advanced",
-		muscle_group: "hombros",
-		type: "strength"
-	},
-	{
-		name: "Dips en paralelas",
-		description: "Fondos en barras paralelas",
+		name: "Extensiones de tríceps en anillas",
+		description: "Extensión de tríceps con mayor inestabilidad usando anillas",
 		difficulty: "intermediate",
 		muscle_group: "tríceps",
 		type: "strength"
 	},
 
-	// PULL
+	// HOMBROS (aislamiento relativo)
 	{
-		name: "Dominadas pronas",
-		description: "Dominadas agarre prono",
-		difficulty: "beginner",
-		muscle_group: "espalda",
+		name: "Elevaciones laterales en anillas",
+		description: "Elevación lateral del brazo usando anillas",
+		difficulty: "advanced",
+		muscle_group: "hombros",
 		type: "strength"
 	},
 	{
-		name: "Dominadas supinas",
-		description: "Dominadas agarre supino",
-		difficulty: "beginner",
-		muscle_group: "espalda",
+		name: "Elevaciones frontales en anillas",
+		description: "Elevación frontal controlada usando anillas",
+		difficulty: "advanced",
+		muscle_group: "hombros",
 		type: "strength"
-	},
-	{
-		name: "Dominadas explosivas",
-		description: "Dominadas con impulso explosivo",
-		difficulty: "advanced",
-		muscle_group: "espalda",
-		type: "explosive"
-	},
-	{
-		name: "Muscle-up",
-		description: "Transición de dominada a dip en barra",
-		difficulty: "advanced",
-		muscle_group: "full-body",
-		type: "skill"
 	},
 
-	// CORE
+	// ESPALDA (control escapular)
 	{
-		name: "Plancha frontal",
-		description: "Mantener cuerpo recto apoyado en antebrazos",
+		name: "Dominadas escapulares",
+		description: "Movimiento corto enfocando la retracción escapular",
+		difficulty: "beginner",
+		muscle_group: "espalda",
+		type: "strength"
+	},
+	{
+		name: "Remo escapular en barra",
+		description: "Activación escapular en posición de remo invertido",
+		difficulty: "beginner",
+		muscle_group: "espalda",
+		type: "strength"
+	},
+
+	// CORE (nuevo, sin repetir hollow)
+	{
+		name: "Reverse plank",
+		description: "Plancha invertida para core posterior y glúteos",
 		difficulty: "beginner",
 		muscle_group: "core",
 		type: "endurance"
 	},
 	{
-		name: "Plancha lateral",
-		description: "Plancha apoyando un solo brazo",
-		difficulty: "intermediate",
+		name: "Dead bug",
+		description: "Ejercicio controlado para estabilidad del core",
+		difficulty: "beginner",
 		muscle_group: "core",
 		type: "endurance"
-	},
-	{
-		name: "Dragon flag",
-		description: "Ejercicio avanzado para abdomen y core",
-		difficulty: "advanced",
-		muscle_group: "core",
-		type: "strength"
-	},
-	{
-		name: "L-sit",
-		description: "Mantener posición en L sobre paralelas o suelo",
-		difficulty: "intermediate",
-		muscle_group: "core",
-		type: "skill"
-	},
-	{
-		name: "V-ups",
-		description: "Ejercicio abdominal subiendo piernas y tronco",
-		difficulty: "intermediate",
-		muscle_group: "core",
-		type: "strength"
 	},
 
 	// PIERNAS
 	{
-		name: "Sentadillas",
-		description: "Squats clásicas con peso corporal",
-		difficulty: "beginner",
+		name: "Elevaciones de pantorrilla a una pierna",
+		description: "Trabajo unilateral para gemelos",
+		difficulty: "intermediate",
 		muscle_group: "piernas",
 		type: "strength"
 	},
 	{
-		name: "Sentadilla pistol",
-		description: "Sentadilla a una pierna",
+		name: "Nordic curl asistido",
+		description: "Ejercicio excéntrico para isquiotibiales",
 		difficulty: "advanced",
 		muscle_group: "piernas",
 		type: "strength"
-	},
-	{
-		name: "Zancadas",
-		description: "Lunges alternando piernas",
-		difficulty: "beginner",
-		muscle_group: "piernas",
-		type: "strength"
-	},
-	{
-		name: "Saltos pliométricos",
-		description: "Saltos explosivos",
-		difficulty: "intermediate",
-		muscle_group: "piernas",
-		type: "explosive"
-	},
-	{
-		name: "Step-ups",
-		description: "Subir a banco o plataforma",
-		difficulty: "beginner",
-		muscle_group: "piernas",
-		type: "strength"
-	},
-
-	// EQUILIBRIO Y MOVILIDAD
-	{
-		name: "Handstand hold",
-		description: "Mantener equilibrio en pino",
-		difficulty: "intermediate",
-		muscle_group: "equilibrio",
-		type: "skill"
-	},
-	{
-		name: "Planche lean",
-		description: "Avance progresivo para planche",
-		difficulty: "advanced",
-		muscle_group: "equilibrio",
-		type: "skill"
-	},
-	{
-		name: "Back bridge",
-		description: "Puente de espalda para movilidad y fuerza",
-		difficulty: "beginner",
-		muscle_group: "movilidad",
-		type: "endurance"
 	}
 ].map(e => ({
 	id: uuidv4(),
@@ -199,50 +124,51 @@ const exercises = [
 // map nombres -> IDs reales
 
 // nombre de ejercicio -> id
-const mapExercise = (name:string) => 
-	exercises.find(e => e.name === name)!.id;
+// const mapExercise = (name:string) => 
+// 	exercises.find(e => e.name === name)!.id;
 
-const mapTag = (name:string) =>
-	tags.find(t => t.name === name)!.id;
+// const mapTag = (name:string) =>
+// 	tags.find(t => t.name === name)!.id;
 
-const exerciseTags = [
-	// Flexiones → sin material + push
-	{ exercise_id: mapExercise("Flexiones"), tag_id: mapTag("sin material") },
-	{ exercise_id: mapExercise("Flexiones"), tag_id: mapTag("push") },
+// const exerciseTags = [
+// 	// Flexiones → sin material + push
+// 	{ exercise_id: mapExercise("Flexiones"), tag_id: mapTag("sin material") },
+// 	{ exercise_id: mapExercise("Flexiones"), tag_id: mapTag("push") },
 
-	// Dips → sin material + push
-	{ exercise_id: mapExercise("Dips en paralelas"), tag_id: mapTag("sin material") },
-	{ exercise_id: mapExercise("Dips en paralelas"), tag_id: mapTag("push") },
+// 	// Dips → sin material + push
+// 	{ exercise_id: mapExercise("Dips en paralelas"), tag_id: mapTag("sin material") },
+// 	{ exercise_id: mapExercise("Dips en paralelas"), tag_id: mapTag("push") },
 
-	// Dominadas pronas → barra fija + pull
-	{ exercise_id: mapExercise("Dominadas pronas"), tag_id: mapTag("barra fija") },
-	{ exercise_id: mapExercise("Dominadas pronas"), tag_id: mapTag("pull") },
+// 	// Dominadas pronas → barra fija + pull
+// 	{ exercise_id: mapExercise("Dominadas pronas"), tag_id: mapTag("barra fija") },
+// 	{ exercise_id: mapExercise("Dominadas pronas"), tag_id: mapTag("pull") },
 
-	// Muscle-up → barra fija + pull + explosivo
-	{ exercise_id: mapExercise("Muscle-up"), tag_id: mapTag("barra fija") },
-	{ exercise_id: mapExercise("Muscle-up"), tag_id: mapTag("pull") },
-	{ exercise_id: mapExercise("Muscle-up"), tag_id: mapTag("explosivo") },
+// 	// Muscle-up → barra fija + pull + explosivo
+// 	{ exercise_id: mapExercise("Muscle-up"), tag_id: mapTag("barra fija") },
+// 	{ exercise_id: mapExercise("Muscle-up"), tag_id: mapTag("pull") },
+// 	{ exercise_id: mapExercise("Muscle-up"), tag_id: mapTag("explosivo") },
 
-	// Plancha frontal → core
-	{ exercise_id: mapExercise("Plancha frontal"), tag_id: mapTag("core") },
+// 	// Plancha frontal → core
+// 	{ exercise_id: mapExercise("Plancha frontal"), tag_id: mapTag("core") },
 
-	// Pistol squat → piernas + equilibrio
-	{ exercise_id: mapExercise("Sentadilla pistol"), tag_id: mapTag("piernas") },
-	{ exercise_id: mapExercise("Sentadilla pistol"), tag_id: mapTag("equilibrio") }
-];
+// 	// Pistol squat → piernas + equilibrio
+// 	{ exercise_id: mapExercise("Sentadilla pistol"), tag_id: mapTag("piernas") },
+// 	{ exercise_id: mapExercise("Sentadilla pistol"), tag_id: mapTag("equilibrio") }
+// ];
 
 // seed main function
 
 async function seed() {
-	console.log("seeding tags...")
-	for(const t of tags){
-		await executeWithRetry(client => 
-			client.execute({
-				sql: `INSERT INTO tags (id, name) VALUES (?,?)`,
-				args: [t.id, t.name]
-			})
-		)
-	}
+
+	// console.log("seeding tags...")
+	// for(const t of tags){
+	// 	await executeWithRetry(client => 
+	// 		client.execute({
+	// 			sql: `INSERT INTO tags (id, name) VALUES (?,?)`,
+	// 			args: [t.id, t.name]
+	// 		})
+	// 	)
+	// }
 
 	console.log("seeding exercises...")
 	for (const e of exercises){
@@ -257,17 +183,17 @@ async function seed() {
 		)
 	}
 
-	console.log("seeding exercises tags...")
-	for(const et of exerciseTags){		
-		await executeWithRetry(client =>
-			client.execute({
-				sql:`
-					INSERT INTO exercise_tags (exercise_id, tag_id) VALUES (?,?)
-				`,
-				args: [et.exercise_id, et.tag_id]
-			})
-		)
-	}
+	// console.log("seeding exercises tags...")
+	// for(const et of exerciseTags){		
+	// 	await executeWithRetry(client =>
+	// 		client.execute({
+	// 			sql:`
+	// 				INSERT INTO exercise_tags (exercise_id, tag_id) VALUES (?,?)
+	// 			`,
+	// 			args: [et.exercise_id, et.tag_id]
+	// 		})
+	// 	)
+	// }
 	console.log("seed completo")
 }
 

@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 interface EntryScreenProps {
 	template: WorkoutTemplate;
 	completed: boolean;
+	completedSessionId?: string;
 }
 
 export default function EntryScreen({
 	template,
 	completed,
+	completedSessionId,
 }: EntryScreenProps) {
 	const [visible, setVisible] = useState(false);
 	const navigate = useNavigate();
@@ -86,25 +88,35 @@ export default function EntryScreen({
 							onClick={() => navigate(`/workouts/sessions/start?templateId=${template.id}`)}
 							className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100"
 						>
-							INICIAR SESIÓN
+							INICIAR ENTRENAMIENTO
 						</button>
 						<button
-							onClick={() => navigate('/workouts?tab=templates')}
+							onClick={() => navigate('/workouts')}
 							className="w-full bg-transparent border-none text-muted-foreground font-barlow text-sm tracking-[3px] py-3 cursor-pointer hover:text-foreground transition-colors"
 						>
-							ELEGIR OTRA PLANTILLA
+							ELEGIR OTRO ENTRENAMIENTO
 						</button>
 					</>
 				) : (
 					<>
-						<button className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-sm tracking-[3px] py-[18px] cursor-pointer hover:bg-muted/20 transition-colors">
+						<button
+							onClick={() => {
+								if (completedSessionId) {
+									navigate(`/workouts/sessions/${completedSessionId}`);
+									return;
+								}
+
+								navigate('/workouts?tab=sessions');
+							}}
+							className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-sm tracking-[3px] py-[18px] cursor-pointer hover:bg-muted/20 transition-colors"
+						>
 							VER DETALLE
 						</button>
 						<button
 							onClick={() => navigate('/workouts?tab=templates')}
 							className="w-full bg-transparent border-none text-muted-foreground font-barlow text-sm tracking-[3px] py-3 cursor-pointer hover:text-foreground transition-colors"
 						>
-							ELEGIR OTRA PLANTILLA
+							ELEGIR OTRO ENTRENAMIENTO
 						</button>
 					</>
 				)}
