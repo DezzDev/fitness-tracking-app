@@ -286,10 +286,10 @@ export default function TemplateDetailPage() {
 					<Button
 						onClick={handleStartSession}
 						size="lg"
-						className="uppercase font-barlow font-semibold tracking-wide"
+						className="uppercase font-barlow font-semibold tracking-wide "
 					>
-						<Play className="h-5 w-5 mr-2" />
-						Iniciar Sesión
+						<Play className="h-5 w-5 sm:mr-2" />
+						<span className='hidden sm:block'>Iniciar Sesión</span>
 					</Button>
 
 					<Button
@@ -298,8 +298,8 @@ export default function TemplateDetailPage() {
 						variant="outline"
 						className="uppercase font-barlow font-semibold tracking-wide"
 					>
-						<Pencil className="h-5 w-5 mr-2" />
-						Editar
+						<Pencil className="h-5 w-5 sm:mr-2" />
+						<span className='hidden sm:block'>Editar</span>
 					</Button>
 
 					<Button
@@ -308,8 +308,8 @@ export default function TemplateDetailPage() {
 						variant="outline"
 						className="uppercase font-barlow font-semibold tracking-wide"
 					>
-						<Copy className="h-5 w-5 mr-2" />
-						Duplicar
+						<Copy className="h-5 w-5 sm:mr-2" />
+						<span className='hidden sm:block'>Duplicar</span>
 					</Button>
 
 					<Button
@@ -318,8 +318,8 @@ export default function TemplateDetailPage() {
 						variant="outline"
 						className="uppercase font-barlow font-semibold tracking-wide text-destructive/70 hover:text-destructive border-destructive/30 hover:border-destructive/60 ml-auto"
 					>
-						<Trash2 className="h-5 w-5 mr-2" />
-						Eliminar
+						<Trash2 className="h-5 w-5 sm:mr-2" />
+						<span className='hidden sm:block'>Eliminar</span>
 					</Button>
 				</div>
 

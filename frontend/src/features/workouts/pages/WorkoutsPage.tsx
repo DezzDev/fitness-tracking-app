@@ -69,7 +69,7 @@ export default function WorkoutsPage() {
 					<SessionsList />
 
 					{/* Bottom CTA */}
-					<div className="flex justify-center pt-4">
+					{/* <div className="flex justify-center pt-4">
 						<Link to="/workouts/sessions/start">
 							<Button
 								size="lg"
@@ -79,7 +79,7 @@ export default function WorkoutsPage() {
 								Nueva Sesión
 							</Button>
 						</Link>
-					</div>
+					</div> */}
 				</TabsContent>
 			</Tabs>
 

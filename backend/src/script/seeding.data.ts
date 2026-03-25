@@ -8,110 +8,78 @@ const app = express();
 
 // 1. Tags
 
-const tags = [
-	"sin material",
-	"barra fija",
-	"anillas",
-	"explosivo",
-	"core",
-	"piernas",
-	"push",
-	"pull",
-	"equilibrio",
-	"movilidad"
-].map(name => ({
-	id: uuidv4(),
-	name
-}));
+// const tags = [
+// 	"sin material",
+// 	"barra fija",
+// 	"anillas",
+// 	"explosivo",
+// 	"core",
+// 	"piernas",
+// 	"push",
+// 	"pull",
+// 	"equilibrio",
+// 	"movilidad"
+// ].map(name => ({
+// 	id: uuidv4(),
+// 	name
+// }));
 
 // 2. Exercises
 
 const exercises = [
-	// BÍCEPS
 	{
-		name: "Curl de bíceps en barra",
-		description: "Flexión de codos en barra baja con agarre supino enfocada en bíceps",
+		name: "Extensiones de tríceps en barra",
+		description: "Extensión de brazos en barra baja tipo rompecráneos",
 		difficulty: "beginner",
-		muscle_group: "bíceps",
-		type: "strength"
-	},
-	{
-		name: "Curl de bíceps en anillas",
-		description: "Curl de bíceps usando anillas para mayor rango y activación",
-		difficulty: "intermediate",
-		muscle_group: "bíceps",
-		type: "strength"
-	},
-
-	// TRÍCEPS
-	{
-		name: "Extensiones de tríceps en anillas",
-		description: "Extensión de tríceps con mayor inestabilidad usando anillas",
-		difficulty: "intermediate",
 		muscle_group: "tríceps",
 		type: "strength"
 	},
-
-	// HOMBROS (aislamiento relativo)
 	{
-		name: "Elevaciones laterales en anillas",
-		description: "Elevación lateral del brazo usando anillas",
-		difficulty: "advanced",
-		muscle_group: "hombros",
-		type: "strength"
-	},
-	{
-		name: "Elevaciones frontales en anillas",
-		description: "Elevación frontal controlada usando anillas",
-		difficulty: "advanced",
-		muscle_group: "hombros",
-		type: "strength"
-	},
-
-	// ESPALDA (control escapular)
-	{
-		name: "Dominadas escapulares",
-		description: "Movimiento corto enfocando la retracción escapular",
-		difficulty: "beginner",
-		muscle_group: "espalda",
-		type: "strength"
-	},
-	{
-		name: "Remo escapular en barra",
-		description: "Activación escapular en posición de remo invertido",
-		difficulty: "beginner",
-		muscle_group: "espalda",
-		type: "strength"
-	},
-
-	// CORE (nuevo, sin repetir hollow)
-	{
-		name: "Reverse plank",
-		description: "Plancha invertida para core posterior y glúteos",
-		difficulty: "beginner",
-		muscle_group: "core",
-		type: "endurance"
-	},
-	{
-		name: "Dead bug",
-		description: "Ejercicio controlado para estabilidad del core",
-		difficulty: "beginner",
-		muscle_group: "core",
-		type: "endurance"
-	},
-
-	// PIERNAS
-	{
-		name: "Elevaciones de pantorrilla a una pierna",
-		description: "Trabajo unilateral para gemelos",
+		name: "Pike push-ups",
+		description: "Flexiones en V enfocadas en hombros",
 		difficulty: "intermediate",
-		muscle_group: "piernas",
+		muscle_group: "hombros",
 		type: "strength"
 	},
 	{
-		name: "Nordic curl asistido",
-		description: "Ejercicio excéntrico para isquiotibiales",
+		name: "Press militar",
+		description: "Empuje vertical con barra o mancuernas",
+		difficulty: "intermediate",
+		muscle_group: "hombros",
+		type: "strength"
+	},
+	{
+		name: "Dominadas australianas",
+		description: "Remo invertido en barra baja",
+		difficulty: "beginner",
+		muscle_group: "espalda",
+		type: "strength"
+	},
+	{
+		name: "Dominadas altas",
+		description: "Dominadas llevando el pecho a la barra",
 		difficulty: "advanced",
+		muscle_group: "espalda",
+		type: "strength"
+	},
+	{
+		name: "Curl de bíceps",
+		description: "Flexión de brazo con peso para bíceps",
+		difficulty: "beginner",
+		muscle_group: "bíceps",
+		type: "strength"
+	},
+	{
+		name: "Remo con mancuerna",
+		description: "Remo unilateral con mancuerna",
+		difficulty: "beginner",
+		muscle_group: "espalda",
+		type: "strength"
+	},
+	{
+		name: "Elevaciones de pantorrilla",
+		description: "Elevación de talones para gemelos",
+		difficulty: "beginner",
 		muscle_group: "piernas",
 		type: "strength"
 	}
