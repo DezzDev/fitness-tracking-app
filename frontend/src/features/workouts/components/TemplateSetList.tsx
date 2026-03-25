@@ -28,10 +28,6 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 	};
 
 	const handleRemoveSet = (setIndex: number) => {
-		if (fields.length === 1) {
-			toast.error('Debe haber al menos 1 serie');
-			return;
-		}
 		remove(setIndex);
 	};
 
@@ -44,6 +40,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 					size={'sm'}
 					variant={'outline'}
 					onClick={handleAddSet}
+          className='rounded-none'
 				>
 					<Plus className='w-4 h-4 mr-2' />
 					Agregar Serie
@@ -60,11 +57,11 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 				{fields.map((field, setIndex) => (
 					<div
 						key={field.id}
-						className="p-4 border rounded-lg bg-popover space-y-3"
+						className="p-4 bg-popover space-y-3"
 					>
 						{/* Header de la serie */}
 						<div className="flex items-center justify-between">
-							<Badge variant={'default'}>
+							<Badge variant={'default'} className='rounded-none tracking-widest'>
 								Serie {setIndex + 1}
 							</Badge>
 
@@ -91,6 +88,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 								</Label>
 								<Input
 									id={`exercises.${exerciseIndex}.sets.${setIndex}.targetReps`}
+                  className='rounded-none'
 									type='number'
 									placeholder='0'
 									{...control.register(
@@ -115,6 +113,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 								</Label>
 								<Input
 									id={`exercises.${exerciseIndex}.sets.${setIndex}.targetWeight`}
+                  className='rounded-none'
 									type='number'
 									min={'0'}
 									step={'0.5'}
@@ -141,6 +140,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 								</Label>
 								<Input
 									id={`exercises.${exerciseIndex}.sets.${setIndex}.targetDurationSeconds`}
+                  className='rounded-none'
 									type='number'
 									min={'0'}
 									placeholder='0'
@@ -166,6 +166,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 								</Label>
 								<Input
 									id={`exercises.${exerciseIndex}.sets.${setIndex}.targetRestSeconds`}
+                  className='rounded-none'
 									type='number'
 									min={'0'}
 									placeholder='60'

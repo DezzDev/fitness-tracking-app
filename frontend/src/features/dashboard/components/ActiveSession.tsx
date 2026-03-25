@@ -460,10 +460,10 @@ export default function ActiveSession({
                       {currentSets.length > 1 && (
                         <button
                           onClick={() => deleteSet(currentIdx, i)}
-                          className="p-1 shrink-0 text-muted-foreground/40 hover:text-destructive transition-colors"
+                          className="p-1 shrink-0 text-destructive hover:text-destructive/80 transition-colors"
                           aria-label="Eliminar set"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <Trash2 className="h-3.5 w-3.5 " />
                         </button>
                       )}
 

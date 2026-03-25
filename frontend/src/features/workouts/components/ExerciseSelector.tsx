@@ -8,6 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+const difficultNameMap: Record<string, string> = {
+  beginner: 'Principiante',
+  intermediate: 'Intermedio',
+  advanced: 'Avanzado'
+}
+
+const typeNameMap: Record<string, string> = {
+  strength: 'Fuerza',
+  skill: 'Habilidad',
+  explosive: 'Explosivo',
+  endurance: 'Resistencia',
+  cardio: 'Cardio',
+  flexibility: 'Flexibilidad',
+  balance: 'Equilibrio',
+  mobility: 'Movilidad',
+  other: 'Otro'
+}
+
 interface ExerciseSelectorProps {
 	onSelectExercise: (exerciseId: string, exerciseName: string) => void;
 	selectedExerciseIds?: string[];
@@ -26,6 +44,7 @@ export default function ExerciseSelector({
 	})
 
 	const exercises = data?.data?.items || [];
+  console.log(exercises);
 
 	const handleSelectExercise = (exerciseId: string, exerciseName: string) => {
 		onSelectExercise(exerciseId, exerciseName);
@@ -50,7 +69,7 @@ export default function ExerciseSelector({
 	}
 
 	return (
-		<Card className="p-4 space-y-4">
+		<Card className="p-4 border-border rounded-none ">
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<h3 className="text-sm font-bebas tracking-widest uppercase text-foreground">
@@ -76,13 +95,13 @@ export default function ExerciseSelector({
 					placeholder='Buscar ejercicios...'
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
-					className="pl-10 font-barlow"
+					className="pl-10 font-barlow rounded-none"
 					autoFocus
 				/>
 			</div>
 
 			{/* Lista de ejercicios */}
-			<div className="max-h-96 overflow-y-auto border rounded-lg divide-y">
+			<div className="max-h-96 overflow-y-auto overflow-x-hidden border divide-y">
 				{isLoading ? (
 					<div className="p-4 space-y-3">
 						{[ ...Array(5) ].map((_, i) => (
@@ -96,7 +115,7 @@ export default function ExerciseSelector({
 						))}
 					</div>
 				) : exercises.length === 0 ? (
-					<div className="p-8 text-center text-muted-foreground">
+					<div className="p-8 text-center text-muted-foreground tracking-widest">
 						<p className="font-barlow">No se encontraron ejercicios</p>
 						{searchTerm && (
 							<p className="text-sm mt-1 font-barlow">
@@ -113,14 +132,14 @@ export default function ExerciseSelector({
 								key={exercise.id}
 								className="p-4 hover:bg-muted/20 transition-colors"
 							>
-								<div className="flex items-start justify-between gap-4">
-									<div className="flex-1 min-w-0">
-										<h4 className="font-bebas tracking-wide text-foreground truncate">
+								<div className="flex gap-4 justify-between">
+									<div className="min-w-0 ">
+										<h4 className="font-bebas text-foreground  tracking-widest">
 											{exercise.name}
 										</h4>
 
 										{exercise.description && (
-											<p className="text-sm text-muted-foreground mt-1 line-clamp-1 font-barlow">
+											<p className="text-sm text-muted-foreground mt-1  font-barlow ">
 												{exercise.description}
 											</p>
 										)}
@@ -129,7 +148,7 @@ export default function ExerciseSelector({
 											{exercise.muscleGroup && (
 												<Badge 
 													variant={'secondary'} 
-													className="text-xs font-barlow uppercase tracking-wide"
+													className="text-xs font-barlow uppercase tracking-wide rounded-none"
 												>
 													{exercise.muscleGroup}
 												</Badge>
@@ -138,7 +157,7 @@ export default function ExerciseSelector({
 											{exercise.difficulty && (
 												<Badge
 													variant={'outline'}
-													className={`text-xs font-barlow uppercase tracking-wide ${
+													className={`text-xs font-barlow uppercase tracking-wide rounded-none ${
 														exercise.difficulty === 'beginner'
 															? 'border-green-500/50 text-green-500'
 															: exercise.difficulty === 'intermediate'
@@ -147,14 +166,19 @@ export default function ExerciseSelector({
 													}`}
 												>
 													{
-														exercise.difficulty === 'beginner'
-															? 'Principiante'
-															: exercise.difficulty === 'intermediate'
-																? 'Intermedio'
-																: 'Avanzado'
+														difficultNameMap[exercise.difficulty] || exercise.difficulty
 													}
 												</Badge>
 											)}
+
+                      {exercise.type && (
+                        <Badge
+                          variant={'secondary'}
+                          className="text-xs font-barlow uppercase tracking-wide rounded-none"
+                        >
+                          {typeNameMap[exercise.type] || exercise.type}
+                        </Badge>
+                      )}
 										</div>
 									</div>
 
@@ -168,13 +192,13 @@ export default function ExerciseSelector({
 									>
 										{isSelected ? (
 											<>
-												<Check className='h-4 w-4 mr-1.5' />
-												Agregado
+												<Check className='h-4 w-4 sm:mr-1.5' />
+												<span className="hidden sm:inline">Agregado</span>
 											</>
 										) : (
 											<>
-												<Plus className="h-4 w-4 mr-1.5" />
-												Agregar
+												<Plus className="h-4 w-4 sm:mr-1.5" />
+												<span className="hidden sm:inline">Agregar</span>
 											</>
 										)}
 

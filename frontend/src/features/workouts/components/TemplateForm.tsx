@@ -228,7 +228,7 @@ export default function TemplateForm({
 
 			{/* Lista de ejercicios agregados */}
 			{fields.length > 0 && (
-				<Card className="p-6 space-y-4">
+				<Card className="p-6 space-y-4 rounded-none border-border">
 					<div className="flex items-center gap-3">
 						<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
 							Ejercicios
