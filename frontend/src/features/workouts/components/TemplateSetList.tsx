@@ -1,7 +1,6 @@
 // src/features/workouts/components/TemplateSetList.tsx
 import { useFieldArray, type Control, type FieldErrors } from 'react-hook-form';
 import type { CreateTemplateFormData } from '../schemas/templateSchema';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
