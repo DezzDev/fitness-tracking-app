@@ -56,12 +56,12 @@ export default function ExerciseDetailDialog({
       <DialogContent className="max-w-2xl border-primary rounded-none w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px]">
         {isLoading ? (
           <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-8 w-[100px] sm:w-3/4" />
+            <Skeleton className="h-20 w-[200px] sm:w-full" />
             <div className="flex gap-2">
-              <Skeleton className="h-6 w-24" />
-              <Skeleton className="h-6 w-24" />
-              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-12 sm:w-24" />
+              <Skeleton className="h-6 w-12 sm:w-24" />
+              <Skeleton className="h-6 w-12 sm:w-24" />
             </div>
           </div>
         ) : exercise ? (
