@@ -192,7 +192,7 @@ export default function StatsPage() {
 
           {globalStats?.mostUsedTemplate ? (
             <div className="space-y-2">
-              <p className="text-2xl font-bebas tracking-[1px] text-foreground break-words">
+              <p className="text-2xl font-bebas tracking-[1px] text-foreground wrap-break-word">
                 {globalStats.mostUsedTemplate.templateName}
               </p>
               <p className="text-sm text-muted-foreground font-barlow">
