@@ -202,9 +202,6 @@ export default function SessionDetailPage() {
     hasPreviousSession ? previousMetrics.totalCompletedSets : null
   );
 
-  const totalSets = currentMetrics.totalCompletedSets;
-  const totalVolume = currentMetrics.totalVolume;
-
   const renderDelta = (delta: ReturnType<typeof formatDelta>, unit: string) => {
     if (!hasPreviousSession) {
       return <span className="text-xs text-muted-foreground font-barlow">Sin sesión anterior</span>;
