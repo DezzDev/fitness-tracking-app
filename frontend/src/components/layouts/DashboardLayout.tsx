@@ -8,7 +8,7 @@ import {
 	LogOut,
 	Menu,
 	LucideSidebarClose,
-	
+	BarChart3
 } from "lucide-react";
 import { useState } from 'react';
 import { useAuthStore } from "@/store/authStore";
@@ -39,6 +39,7 @@ function DashboardLayout() {
 		{ icon: Home, label: 'Dashboard', path: '/dashboard' },
 		{ icon: Dumbbell, label: 'Entrenamientos', path: '/workouts' },
 		{ icon: TrendingUp, label: 'Ejercicios', path: '/exercises' },
+    {icon: BarChart3, label: 'Estadísticas', path: '/stats' },
 		{ icon: User, label: 'Perfil', path: '/profile' },
 	];
 
@@ -116,7 +117,7 @@ function DashboardLayout() {
 				
 					{/* Sidebar - Desktop */}
 					<aside className="hidden lg:block w-64 shrink-0">
-						<nav className="space-y-1 bg-(--surface) rounded-lg p-3 border border-border">
+						<nav className="space-y-1 bg-(--surface) p-3 border border-border">
 							{menuItems.map(item => {
 								const Icon = item.icon;
 								const isActive = location.pathname === item.path;
@@ -125,7 +126,7 @@ function DashboardLayout() {
 									<Link
 										key={item.path}
 										to={item.path}
-										className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+										className={`flex items-center gap-3 px-4 py-3 transition-all ${
 											isActive 
 											? 'bg-(--orange-subtle) text-primary font-semibold border-l-2 border-primary'
 											: 'text-muted-foreground hover:bg-popover hover:text-foreground'
@@ -153,7 +154,7 @@ function DashboardLayout() {
 												key={item.path}
 												to={item.path}
 												onClick={()=> setSidebarOpen(false)}
-												className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+												className={`flex items-center gap-3 px-4 py-3 rounded-none transition-all ${
 														isActive
 														? 'bg-(--orange-subtle) text-primary font-semibold'
 														: 'text-muted-foreground hover:bg-popover hover:text-foreground'
