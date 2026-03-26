@@ -46,10 +46,10 @@ export default function AccountSettings() {
 
 	return (
 		<>
-			<Card>
+			<Card className='rounded-none border-border'>
 				<CardHeader>
-					<CardTitle>Configuración de cuenta</CardTitle>
-					<CardDescription>
+					<CardTitle className='tracking-widest'>Configuración de cuenta</CardTitle>
+					<CardDescription className='tracking-wide'>
 						Administra tus preferencias y configuración
 					</CardDescription>
 				</CardHeader>
@@ -59,32 +59,32 @@ export default function AccountSettings() {
 
 						<div className='flex items-center justify-between'>
 							<div>
-								<h3 className='font-medium'>Estado de cuenta</h3>
-							<p className='text-sm text-muted-foreground'>
+								<h3 className='font-medium tracking-widest'>Estado de cuenta</h3>
+							<p className='text-sm text-muted-foreground tracking-wide'>
 									Tu cuenta está actualmente activa.
 								</p>
 							</div>
-							<Badge variant={'default'} className='bg-[var(--success)]'>
+							<Badge variant={'default'} className='bg-(--success)'>
 								Activa
 							</Badge>
 						</div>
 
 						<div className='flex items-center justify-between'>
 							<div>
-								<h3 className='font-medium'>Rol</h3>
-							<p className='text-sm text-muted-foreground'>
+								<h3 className='font-medium tracking-widest'>Rol</h3>
+							<p className='text-sm text-muted-foreground tracking-wide'>
 									Nivel de acceso en la plataforma.
 								</p>
 							</div>
-							<Badge variant={'outline'} >
+							<Badge variant={'outline'} className='rounded-none tracking-widest'>
 								{user?.role === 'admin' ? 'Administrador' : 'Usuario'}
 							</Badge>
 						</div>
 
 						<div className='flex items-center justify-between'>
 							<div>
-								<h3 className='font-medium'>Miembro desde</h3>
-							<p className='text-sm text-muted-foreground'>
+								<h3 className='font-medium tracking-widest'>Miembro desde</h3>
+							<p className='text-sm text-muted-foreground tracking-wide'>
 									Fecha de registro
 								</p>
 							</div>
@@ -105,14 +105,14 @@ export default function AccountSettings() {
 
 					{/* Notificaciones */}
 					<div className='space-y-4'>
-						<h3 className='font-medium'>Notificaciones</h3>
+						<h3 className='font-medium tracking-widest'>Notificaciones</h3>
 
 						<div className="flex items-center justify-between">
 							<div className="space-y-0 5">
-								<Label htmlFor='email-notifications'>
+								<Label htmlFor='email-notifications' className='tracking-widest'>
 									Notificaciones por email
 								</Label>
-							<p className='text-sm text-muted-foreground'>
+							<p className='text-sm text-muted-foreground tracking-wide'>
 									Recibe emails sobre tu actividad
 								</p>
 							</div>
@@ -125,10 +125,10 @@ export default function AccountSettings() {
 
 						<div className="flex items-center justify-between">
 							<div className="space-y-0 5">
-								<Label htmlFor='push-notifications'>
+								<Label htmlFor='push-notifications' className='tracking-widest'>
 									Notificaciones push
 								</Label>
-							<p className='text-sm text-muted-foreground'>
+							<p className='text-sm text-muted-foreground tracking-wide'>
 									Recibe notificaciones en tu dispositivo
 								</p>
 							</div>
@@ -141,10 +141,10 @@ export default function AccountSettings() {
 						
 						<div className="flex items-center justify-between">
 							<div className="space-y-0 5">
-								<Label htmlFor='marketing-emails'>
+								<Label htmlFor='marketing-emails' className='tracking-widest'>
 									Emails de marketing
 								</Label>
-							<p className='text-sm text-muted-foreground'>
+							<p className='text-sm text-muted-foreground tracking-wide'>
 									Recibe notificaciones y ofertas especiales
 								</p>
 							</div>
@@ -162,13 +162,13 @@ export default function AccountSettings() {
 
 						<div className="flex items-center gap-2">
 							<AlertTriangle className='w-5 h-5 text-destructive' />
-							<h3 className='font-medium text-destructive'>Zona de peligro</h3>
+							<h3 className='font-medium text-destructive tracking-widest'>Zona de peligro</h3>
 						</div>
 
-						<div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-3">
+						<div className="bg-destructive/10 border border-destructive/20 rounded-none p-4 space-y-3">
 							<div>
-								<h4 className="font-medium text-destructive"> Eliminar cuenta</h4>
-								<p className="text-sm text-destructive/80 mt-1">
+								<h4 className="font-medium text-destructive tracking-widest"> Eliminar cuenta</h4>
+								<p className="text-sm text-destructive/80 mt-1 tracking-wide">
 									Una vez eliminada tu cuenta, no podrás recuperar tu
 									información. Esta acción es permanente.
 								</p>
@@ -177,7 +177,7 @@ export default function AccountSettings() {
 							<Button
 								variant={'destructive'}
 								onClick={()=> setShowDeleteDialog(true)}
-								className='w-full sm:w-auto'
+								className='w-full sm:w-auto rounded-none tracking-widest'
 							>
 								<Trash2 className='mr-2 h-4 w-4' />
 								Eliminar cuenta
@@ -189,13 +189,13 @@ export default function AccountSettings() {
 
 			{/* Dialogo de confirmación para eliminar cuenta */}
 			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<DialogContent>
+				<DialogContent className='rounded-none border-border'>
 					<DialogHeader>
-						<DialogTitle className="flex items-center gap-2 text-destructive">
+						<DialogTitle className="flex items-center gap-2 text-destructive tracking-widest">
 							<AlertTriangle className="w-5 h-5" />
 							¿Eliminar cuenta?
 						</DialogTitle>
-						<DialogDescription className="space-y-3">
+						<DialogDescription className="space-y-3 tracking-wide">
 							<p>
 								Esta acción es <strong>permanente</strong> y no se puede
 								deshacer. Se eliminarán:
@@ -219,7 +219,8 @@ export default function AccountSettings() {
 							placeholder='Escribe "eliminar"'
 							value={confirmText}
 							onChange={(e) => setConfirmText(e.target.value)}
-							className="w-full px-3 py-2 border border-border rounded-lg bg-[var(--surface)] text-foreground focus:outline-none focus:ring-2 focus:ring-destructive"
+							className="w-full px-3 py-2 border border-border rounded-none bg-(--surface) text-foreground 
+                tracking-wide focus:outline-none focus:ring-2 focus:ring-destructive"
 							disabled={isPending}
 						/>
 					</div>
@@ -229,6 +230,7 @@ export default function AccountSettings() {
 							variant="outline"
 							onClick={() => setShowDeleteDialog(false)}
 							disabled={isPending}
+              className='rounded-none tracking-widest'
 						>
 							Cancelar
 						</Button>
@@ -236,6 +238,7 @@ export default function AccountSettings() {
 							variant="destructive"
 							onClick={handleDeleteAccount}
 							disabled={!canDelete || isPending}
+              className='rounded-none tracking-widest'
 						>
 							{isPending ? (
 								<>

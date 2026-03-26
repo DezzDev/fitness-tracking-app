@@ -88,10 +88,10 @@ export default function ChangePasswordForm(){
 	}
 
 	return (
-		<Card>
+		<Card className='rounded-none border-border'>
 			<CardHeader>
-				<CardTitle>Cambiar Contraseña</CardTitle>
-				<CardDescription>
+				<CardTitle className='tracking-widest'>Cambiar Contraseña</CardTitle>
+				<CardDescription className='tracking-wide'>
 					Asegúrate de usar una contraseña segura
 				</CardDescription>
 			</CardHeader>
@@ -100,7 +100,9 @@ export default function ChangePasswordForm(){
 
 					{/* Contraseña actual */}
 					<div className='space-y-2'>
-						<Label htmlFor="currentPassword">Contraseña actual</Label>
+						<Label htmlFor="currentPassword" className='tracking-widest'>
+							Contraseña actual
+						</Label>
 						<div className='relative'>
 							<Input 
 								id='currentPassword'
@@ -108,6 +110,7 @@ export default function ChangePasswordForm(){
 								placeholder='***********'
 								disabled={isPending}
 								{...register('currentPassword')}
+                className='tracking-wide rounded-none'
 							/>
 							<button
 								type='button'
@@ -129,7 +132,9 @@ export default function ChangePasswordForm(){
 
 					{/* Nueva contraseña */}
 					<div className='space-y-2'>
-						<Label htmlFor="newPassword">Nueva contraseña</Label>
+						<Label htmlFor="newPassword" className='tracking-widest'>
+							Nueva contraseña
+						</Label>
 						<div className='relative'>
 							<Input 
 								id='newPassword'
@@ -137,6 +142,8 @@ export default function ChangePasswordForm(){
 								placeholder='***********'
 								disabled={isPending}
 								{...register('newPassword')}
+                className='tracking-wide rounded-none'
+
 							/>
 							<button
 								type='button'
@@ -184,7 +191,9 @@ export default function ChangePasswordForm(){
 
 					{/* Confirmar nueva contraseña */}
 					<div className='space-y-2'>
-						<Label htmlFor="confirmNewPassword">Confirmar nueva contraseña</Label>
+						<Label htmlFor="confirmNewPassword" className='tracking-widest'>
+							Confirmar nueva contraseña
+						</Label>
 						<div className='relative'>
 							<Input
 								id='confirmNewPassword'
@@ -192,6 +201,7 @@ export default function ChangePasswordForm(){
 								placeholder='***********'
 								disabled={isPending}
 								{...register('confirmNewPassword')}
+                className='tracking-wide rounded-none'
 							/>
 							<button
 								type='button'
@@ -213,7 +223,7 @@ export default function ChangePasswordForm(){
 
 					{/* Botón */}
 					<div className='pt-4'>
-						<Button type='submit' disabled={isPending}>
+						<Button type='submit' disabled={isPending} className='rounded-none tracking-widest'>
 							{isPending ? (
 								<>
 									<Loader2 className='mr-2 h-4 w-4 animate-spin' />

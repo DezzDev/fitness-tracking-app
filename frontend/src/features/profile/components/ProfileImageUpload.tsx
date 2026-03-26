@@ -53,10 +53,10 @@ export default function ProfileImageUpload(){
 	}
 
 	return(
-		<Card>
+		<Card className='rounded-none border-border'>
 			<CardHeader>
-				<CardTitle>Foto de perfil</CardTitle>
-				<CardDescription>
+				<CardTitle className='tracking-widest'>Foto de perfil</CardTitle>
+				<CardDescription className='tracking-wide'>
 					Sube una foto para personalizar tu perfil.
 				</CardDescription>
 			</CardHeader>
@@ -106,7 +106,7 @@ export default function ProfileImageUpload(){
 					variant='outline'
 					onClick={handleButtonClick}
 					disabled={isPending}
-					className='w-full'
+					className='w-full rounded-none tracking-widest'
 				>
 					{isPending ? (
 						<>

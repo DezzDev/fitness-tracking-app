@@ -47,10 +47,10 @@ function EditProfileForm() {
 	}
 
 	return (
-		<Card>
+		<Card className="rounded-none border-border">
 			<CardHeader>
-				<CardTitle>Editar perfil</CardTitle>
-				<CardDescription>
+				<CardTitle className="tracking-widest">Editar perfil</CardTitle>
+				<CardDescription className="tracking-wide">
 					Actualiza tu información de perfil
 				</CardDescription>
 			</CardHeader>
@@ -59,13 +59,15 @@ function EditProfileForm() {
 
 					{/* Email (solo lectura) */}
 					<div className="space-y-2">
-						<Label htmlFor="email">Email</Label>
+						<Label htmlFor="email" className="tracking-widest">
+							Email
+						</Label>
 						<Input
 							id="email"
 							type="email"
 							value={user?.email || ''}
 							disabled
-							className="bg-[var(--surface-elevated)]"
+							className="bg-popover rounded-none tracking-wide"
 						/>
 						<p className="text-xs text-muted-foreground">
 							El email no se puede modificar
@@ -74,13 +76,16 @@ function EditProfileForm() {
 
 					{/* Nombre */}
 					<div className="space-y-2">
-						<Label htmlFor="name">Nombre</Label>
+						<Label htmlFor="name" className="tracking-widest">
+							Nombre
+						</Label>
 						<Input
 							id="name"
 							type="text"
 							placeholder="Tu nombre"
 							disabled={isPending}
 							{...register('name')}
+              className="rounded-none tracking-wide"
 						/>
 						{errors.name && (
 							<p className="text-sm text-destructive">{errors.name.message}</p>
@@ -89,7 +94,9 @@ function EditProfileForm() {
 
 					{/* Edad */}
 					<div className="space-y-2">
-						<Label htmlFor="age">Edad</Label>
+						<Label htmlFor="age" className="tracking-widest">
+							Edad
+						</Label>
 						<Input
 							id="age"
 							type="number"
@@ -97,6 +104,7 @@ function EditProfileForm() {
 							max={120}
 							disabled={isPending}
 							{...register('age', { valueAsNumber: true })}
+              className="rounded-none tracking-wide"
 						/>
 						{errors.age && (
 							<p className="text-sm text-destructive">{errors.age.message}</p>
@@ -108,6 +116,7 @@ function EditProfileForm() {
 						<Button
 							type="submit"
 							disabled={!isDirty || isPending}
+              className="rounded-none tracking-widest"
 						>
 							{isPending ? (
 								<>
@@ -124,6 +133,7 @@ function EditProfileForm() {
 							variant={"outline"}
 							disabled={isPending}
 							onClick={()=> window.location.reload()}
+              className="rounded-none tracking-widest"
 						>
 							Cancelar
 						</Button>

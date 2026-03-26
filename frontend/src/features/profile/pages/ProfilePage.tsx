@@ -11,7 +11,7 @@ export default function ProfilePage() {
 
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 w-full">
 			{/* Header */}
 			<div>
 				<h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">Mi Perfil</h1>
@@ -22,19 +22,19 @@ export default function ProfilePage() {
 
 			{/* Tabs */}
 			<Tabs defaultValue="profile" className="space-y-6">
-				<TabsList className="grid w-full grid-cols-3">
+				<TabsList className="grid w-full grid-cols-3 rounded-none">
 
-					<TabsTrigger value="profile" className="flex items-center gap-2">
+					<TabsTrigger value="profile" className="flex items-center gap-2 rounded-none tracking-widest">
 						<User size={18}/>
 						<span className="hidden sm:inline">Perfil</span>
 					</TabsTrigger>
 
-					<TabsTrigger value="security" className="flex items-center gap-2">
+					<TabsTrigger value="security" className="flex items-center gap-2 rounded-none tracking-widest">
 						<Lock size={18}/>
 						<span className="hidden sm:inline">Seguridad</span>
 					</TabsTrigger>
-					
-					<TabsTrigger value="settings" className="flex items-center gap-2">
+
+					<TabsTrigger value="settings" className="flex items-center gap-2 rounded-none tracking-widest">
 						<Settings size={18}/>
 						<span className="hidden sm:inline">Configuración</span>
 					</TabsTrigger>
