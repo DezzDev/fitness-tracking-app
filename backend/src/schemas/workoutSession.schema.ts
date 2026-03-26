@@ -240,8 +240,8 @@ export const WorkoutSessionFiltersSchema = z.object({
 		.string()
 		.regex(/^\d+$/, 'Limit must be a number')
 		.transform(Number)
-		.refine(val => val > 0 && val <= 100, {
-			message: 'Limit must be between 1 and 100'
+		.refine(val => val > 0 && val <= 200, {
+			message: 'Limit must be between 1 and 200'
 		})
 		.optional()
 		.default(10),

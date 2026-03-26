@@ -27,7 +27,7 @@ GET {{baseUrl}}/workoutSessions/recent HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions/recent - Obtener sesiones recientes (últimas x)
-GET {{baseUrl}}/workoutSessions/recent?limit=2 HTTP/1.1
+GET {{baseUrl}}/workoutSessions/recent?limit=200 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions/date-range - Obtener sesiones por rango de fechas
@@ -141,7 +141,7 @@ GET {{baseUrl}}/workoutSessions HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions - Listar sesiones con paginación personalizada
-GET {{baseUrl}}/workoutSessions?page=1&limit=20 HTTP/1.1
+GET {{baseUrl}}/workoutSessions?page=1&limit=200 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions - Filtrar por template
@@ -149,7 +149,7 @@ GET {{baseUrl}}/workoutSessions?templateId=d2c31fd5-5720-459c-964b-17f9cad150a9 
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions - Filtrar por rango de fechas
-GET {{baseUrl}}/workoutSessions?startDate=2025-02-01T00:00:00Z&endDate=2025-02-28T23:59:59Z HTTP/1.1
+GET {{baseUrl}}/workoutSessions?startDate=2025-02-01T00:00:00Z&endDate=2026-03-25T23:59:59Z HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions - Buscar por término
@@ -157,7 +157,7 @@ GET {{baseUrl}}/workoutSessions?searchTerm=push HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions - Filtros combinados
-GET {{baseUrl}}/workoutSessions?startDate=2025-02-01T00:00:00Z&endDate=2025-02-28T23:59:59Z&searchTerm=morning&page=1&limit=10 HTTP/1.1
+GET {{baseUrl}}/workoutSessions?startDate=2025-02-01T00:00:00Z&endDate=2026-03-25T23:59:59Z&searchTerm=pecho&page=1&limit=200 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /sessions/:id - Obtener sesión por id

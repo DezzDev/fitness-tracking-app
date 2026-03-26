@@ -20,6 +20,7 @@ import SessionDetailPage from '@/features/workouts/pages/SessionDetailPage';
 import TemplateDetailPage from '@/features/workouts/pages/TemplateDetailPage';
 import ExercisesPage from '@/features/exercises/pages/ExercisesPage';
 import ProfilePage from '@/features/profile/pages/ProfilePage';
+import StatsPage from '@/features/stats/pages/StatsPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
 
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
               {
                 path: 'profile',
                 element: <ProfilePage />
+              },
+              {
+                path: 'stats',
+                element: <StatsPage />
               }
             ]
           }
