@@ -46,21 +46,29 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
   const type = exercise.type ? typeConfig[exercise.type] : null;
 
   return (
-    <Card
-      className="hover:shadow-lg transition-shadow cursor-pointer border-border rounded-none py-5
+    <div
+      className="hover:shadow-lg transition-shadow cursor-pointer py-3
       gap-0 md:gap-4"
       onClick={onClick}
     >
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-2xl text-foreground line-clamp-1 capitalize">
+      <CardContent className="space-y-2 grid gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div>
+          <h3 className="font-semibold text-2xl text-foreground capitalize tracking-widest">
             {exercise.name}
           </h3>
-          <ArrowRight className="h-5 w-5 text-muted-foreground" />
+
+          <p className="text-sm text-muted-foreground tracking-wide">
+            {exercise.description  
+              ? exercise.description.length > 100
+                ? exercise.description.slice(0, 100) + '...'
+                : exercise.description
+              : 'No hay descripción disponible para este ejercicio.'}
+          </p>
 
         </div>
+
         {/* Badges */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-end gap-2 flex-wrap ">
 
           {/* Grupo muscular */}
           {exercise.muscleGroup && (
@@ -95,6 +103,6 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
 
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }
