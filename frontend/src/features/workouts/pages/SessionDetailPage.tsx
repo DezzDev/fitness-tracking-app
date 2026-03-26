@@ -279,7 +279,7 @@ export default function SessionDetailPage() {
         {session.templateId && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bebas tracking-[2px] uppercase text-foreground">
+              <h2 className="text-xl font-bebas tracking-[2px] uppercase text-foreground">
                 Comparación vs sesión anterior
               </h2>
               {isPreviousSessionLoading && (
@@ -379,7 +379,7 @@ export default function SessionDetailPage() {
                         )}
 
                         <div className="flex-1 min-w-0 space-y-1">
-                          <h3 className="font-bebas tracking-[2px] text-2xl text-foreground">
+                          <h3 className="font-bebas tracking-[2px] text-xl text-foreground">
                             {workoutExercise.exerciseName || 'Ejercicio'}
                           </h3>
 
