@@ -90,7 +90,7 @@ CREATE TABLE workout_templates (
   scheduled_day_of_week INTEGER CHECK(scheduled_day_of_week BETWEEN 0 AND 6) DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-	deleted_at DATETIME DEFAULT NULL,
+  deleted_at DATETIME DEFAULT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -160,6 +160,21 @@ CREATE TABLE workout_session_sets (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (session_exercise_id) REFERENCES workout_session_exercises(id) ON DELETE CASCADE
 );
+
+-- Nueva tabla: refresh_tokens
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  token_id TEXT UNIQUE NOT NULL,
+  expires_at DATETIME NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  revoked BOOLEAN DEFAULT 0,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Índice para búsquedas rápidas
+CREATE INDEX idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_tokens_token_id ON refresh_tokens(token_id);
 
 -- =====================================
 -- DATA: Usuarios de prueba
