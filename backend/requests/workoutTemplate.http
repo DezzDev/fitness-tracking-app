@@ -41,8 +41,15 @@ content-type: application/json
 			"notes": "Flexiones clásicas"
 		},
 		{
-			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"exerciseId": "07bd7be2-315c-48e2-b4b2-210161d79f2f",
 			"orderIndex": 1,
+			"suggestedSets": 3,
+			"suggestedReps": 10,
+			"notes": "Flexiones clásicas"
+		},
+		{
+			"exerciseId": "1768af97-4deb-4f0e-956d-98fb89908212",
+			"orderIndex": 2,
 			"suggestedSets": 4,
 			"suggestedReps": 8,
 			"notes": "Dips en paralelas"
