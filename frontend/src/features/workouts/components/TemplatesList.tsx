@@ -150,39 +150,42 @@ export default function TemplatesList() {
 					)}
 
 					{/* Acciones */}
-					<div className="flex gap-4 text-2xl">
-						<Button
-							onClick={() => handleStartSession(template.id)}
-							size="sm"
-							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-2"
-						>
-							Iniciar
-						</Button>
+					<div className="flex justify-between text-2xl flex-wrap align-middle">
+            <div >
+              <Button
+                onClick={() => handleStartSession(template.id)}
+                size="sm"
+                variant="ghost"
+                className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-2"
+              >
+                Iniciar
+              </Button>
 
-						<Button
-							onClick={() => handleEdit(template.id)}
-							size="sm"
-							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] px-2"
-						>
-							Editar
-						</Button>
+              <Button
+                onClick={() => handleEdit(template.id)}
+                size="sm"
+                variant="ghost"
+                className="uppercase font-barlow font-semibold tracking-[3px] px-2"
+              >
+                Editar
+              </Button>
 
-						<Button
-							onClick={() => handleDuplicate(template.id)}
-							size="sm"
-							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] px-2"
-						>
-							Duplicar
-						</Button>
+              <Button
+                onClick={() => handleDuplicate(template.id)}
+                size="sm"
+                variant="ghost"
+                className="uppercase font-barlow font-semibold tracking-[3px] px-2"
+              >
+                Duplicar
+              </Button>
+
+            </div>
 
 						<Button
 							onClick={() => handleDeleteClick(template.id)}
 							size="sm"
 							variant="ghost"
-							className="uppercase font-barlow font-semibold tracking-[3px] text-destructive/70 hover:text-destructive px-2 ml-auto"
+							className="uppercase font-barlow font-semibold tracking-[3px] text-destructive/70 hover:text-destructive px-2"
 						>
 							<Trash2 className="h-4 w-4" />
 						</Button>
