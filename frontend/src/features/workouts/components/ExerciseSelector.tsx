@@ -44,7 +44,6 @@ export default function ExerciseSelector({
 	})
 
 	const exercises = data?.data?.items || [];
-  console.log(exercises);
 
 	const handleSelectExercise = (exerciseId: string, exerciseName: string) => {
 		onSelectExercise(exerciseId, exerciseName);

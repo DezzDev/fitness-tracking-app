@@ -21,7 +21,6 @@ export default function ExerciseInfo({
 }: ExerciseInfoProps) {
 
   const { data: exercise, isLoading, isError } = useExercise(exerciseId);
-  console.log({ exercise })
 
   if (isLoading) {
     return (

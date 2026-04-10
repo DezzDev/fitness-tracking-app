@@ -106,6 +106,7 @@ export default function TemplateForm({
 	};
 
 	const handleDayChange = (value: string) => {
+   
 		if (value === 'none') {
 			setValue('scheduledDayOfWeek', undefined, { shouldDirty: true });
 		} else {
@@ -117,7 +118,7 @@ export default function TemplateForm({
 
 	return (
 		<form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6'>
-			{/* Alerta de navegacion bloqueada */}
+			{/* Alerta de navegación bloqueada */}
 			{blocker.state === 'blocked' && (
 				<Alert variant="destructive">
 					<AlertTriangle className="h-4 w-4" />
@@ -145,7 +146,7 @@ export default function TemplateForm({
 				</Alert>
 			)}
 
-			{/* Informacion basica */}
+			{/* Información básica */}
 			<Card className="p-6 space-y-4 rounded-none border-border">
 				{/* Nombre */}
 				<div className='space-y-2'>
@@ -167,13 +168,13 @@ export default function TemplateForm({
 					)}
 				</div>
 
-				{/* Descripcion */}
+				{/* Descripción */}
 				<div className='space-y-2'>
 					<Label
 						htmlFor='description'
 						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
 					>
-						Descripcion (opcional)
+						Descripción (opcional)
 					</Label>
 					<Textarea
 						id='description'
@@ -193,7 +194,7 @@ export default function TemplateForm({
 					<Label
 						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
 					>
-						Dia programado (opcional)
+						Día programado (opcional)
 					</Label>
 					<Select
 						value={scheduledDay !== undefined ? String(scheduledDay) : 'none'}
@@ -286,7 +287,7 @@ export default function TemplateForm({
 				<p className='text-sm text-destructive font-barlow'>{errors.exercises.message}</p>
 			)}
 
-			{/* Boton de accion */}
+			{/* Botón de acción */}
 			<Button
 				type='submit'
 				size={'lg'}
