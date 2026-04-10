@@ -14,7 +14,7 @@ const colors: Record<LogLevel | 'reset', string> = {
 const levels: LogLevel[] = [ 'debug', 'info', 'warn', 'error' ];
 
 function getCurrentLevelIndex(): number {
-  const configured = (env.LOG_LEVEL || 'info') as LogLevel;
+  const configured = (env?.LOG_LEVEL || 'info') as LogLevel;
   const idx = levels.indexOf(configured);
   return idx === -1 ? levels.indexOf('info') : idx;
 }
