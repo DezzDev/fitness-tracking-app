@@ -21,9 +21,11 @@ CREATE TABLE IF NOT EXISTS exercises (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
-  difficulty TEXT CHECK(difficulty IN ('beginner','intermediate','advanced')),
+  difficulty TEXT,
   muscle_group TEXT,
-  type TEXT CHECK(type IN ('strength','endurance','skill','explosive')),
+  type TEXT CHECK (
+    type IN ('fuerza','resistencia','skill','explosivo','isométrico','cardio','mobilidad')
+  ),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

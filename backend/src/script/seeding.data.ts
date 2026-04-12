@@ -1,5 +1,5 @@
-import {v4 as uuidv4} from 'uuid';
-import {executeWithRetry, connectDatabase} from '@/config/database';
+import { randomUUID } from 'crypto';
+import { connectDatabase, batch} from '@/config/database';
 import express from 'express';
 
 // init express
@@ -27,64 +27,93 @@ const app = express();
 // 2. Exercises
 
 const exercises = [
+	
 	{
-		name: "Extensiones de tríceps en barra",
-		description: "Extensión de brazos en barra baja tipo rompecráneos",
-		difficulty: "beginner",
-		muscle_group: "tríceps",
-		type: "strength"
-	},
-	{
-		name: "Pike push-ups",
-		description: "Flexiones en V enfocadas en hombros",
+		name: "Dominadas con agarre neutro",
+		description: "Dominadas con agarre paralelo que reducen el estrés en hombros y maximizan la activación de dorsales y bíceps",
 		difficulty: "intermediate",
-		muscle_group: "hombros",
-		type: "strength"
+		muscle_group: "espalda",
+		type: "fuerza"
 	},
 	{
-		name: "Press militar",
-		description: "Empuje vertical con barra o mancuernas",
+		name: "Flexiones escapulares",
+		description: "Flexión escapular sin doblar brazos, ideal para activar serrato anterior y mejorar la estabilidad del hombro",
+		difficulty: "beginner",
+		muscle_group: "hombros",
+		type: "mobilidad"
+	},
+	{
+		name: "Rotaciones externas de hombros",
+		description: "Ejercicio correctivo para fortalecer el manguito rotador y prevenir lesiones en el hombro",
+		difficulty: "beginner",
+		muscle_group: "hombros",
+		type: "mobilidad"
+	},
+	{
+		name: "Face pull",
+		description: "Tirón hacia la cara con enfoque en deltoides posterior y estabilidad escapular",
+		difficulty: "beginner",
+		muscle_group: "hombros",
+		type: "fuerza"
+	},
+	{
+		name: "Flexiones declinadas",
+		description: "Flexiones con pies elevados para aumentar la carga sobre pecho superior y hombros",
 		difficulty: "intermediate",
+		muscle_group: "pecho",
+		type: "fuerza"
+	},
+	{
+		name: "Elevaciones Y",
+		description: "Elevaciones en forma de Y para activar trapecio inferior y mejorar postura",
+		difficulty: "beginner",
 		muscle_group: "hombros",
-		type: "strength"
+		type: "mobilidad"
 	},
 	{
-		name: "Dominadas australianas",
-		description: "Remo invertido en barra baja",
+		name: "Elevaciones T",
+		description: "Elevaciones en forma de T centradas en deltoides posterior y control escapular",
+		difficulty: "beginner",
+		muscle_group: "hombros",
+		type: "mobilidad"
+	},
+	{
+		name: "Elevaciones W",
+		description: "Movimiento en W enfocado en la retracción escapular y fortalecimiento del manguito rotador",
+		difficulty: "beginner",
+		muscle_group: "hombros",
+		type: "mobilidad"
+	},
+	{
+		name: "Hollow body hold",
+		description: "Ejercicio isométrico clave para desarrollar un core sólido y transferir fuerza en calistenia",
+		difficulty: "intermediate",
+		muscle_group: "core",
+		type: "isométrico"
+	},
+	{
+		name: "Dead hang",
+		description: "Suspensión pasiva en barra que mejora agarre, descompresión espinal y salud del hombro",
 		difficulty: "beginner",
 		muscle_group: "espalda",
-		type: "strength"
+		type: "isométrico"
 	},
 	{
-		name: "Dominadas altas",
-		description: "Dominadas llevando el pecho a la barra",
-		difficulty: "advanced",
-		muscle_group: "espalda",
-		type: "strength"
-	},
-	{
-		name: "Curl de bíceps",
-		description: "Flexión de brazo con peso para bíceps",
-		difficulty: "beginner",
-		muscle_group: "bíceps",
-		type: "strength"
-	},
-	{
-		name: "Remo con mancuerna",
-		description: "Remo unilateral con mancuerna",
+		name: "Dominadas negativas",
+		description: "Fase excéntrica controlada de la dominada para ganar fuerza y progresar hacia dominadas completas",
 		difficulty: "beginner",
 		muscle_group: "espalda",
-		type: "strength"
+		type: "fuerza"
 	},
 	{
-		name: "Elevaciones de pantorrilla",
-		description: "Elevación de talones para gemelos",
+		name: "Extensores de muñeca",
+		description: "Trabajo específico de antebrazo para equilibrar musculatura y prevenir lesiones en muñeca y codo",
 		difficulty: "beginner",
-		muscle_group: "piernas",
-		type: "strength"
+		muscle_group: "antebrazo",
+		type: "fuerza"
 	}
 ].map(e => ({
-	id: uuidv4(),
+	id: randomUUID(),
 	...e
 }));
 
@@ -138,18 +167,22 @@ async function seed() {
 	// 	)
 	// }
 
-	console.log("seeding exercises...")
-	for (const e of exercises){
-		await executeWithRetry(client =>
-			client.execute({
-				sql: `
+  const exerciseQueries: Array<{ sql: string, args: any[] }> = [];
+
+ for(const e of exercises){
+  exerciseQueries.push({
+    sql: `
 					INSERT INTO exercises (id, name, description, difficulty, muscle_group, type)
 					VALUES (?,?,?,?,?,?)
 				`,
-				args:[e.id, e.name, e.description, e.difficulty, e.muscle_group, e.type]
-			})
-		)
-	}
+    args: [e.id, e.name, e.description, e.difficulty, e.muscle_group, e.type]
+  })
+ }
+
+ console.log("seeding exercises...")
+ await batch(exerciseQueries);
+	
+	
 
 	// console.log("seeding exercises tags...")
 	// for(const et of exerciseTags){		
@@ -172,7 +205,9 @@ const start = async () => {
 	app.listen(3000, () => {
 		console.log('Server started on port 3000');
 		
-		seed().catch(err => {
+		seed()
+    .then(process.exit(0))
+    .catch(err => {
 			console.error("seed failed", err);
 			process.exit(1)
 		}).finally(()=>{
