@@ -236,7 +236,7 @@ GET {{baseUrl}}/workoutTemplates?page=1&limit=5&searchTerm=Day&favoritesOnly=fal
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /workoutTemplates/:id - Obtener template por ID
-GET {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
+GET {{baseUrl}}/workoutTemplates/3cf9e6b1-747b-4c4c-af66-e4b932fbe7b2 HTTP/1.1
 Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### GET /workoutTemplates/:id - Error: ID inexistente (404)

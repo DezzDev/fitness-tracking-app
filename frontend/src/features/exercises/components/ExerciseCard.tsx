@@ -25,24 +25,9 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
     }
   };
 
-  // Configuración de tipo
-  const typeConfig = {
-    strength: {
-      label: 'Fuerza'
-    },
-    endurance: {
-      label: 'Resistencia'
-    },
-    skill: {
-      label: 'Habilidad'
-    },
-    explosive: {
-      label: 'Explosivo'
-    }
-  };
 
   const difficulty = exercise.difficulty ? difficultyConfig[exercise.difficulty] : null;
-  const type = exercise.type ? typeConfig[exercise.type] : null;
+  const type = exercise.type ? capitalize(exercise.type) : null;
 
   return (
     <div
@@ -95,7 +80,7 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
               variant="secondary"
               className={`text-xs font-medium bg-popover text-muted-foreground rounded-none tracking-widest`}
             >
-              {type.label}
+              {type}
             </Badge>
           )}
 

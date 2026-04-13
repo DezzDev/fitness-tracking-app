@@ -35,21 +35,6 @@ export default function ExerciseDetailDialog({
     }
   };
 
-  // Configuración de tipo
-  const typeConfig = {
-    strength: {
-      label: 'Fuerza'
-    },
-    endurance: {
-      label: 'Resistencia'
-    },
-    skill: {
-      label: 'Habilidad'
-    },
-    explosive: {
-      label: 'Explosivo'
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -116,7 +101,7 @@ export default function ExerciseDetailDialog({
                       variant="secondary"
                       className={`text-sm font-medium rounded-none tracking-widest`}
                     >
-                      {typeConfig[exercise.type].label}
+                      {capitalize(exercise.type)}
                     </Badge>
                   )}
 
