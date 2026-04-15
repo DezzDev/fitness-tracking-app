@@ -31,7 +31,7 @@ export const RegisterSchema = BaseUserSchema.extend({
   name: z.string().min(2).max(50).trim(),
   age: z.number().int('Age must be a number').min(15,{error:'Age must be at least 15 years old'}).max(120,{message:'Invalid age'}),
   role: z.enum(['user', 'admin']).default('user'),
-	profile_image: z.string().optional().default(profile_image_default),
+	profileImage: z.string().optional().default(profile_image_default),
 	acceptTerms: z.boolean().refine((val: boolean) => val === true, { error: 'You must accept the terms and conditions' }),
 });
 
@@ -46,7 +46,7 @@ export const UpdateUserSchema = z.object({
 	email: BaseUserSchema.shape.email.optional(),
   name: RegisterSchema.shape.name.optional(),
   age: RegisterSchema.shape.age.optional(),
-	profile_image: z.string().optional(),
+	profileImage: z.string().optional(),
 }).strict(); // No permite campos adicionales
 
 // Schema para validar ID en params

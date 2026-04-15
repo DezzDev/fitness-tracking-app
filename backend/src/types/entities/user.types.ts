@@ -7,24 +7,33 @@ export interface User {
 	name: string;
 	age: number;
 	role: 'user' | 'admin';
-	profile_image: string,
-	is_active: boolean;
+	profileImage: string,
+	isActive: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+  tokenVersion: number;
 };
 
 // Para insert en DB
-export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'is_active'> & {
+export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'tokenVersion'> & {
 	password: string;
 };
 
 // Para update en DB
-export type UserUpdateData = Partial<Omit<User, 'id' | 'is_active' | 'role' | 'createdAt' | 'updatedAt'>>;
+export type UserUpdateData = Partial<Omit<User, 'id' | 'isActive' | 'role' | 'createdAt' | 'updatedAt'>>;
 
 
-// Row de la DB (si usas snake_case)
-export type UserRow = Omit<User, 'createdAt' | 'updatedAt'> & {
+// User row
+export type UserRow = {
+  id: string;
+	email: string;
+	name: string;
+	age: number;
+	role: 'user' | 'admin';
+  profile_image: string,
+  is_active: boolean;
 	password_hash: string;
 	created_at: string;
 	updated_at: string;
+  token_version: number;
 };

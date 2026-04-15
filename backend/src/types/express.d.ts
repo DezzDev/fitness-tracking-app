@@ -5,8 +5,8 @@ declare global {
 		interface Request {
 			user?: {
 				userId: string;
-				email: string;
 				role: 'user' | 'admin';
+        tokenVersion: number;
 			},
 			validatedBody?: Record<string, unknown>;
 			validatedQuery?: Record<string, unknown>;

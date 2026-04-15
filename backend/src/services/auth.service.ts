@@ -1,8 +1,10 @@
 // src/services/auth.service.ts
 
+import { createAppError } from "@/middlewares/error.middleware";
 import { refreshTokenRepository } from "@/repositories/refreshToken.repository";
 import { securityEventRepository } from "@/repositories/securityEvent.repository";
-import { RefreshTokenPayload } from "@/types/common/auth.types";
+import { userRepository } from "@/repositories/user.repository";
+import { RefreshTokenPayload, SecurityEventType } from "@/types/common/auth.types";
 import { handleServiceError } from "@/utils/error.utils";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@/utils/jwt.utils";
 import logger from "@/utils/logger";
@@ -17,70 +19,74 @@ export const authService = {
    * @param data - Datos necesarios para generar los tokens
    * @returns accessToken, refreshToken y tokenId del refresh token para seguimiento
    */
-  generateTokenPair: async (
+  generateTokenPair: async (data: {
     userId: string,
     role: string,
     tokenVersion: number,
     parentTokenId?: string,
     deviceInfo?: string,
     ipAddress?: string
-  ):Promise<{ accessToken: string; refreshToken: string, tokenId:string }> => {
-  
+  }
+  ): Promise<{ accessToken: string; refreshToken: string, tokenId: string }> => {
+
     try {
       // Generar access token
       const accessToken = generateAccessToken({
-        userId:userId,
-        role: role,
-        tokenVersion: tokenVersion
+        userId: data.userId,
+        role: data.role,
+        tokenVersion: data.tokenVersion
       })
-  
+
       // Generar refresh token
-      const {token:refreshToken, tokenId, expiresAt} = generateRefreshToken({
-        userId: userId,
-        role: role,
-        tokenVersion: tokenVersion
+      const { token: refreshToken, tokenId, expiresAt } = generateRefreshToken({
+        userId: data.userId,
+        role: data.role,
+        tokenVersion: data.tokenVersion
       })
-  
+
       // Guardar refresh token en base de datos
       await refreshTokenRepository.create({
-        userId: userId,
+        userId: data.userId,
         tokenId,
         expiresAt,
-        parentTokenId: parentTokenId || null,
-        deviceInfo: deviceInfo || null,
-        ipAddress: ipAddress || null
+        parentTokenId: data.parentTokenId || null,
+        deviceInfo: data.deviceInfo || null,
+        ipAddress: data.ipAddress || null
       })
-  
+
       return { accessToken, refreshToken, tokenId };
-      
+
     } catch (error) {
       throw handleServiceError(
         error,
         'AuthService.generateTokenPair',
         'Unable to generate token pair',
-        { userId, role, tokenVersion, parentTokenId, deviceInfo, ipAddress }  
+        { userId: data.userId, role: data.role, tokenVersion: data.tokenVersion, parentTokenId: data.parentTokenId, deviceInfo: data.deviceInfo, ipAddress: data.ipAddress }
       );
     }
   },
 
   /**
    * Refrescar tokens (con rotación)
+   * @param oldRefreshToken - El refresh token que se va a rotar
+   * @param ipAddress - IP del cliente (opcional, para logging)
+   * @param userAgent - User agent del cliente (opcional, para logging)
+   * @returns Nuevo access token, refresh token y datos del usuario
    */
-  refreshToken : async (oldRefreshToken:string, ipAddress?:string, userAgent?:string) =>{
+  refreshTokens: async ({oldRefreshToken, ipAddress, userAgent}: { oldRefreshToken: string, ipAddress?: string, userAgent?: string }) => {
     try {
       // Verificar firma del refresh token
-      let decoded: RefreshTokenPayload
-      decoded = verifyRefreshToken(oldRefreshToken);
+      const decoded: RefreshTokenPayload = verifyRefreshToken(oldRefreshToken);
 
       // Buscar token en base de datos
       const storedToken = await refreshTokenRepository.findByTokenId(decoded.tokenId)
 
       // Detección de reuso del token
-      if(!storedToken){
+      if (!storedToken) {
         // token no existe o ya fue revocado
         const revokedToken = await refreshTokenRepository.findByTokenIdIncludeRevoked(decoded.tokenId);
 
-        if(revokedToken && revokedToken.revoked){
+        if (revokedToken && revokedToken.revoked) {
           // Token válido pero ya usado = ATAQUE
           logger.warn(`Token reuse detected for user ${decoded.userId}`)
 
@@ -97,17 +103,138 @@ export const authService = {
             success: false,
             details: 'Refresh token reuse detected, token family revoked'
           })
+          throw createAppError('TOKEN_REUSE_DETECTED', 401, true);
+        }
+
+        throw createAppError('INVALID_REFRESH_TOKEN', 401, true);
+      }
+
+      // Validar usuario y token version (en caso de que el usuario haya cambiado su contraseña o se haya revocado manualmente)
+      const user = await userRepository.findById(decoded.userId);
+
+      if (!user) {
+        throw createAppError('USER_NOT_FOUND', 404, true);
+      }
+
+      if (user.tokenVersion !== decoded.tokenVersion) {
+        throw createAppError('TOKEN_VERSION_MISMATCH', 401, true);
+      }
+
+      // Revocar token viejo antes de crear el nuevo (rotación)
+      await refreshTokenRepository.revokedByTokenId(decoded.tokenId, 'rotated')
+
+      // Generar nuevo par de tokens
+      const tokens = await authService.generateTokenPair({
+        userId: user.id,
+        role: user.role,
+        tokenVersion: user.tokenVersion || 0,
+        parentTokenId: decoded.tokenId,
+        deviceInfo: userAgent || undefined,
+        ipAddress: ipAddress || undefined
+      });
+
+      // Registrar evento de seguridad
+      await securityEventRepository.create({
+        userId: user.id,
+        eventType: 'token_refresh',
+        ipAddress: ipAddress || null,
+        userAgent: userAgent || null,
+        tokenId: decoded.tokenId,
+        success: true,
+        details: 'Refresh token rotated successfully'
+      })
+
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role
         }
       }
 
 
-    }catch (error){
+    } catch (error) {
       throw handleServiceError(
         error,
-        'AuthService.refreshToken', 
+        'AuthService.refreshToken',
         'Invalid refresh token',
         { oldRefreshToken, ipAddress, userAgent }
       );
     }
+  },
+
+  logout: async (data: {
+    refreshToken?: string,
+    userId?: string,
+    ipAddress?: string,
+    userAgent?: string
+  }) => {
+    if (data.refreshToken) {
+      try {
+        const decoded = verifyRefreshToken(data.refreshToken);
+        await refreshTokenRepository.revokedByTokenId(decoded.tokenId, 'logout')
+
+        // Registrar evento de seguridad
+        if (decoded.userId) {
+          await securityEventRepository.create({
+            userId: decoded.userId,
+            eventType: 'logout',
+            tokenId: decoded.tokenId,
+            ipAddress: data.ipAddress || null,
+            userAgent: data.userAgent || null,
+            success: true,
+            details: 'User logged out successfully'
+          })
+        }
+      } catch (error) {
+        // token invalido, pero continuar con logout
+
+
+        throw handleServiceError(
+          error,
+          'AuthService.logout',
+          'Unable to logout with refresh token',
+          { refreshToken: data.refreshToken, userId: data.userId, ipAddress: data.ipAddress }
+        );
+      }
+    }
+  },
+
+  /**
+   * Revocar todas las sesiones (cambio de contraseña)
+   */
+  revokeAllSessions: async (userId: string, reason: SecurityEventType) => {
+    try {
+      // Incrementar token version del usuario para invalidar todos los tokens existentes
+      await userRepository.incrementTokenVersion(userId);
+
+      // Revocar todos los refresh tokens
+      await refreshTokenRepository.revokedAllByUserId(userId, reason)
+
+      // Registrar evento de seguridad
+      await securityEventRepository.create({
+        userId,
+        eventType: reason,
+        ipAddress: null,
+        userAgent: null,
+        tokenId: null,
+        success: true,
+        details: 'All user sessions revoked due to password change'
+      });
+
+
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'AuthService.revokeAllSessions',
+        'Unable to revoke all sessions',
+        { userId }
+      );
+    }
+
+
   }
 }

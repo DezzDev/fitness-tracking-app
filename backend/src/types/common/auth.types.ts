@@ -22,10 +22,12 @@ export interface RefreshToken {
   revokedReason: string | null;
 }
 
+export type SecurityEventType = 'login' | 'logout' | 'token_reuse' | 'token_refresh' | 'password_change';
+
 export interface SecurityEvent {
   id: string;
   userId: string;
-  eventType: 'login' | 'logout' | 'token_reuse' | 'token_refresh' | 'password_change';
+  eventType: SecurityEventType;
   ipAddress: string | null;
   userAgent: string | null;
   tokenId: string | null;
@@ -55,7 +57,7 @@ export type RefreshTokenRow = {
 export interface SecurityEventRow {
   id: string;
   user_id:string;
-  event_type: 'login' | 'logout' | 'token_reuse' | 'token_refresh' | 'password_change';
+  event_type: SecurityEventType;
   ip_address: string | null;
   user_agent: string | null;
   token_id: string | null;

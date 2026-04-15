@@ -8,7 +8,8 @@ import { LoginInput, RegisterInput, UpdateUserInput } from '@/schemas/user.schem
 import { userRepository } from '@/repositories/user.repository';
 import { createAppError } from '@/middlewares/error.middleware';
 import { handleServiceError } from '@/utils/error.utils';
-import { generateToken } from '@/utils/jwt.utils';
+import { authService } from './auth.service';
+import { securityEventRepository } from '@/repositories/securityEvent.repository';
 
 
 
@@ -23,14 +24,14 @@ const SALT_ROUNDS = 10;
 // ============================================
 
 const hashPassword = async (password: string): Promise<string> =>
-	bcrypt.hash(password, SALT_ROUNDS);
+  bcrypt.hash(password, SALT_ROUNDS);
 
 const comparePassword = async (password: string, hash: string): Promise<boolean> =>
-	bcrypt.compare(password, hash);
+  bcrypt.compare(password, hash);
 
 const sanitizeUser = (user: User): Omit<User, 'passwordHash'> => {
-	// Remover campos sensibles si los hubiera
-	return user;
+  // Remover campos sensibles si los hubiera
+  return user;
 };
 
 // ============================================
@@ -38,309 +39,331 @@ const sanitizeUser = (user: User): Omit<User, 'passwordHash'> => {
 // ============================================
 
 export const userService = {
-	/**
-		* Registrar un nuevo usuario
-	*/
-	register: async (input: RegisterInput): Promise<{ user: User; token: string }> => {
-		try {
-			// 1. Verificar si el email ya existe
-			const existingUser = await userRepository.existByEmail(input.email);
 
-			if (existingUser) {
-				throw createAppError('Email already registered', 409);
-			}
+  /**
+    * Registrar un nuevo usuario
+  */
+  register: async (input: RegisterInput): Promise<{ user: User; token: string }> => {
+    try {
+      // 1. Verificar si el email ya existe
+      const existingUser = await userRepository.existByEmail(input.email);
 
-			// 2. Hashear contraseña
-			const passwordHash = await hashPassword(input.password);
+      if (existingUser) {
+        throw createAppError('Email already registered', 409);
+      }
 
-			// 3. Crear usuario
-			const user = await userRepository.create(input, passwordHash);
+      // 2. Hashear contraseña
+      const passwordHash = await hashPassword(input.password);
 
-			// 4. Generar token
-			const token = generateToken({userId: user.id, email: user.email, role: user.role},{expiresIn: '1d'});
+      // 3. Crear usuario
+      const user = await userRepository.create(input, passwordHash);
 
-			// 5. Retornar usuario sanitizado y token
-			return {
-				user: sanitizeUser(user),
-				token
-			};
-		} catch (error) {
-			// se utiliza handleServiceError para manejar errores que provienen del repository u otros
-			// ademas hacer un log y convertir errores conocidos o desconocidos en AppErrors
-			throw handleServiceError(
-				error,
-				'UserService.register',
-				'Unable to register user',
-				{ email: input.email }
-			);
-		}
-	},
+      // 4. Generar token
+      const token = generateToken({ userId: user.id, email: user.email, role: user.role }, { expiresIn: '1d' });
 
-	/**
-	 * Login
-	 * INPUT: LoginInput (schema)
-	 * OUTPUT: User (entity)
-	 */
-	login: async (input: LoginInput): Promise<{ user: User; token: string }> => {
-		try {
-			// 1. Buscar usuarios por email, obtener sus datos y su password_hash
-			const user = await userRepository.findByEmailWithPassword(input.email);
+      // 5. Retornar usuario sanitizado y token
+      return {
+        user: sanitizeUser(user),
+        token
+      };
+    } catch (error) {
+      // se utiliza handleServiceError para manejar errores que provienen del repository u otros
+      // ademas hacer un log y convertir errores conocidos o desconocidos en AppErrors
+      throw handleServiceError(
+        error,
+        'UserService.register',
+        'Unable to register user',
+        { email: input.email }
+      );
+    }
+  },
 
-			if (!user) {
-				throw createAppError('Invalid credentials', 401);
-			}
+  /**
+   * Login
+   * INPUT: LoginInput (schema)
+   * OUTPUT: User (entity)
+   */
+  login: async (
+    input: LoginInput,
+    { ipAddress,
+      deviceInfo }: {
+        ipAddress: string | undefined;
+        deviceInfo: string | undefined
+      }): Promise<{
+        user: User;
+        tokens: { accessToken: string; refreshToken: string, tokenId: string }
+      }> => {
+    try {
+      // 1. Buscar usuarios por email, obtener sus datos y su password_hash
+      const user = await userRepository.findByEmailWithPassword(input.email);
 
-			// 2.Verificar password
-			const isPasswordValid = await comparePassword(input.password, user.passwordHash);
+      if (!user) {
+        throw createAppError('Invalid credentials', 401);
+      }
 
-			if (!isPasswordValid) {
-				throw createAppError('Invalid credentials', 401);
-			}
+      // 2.Verificar password
+      const isPasswordValid = await comparePassword(input.password, user.passwordHash);
 
-			// 3. Generar token
-			const token = generateToken({userId: user.id, email: user.email, role: user.role});
+      if (!isPasswordValid) {
+        throw createAppError('Invalid credentials', 401);
+      }
+      // Generar tokens
+      const tokens = await authService.generateTokenPair({
+        userId: user.id,
+        role: user.role,
+        tokenVersion: user.tokenVersion || 0,
+        ipAddress: ipAddress,
+        deviceInfo: deviceInfo,
+      })
 
+      // Registrar evento de login exitoso
+      await securityEventRepository.create({
+        userId: user.id,
+        eventType: 'login',
+        ipAddress: ipAddress || null,
+        tokenId: tokens.tokenId,
+        userAgent: deviceInfo || null,
+        success: true,
+        details: 'User logged in successfully'
+      })
 
-			// Retornar usuario sanitizado (sin password)		
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { passwordHash, ...userWithoutPassword } = user;
+      return {
+        user: sanitizeUser(user),
+        tokens: tokens
+      }
 
-			return {
-				user: userWithoutPassword,
-				token
-			};
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.login',
-				'Unable to login',
-				{ email: input.email }
-			);
-		}
-	},
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.login',
+        'Unable to login',
+        { email: input.email }
+      );
+    }
+  },
 
-	/**
-	 * Obtener usuario por ID
-	 */
-	findById: async (id: string): Promise<User> => {
-		try {
-			const user = await userRepository.findById(id);
+  /**
+   * Obtener usuario por ID
+   */
+  findById: async (id: string): Promise<User> => {
+    try {
+      const user = await userRepository.findById(id);
 
-			if (!user) {
-				throw createAppError('User not found', 404);
-			}
+      if (!user) {
+        throw createAppError('User not found', 404);
+      }
 
-			return sanitizeUser(user);
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.findById',
-				'Unable to retrieve user',
-				{ userId: id }
-			);
-		}
-	},
+      return sanitizeUser(user);
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.findById',
+        'Unable to retrieve user',
+        { userId: id }
+      );
+    }
+  },
 
-	/**
-	* Obtener usuario por email
-	*/
-	findByEmail: async (email: string): Promise<User> => {
-		try {
-			const user = await userRepository.findByEmail(email);
+  /**
+  * Obtener usuario por email
+  */
+  findByEmail: async (email: string): Promise<User> => {
+    try {
+      const user = await userRepository.findByEmail(email);
 
-			if (!user) {
-				throw createAppError('User not found', 404);
-			}
-			return sanitizeUser(user);
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.findByEmail',
-				'Unable to retrieve user',
-				{ email }
-			);
-		}
-	},
+      if (!user) {
+        throw createAppError('User not found', 404);
+      }
+      return sanitizeUser(user);
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.findByEmail',
+        'Unable to retrieve user',
+        { email }
+      );
+    }
+  },
 
-	/**
-	 * Listar usuarios con pagination
-	 */
-	findAll: async (
-		page = 1,
-		limit = 10
-	): Promise<{ users: User[], total: number; page: number; totalPages: number }> => {
-		try {
-			// validación básica
-			if (page < 1) page = 1;
-			if (limit < 1 || limit > 100) limit = 10;
+  /**
+   * Listar usuarios con pagination
+   */
+  findAll: async (
+    page = 1,
+    limit = 10
+  ): Promise<{ users: User[], total: number; page: number; totalPages: number }> => {
+    try {
+      // validación básica
+      if (page < 1) page = 1;
+      if (limit < 1 || limit > 100) limit = 10;
 
-			// Obtener usuarios y total
-			const [ users, total ] = await Promise.all([
-				userRepository.findAll(page, limit),
-				userRepository.count()
-			]);
+      // Obtener usuarios y total
+      const [users, total] = await Promise.all([
+        userRepository.findAll(page, limit),
+        userRepository.count()
+      ]);
 
-			const totalPages = Math.ceil(total / limit);
+      const totalPages = Math.ceil(total / limit);
 
-			return {
-				users: users.map(sanitizeUser),
-				total,
-				page,
-				totalPages
-			};
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.findAll',
-				'Unable to retrieve users',
-				{ page, limit }
-			);
-		}
-	},
+      return {
+        users: users.map(sanitizeUser),
+        total,
+        page,
+        totalPages
+      };
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.findAll',
+        'Unable to retrieve users',
+        { page, limit }
+      );
+    }
+  },
 
-	/**
-	 * Actualizar usuario
-	 */
-	update: async (id: string, input: UpdateUserInput): Promise<User> => {
-		try {
-			// 1. Verifica que el usuario existe
-			const existingUser = await userRepository.findById(id);
+  /**
+   * Actualizar usuario
+   */
+  update: async (id: string, input: UpdateUserInput): Promise<User> => {
+    try {
+      // 1. Verifica que el usuario existe
+      const existingUser = await userRepository.findById(id);
 
-			if (!existingUser) {
-				throw createAppError('User not found', 404);
-			}
+      if (!existingUser) {
+        throw createAppError('User not found', 404);
+      }
 
-			// 2. si se actualiza email verifica que no existe
-			if (input.email && input.email !== existingUser.email) {
-				const emailExists = await userRepository.existByEmail(input.email);
+      // 2. si se actualiza email verifica que no existe
+      if (input.email && input.email !== existingUser.email) {
+        const emailExists = await userRepository.existByEmail(input.email);
 
-				if (emailExists) {
-					throw createAppError('Email already in use', 409);
-				}
-			}
+        if (emailExists) {
+          throw createAppError('Email already in use', 409);
+        }
+      }
 
-			// 3. Actualizar
-			const updateUser = await userRepository.update(id, input);
-			return sanitizeUser(updateUser);
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.update',
-				'Unable to update user',
-				{ userId: id, input }
-			);
-		}
-	},
+      // 3. Actualizar
+      const updateUser = await userRepository.update(id, input);
+      return sanitizeUser(updateUser);
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.update',
+        'Unable to update user',
+        { userId: id, input }
+      );
+    }
+  },
 
-	/**
-	* Eliminar usuario (lógica: desactivar)
-	*/
-	softDelete: async (id: string): Promise<void> => {
-		try {
-			// 1. Verificar que existe
-			const user = await userRepository.findById(id);
+  /**
+  * Eliminar usuario (lógica: desactivar)
+  */
+  softDelete: async (id: string): Promise<void> => {
+    try {
+      // 1. Verificar que existe
+      const user = await userRepository.findById(id);
 
-			if (!user) {
-				throw createAppError('User not found', 404);
-			}
+      if (!user) {
+        throw createAppError('User not found', 404);
+      }
 
-			// 2. Eliminar
-			await userRepository.softDelete(id);
-			
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.delete',
-				'Unable to delete user',
-				{ userId: id }
-			);
-		}
-	},
+      // 2. Eliminar
+      await userRepository.softDelete(id);
 
-	/**
-	* Eliminar usuario permanentemente
-	*/
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.delete',
+        'Unable to delete user',
+        { userId: id }
+      );
+    }
+  },
 
-	hardDelete: async (id: string): Promise<void> => {
-		try {
-			// 1. Verificar que existe
-			const user = await userRepository.findById(id);
+  /**
+  * Eliminar usuario permanentemente
+  */
 
-			if (!user) {
-				throw createAppError('User not found', 404);
-			}
+  hardDelete: async (id: string): Promise<void> => {
+    try {
+      // 1. Verificar que existe
+      const user = await userRepository.findById(id);
 
-			// 2. Eliminar
-			await userRepository.hardDelete(id);
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.delete',
-				'Unable to delete user',
-				{ userId: id }
-			);
-		}
-	},
+      if (!user) {
+        throw createAppError('User not found', 404);
+      }
 
-	/**
-	 * Cambiar contraseña
-	 */
-	changePassword: async (
-		id: string,
-		oldPassword: string,
-		newPassword: string
-	): Promise<void> => {
-		try {
-			// 1. Obtener usuario con password
-			const user = await userRepository.findById(id);
+      // 2. Eliminar
+      await userRepository.hardDelete(id);
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.delete',
+        'Unable to delete user',
+        { userId: id }
+      );
+    }
+  },
 
-			if (!user) {
-				throw createAppError('User not found', 404);
-			}
+  /**
+   * Cambiar contraseña
+   */
+  changePassword: async (
+    id: string,
+    oldPassword: string,
+    newPassword: string
+  ): Promise<void> => {
+    try {
+      // 1. Obtener usuario con password
+      const user = await userRepository.findById(id);
 
-			const userWithPassword = await userRepository.findByEmailWithPassword(user.email);
+      if (!user) {
+        throw createAppError('User not found', 404);
+      }
 
-			if (!userWithPassword) {
-				throw createAppError('User not found', 404);
-			}
+      const userWithPassword = await userRepository.findByEmailWithPassword(user.email);
 
-			// 2. Verificar contraseña actual
-			const isPasswordValid = await comparePassword(oldPassword, userWithPassword.passwordHash);
+      if (!userWithPassword) {
+        throw createAppError('User not found', 404);
+      }
 
-			if (!isPasswordValid) {
-				throw createAppError('Current password is incorrect', 401);
-			}
+      // 2. Verificar contraseña actual
+      const isPasswordValid = await comparePassword(oldPassword, userWithPassword.passwordHash);
 
-			// 3. Hashear nueva contraseña
-			const newPasswordHash = await hashPassword(newPassword);
+      if (!isPasswordValid) {
+        throw createAppError('Current password is incorrect', 401);
+      }
 
-			// 4. Actualizar
-			await userRepository.updatePassword(id, newPasswordHash);
-		} catch (error) {
-			
-			throw handleServiceError(
-				error,
-				'UserService.changePassword',
-				'Unable to change password',
-				{ userId: id }
-			);
-		}
-	},
+      // 3. Hashear nueva contraseña
+      const newPasswordHash = await hashPassword(newPassword);
 
-	/**
-	 * Eliminar todos los usuarios de prueba
-	 */
-	deleteMockUsers: async (): Promise<void> => {
-		try {
-			await userRepository.deleteMockUsers();
-		} catch (error) {
-			throw handleServiceError(
-				error,
-				'UserService.deleteMockUsers',
-				'Unable to delete mock users',				
-			);
-		}
-	},
+      // 4. Actualizar
+      await userRepository.updatePassword(id, newPasswordHash);
+    } catch (error) {
+
+      throw handleServiceError(
+        error,
+        'UserService.changePassword',
+        'Unable to change password',
+        { userId: id }
+      );
+    }
+  },
+
+  /**
+   * Eliminar todos los usuarios de prueba
+   */
+  deleteMockUsers: async (): Promise<void> => {
+    try {
+      await userRepository.deleteMockUsers();
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.deleteMockUsers',
+        'Unable to delete mock users',
+      );
+    }
+  },
 
 
 };
