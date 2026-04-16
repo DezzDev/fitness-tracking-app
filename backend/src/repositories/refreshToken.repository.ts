@@ -1,7 +1,8 @@
 // src/repositories/refreshToken.repository.ts
 import { randomUUID } from "crypto";
 import { execute } from "@/config/database";
-import { RefreshToken, RefreshTokenRow } from "@/types/common/auth.types";
+import { RefreshToken, RefreshTokenRow } from "@/types/entities/refreshToken.type";
+import { RefreshTokenCreateData } from "@/types/entities/refreshToken.type";
 
 // ============================================
 // mappers
@@ -11,9 +12,9 @@ const mapRowToRefreshToken = (row: RefreshTokenRow): RefreshToken => ({
   id: row.id,
   userId: row.user_id,
   tokenId: row.token_id,
-  parentTokenId: row?.parent_token_id || null,
-  deviceInfo: row?.device_info || null,
-  ipAddress: row?.ip_address || null,
+  parentTokenId: row.parent_token_id,
+  deviceInfo: row.device_info,
+  ipAddress: row.ip_address,
   expiresAt: new Date(row.expires_at),
   createdAt: new Date(row.created_at),
   revoked: Boolean(row.revoked),
@@ -37,8 +38,8 @@ export const queries = {
       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now')) 
       RETURNING *     
     `,
-    args: (data: Omit<RefreshToken, 'createdAt' | 'revoked' | 'revokedAt' | 'revokedReason'>) => [
-      data.id,
+    args: (id: string, data: RefreshTokenCreateData) => [
+      id,
       data.userId,
       data.tokenId,
       data.parentTokenId || null,
@@ -84,8 +85,7 @@ export const queries = {
   revokedByTokenId: {
     sql: `UPDATE refresh_tokens
           SET revoked = 1, revoked_at = datetime('now'), revoked_reason = ?
-          WHERE token_id = ? 
-          RETURNING *`,
+          WHERE token_id = ?`,
     args: (tokenId: string, reason: string) => [reason || null, tokenId]
   },
 
@@ -143,7 +143,7 @@ export const queries = {
    */
   deleteExpired: {
     sql: `DELETE FROM refresh_tokens
-          WHERE expires_at < datetime('now') AND revoked = 1`,
+          WHERE expires_at < datetime('now')`,
     args: () => []
   },
 
@@ -171,20 +171,12 @@ export const refreshTokenRepository = {
    * @param data - Datos necesarios para crear el RefreshToken (sin id, createdAt, revoked, revokedAt, revokedReason)
    * @returns  El token creado (con id generado y campos por defecto)
    */
-  create: async (data: Omit<RefreshToken,'id'| 'createdAt' | 'revoked' | 'revokedAt' | 'revokedReason'>) => {
+  create: async (data: RefreshTokenCreateData):Promise<RefreshToken> => {
     const tokenId = randomUUID();
-    const newToken: Omit<RefreshToken, 'createdAt' | 'revoked' | 'revokedAt' | 'revokedReason'> = {
-      id: tokenId,
-      userId: data.userId,
-      tokenId: tokenId,
-      parentTokenId: data.parentTokenId || null,
-      deviceInfo: data.deviceInfo || null,
-      ipAddress: data.ipAddress || null,
-      expiresAt: data.expiresAt,
-    };
+   
     const result = await execute({
       sql: queries.create.sql,
-      args: queries.create.args(newToken)
+      args: queries.create.args(tokenId,data)
     });
 
     const row = result.rows[0] as RefreshTokenRow | undefined;
@@ -210,7 +202,7 @@ export const refreshTokenRepository = {
     const row = result.rows[0] as RefreshTokenRow | undefined;
 
     if (!row) return null;
-
+    
     return mapRowToRefreshToken(row);
   }, 
 
@@ -250,21 +242,16 @@ export const refreshTokenRepository = {
 
   /**
    * Revocar un token por tokenId (marcar como revoked = 1, set revokedAt y revokedReason)
-   * @tokenId
+   * @param tokenId
    * reason - Razón para revocar el token (ej: 'user_logout', 'token_reuse_detected', etc)
    * Nota: no se elimina el registro para mantener el historial y poder detectar reutilización de tokens
    */
-  revokedByTokenId: async (tokenId:string, reason:string): Promise<RefreshToken> =>{
-    const result = await execute({
+  revokedByTokenId: async (tokenId:string, reason:string): Promise<void> =>{
+    await execute({
       sql: queries.revokedByTokenId.sql,
       args: queries.revokedByTokenId.args(tokenId, reason)
     })
 
-    const row = result.rows[0] as RefreshTokenRow | undefined;
-    if (!row) {
-      throw new Error('Failed to revoke refresh token');
-    }
-    return mapRowToRefreshToken(row);
   },
 
   /**
@@ -328,11 +315,12 @@ export const refreshTokenRepository = {
    * Eliminar tokens expirados (limpieza)
    * Nota: solo se eliminan los tokens que ya están revocados para mantener el historial de tokens activos y detectar reutilización de tokens
    */
-  deleteExpired: async (): Promise<void> =>{
-    await execute({
+  deleteExpired: async (): Promise<number> =>{
+    const result = await execute({
       sql: queries.deleteExpired.sql,
       args: queries.deleteExpired.args()
     })
+    return result.rowsAffected || 0;
   },
 
   /**
@@ -346,7 +334,8 @@ export const refreshTokenRepository = {
       args: queries.countActiveByUserId.args(userId)
     })
 
-    return result?.rows?.length || 0;
+    const row = result.rows[0] as { count: number } | undefined;
+    return row ? row.count : 0;
   }
 
 }

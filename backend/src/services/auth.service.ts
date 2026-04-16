@@ -4,7 +4,8 @@ import { createAppError } from "@/middlewares/error.middleware";
 import { refreshTokenRepository } from "@/repositories/refreshToken.repository";
 import { securityEventRepository } from "@/repositories/securityEvent.repository";
 import { userRepository } from "@/repositories/user.repository";
-import { RefreshTokenPayload, SecurityEventType } from "@/types/common/auth.types";
+import { RefreshTokenPayload, Role } from "@/types/common/auth.types";
+import { SecurityEventType } from "@/types/entities/securityEvent.types";
 import { handleServiceError } from "@/utils/error.utils";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@/utils/jwt.utils";
 import logger from "@/utils/logger";
@@ -21,7 +22,7 @@ export const authService = {
    */
   generateTokenPair: async (data: {
     userId: string,
-    role: string,
+    role: Role,
     tokenVersion: number,
     parentTokenId?: string,
     deviceInfo?: string,
@@ -49,9 +50,9 @@ export const authService = {
         userId: data.userId,
         tokenId,
         expiresAt,
-        parentTokenId: data.parentTokenId || null,
-        deviceInfo: data.deviceInfo || null,
-        ipAddress: data.ipAddress || null
+        parentTokenId: data.parentTokenId,
+        deviceInfo: data.deviceInfo,
+        ipAddress: data.ipAddress
       })
 
       return { accessToken, refreshToken, tokenId };
@@ -73,10 +74,19 @@ export const authService = {
    * @param userAgent - User agent del cliente (opcional, para logging)
    * @returns Nuevo access token, refresh token y datos del usuario
    */
-  refreshTokens: async ({oldRefreshToken, ipAddress, userAgent}: { oldRefreshToken: string, ipAddress?: string, userAgent?: string }) => {
+  refreshTokens: async (data: { oldRefreshToken: string, ipAddress?: string, userAgent?: string }): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      role: Role;
+    };
+  }> => {
     try {
       // Verificar firma del refresh token
-      const decoded: RefreshTokenPayload = verifyRefreshToken(oldRefreshToken);
+      const decoded: RefreshTokenPayload = verifyRefreshToken(data.oldRefreshToken);
 
       // Buscar token en base de datos
       const storedToken = await refreshTokenRepository.findByTokenId(decoded.tokenId)
@@ -88,7 +98,7 @@ export const authService = {
 
         if (revokedToken && revokedToken.revoked) {
           // Token válido pero ya usado = ATAQUE
-          logger.warn(`Token reuse detected for user ${decoded.userId}`)
+          logger.error(`Token reuse detected for user ${decoded.userId}`)
 
           // Revocamos toda la familia
           await refreshTokenRepository.revokeTokenFamily(decoded.tokenId)
@@ -97,16 +107,23 @@ export const authService = {
           await securityEventRepository.create({
             userId: decoded.userId,
             eventType: 'token_reuse',
-            ipAddress: ipAddress || null,
-            userAgent: userAgent || null,
+            ipAddress: data.ipAddress,
+            userAgent: data.userAgent,
             tokenId: decoded.tokenId,
             success: false,
             details: 'Refresh token reuse detected, token family revoked'
           })
-          throw createAppError('TOKEN_REUSE_DETECTED', 401, true);
+          throw createAppError(
+            'TOKEN_REUSE_DETECTED',
+            401,
+            true
+          );
         }
 
-        throw createAppError('INVALID_REFRESH_TOKEN', 401, true);
+        throw createAppError(
+          'INVALID_REFRESH_TOKEN',
+          401,
+          true);
       }
 
       // Validar usuario y token version (en caso de que el usuario haya cambiado su contraseña o se haya revocado manualmente)
@@ -129,16 +146,16 @@ export const authService = {
         role: user.role,
         tokenVersion: user.tokenVersion || 0,
         parentTokenId: decoded.tokenId,
-        deviceInfo: userAgent || undefined,
-        ipAddress: ipAddress || undefined
+        deviceInfo: data.userAgent,
+        ipAddress: data.ipAddress
       });
 
       // Registrar evento de seguridad
       await securityEventRepository.create({
         userId: user.id,
         eventType: 'token_refresh',
-        ipAddress: ipAddress || null,
-        userAgent: userAgent || null,
+        ipAddress: data.ipAddress,
+        userAgent: data.userAgent,
         tokenId: decoded.tokenId,
         success: true,
         details: 'Refresh token rotated successfully'
@@ -161,7 +178,7 @@ export const authService = {
         error,
         'AuthService.refreshToken',
         'Invalid refresh token',
-        { oldRefreshToken, ipAddress, userAgent }
+        { oldRefreshToken: data.oldRefreshToken, ipAddress: data.ipAddress, userAgent: data.userAgent }
       );
     }
   },
@@ -170,57 +187,54 @@ export const authService = {
     refreshToken?: string,
     userId?: string,
     ipAddress?: string,
-    userAgent?: string
-  }) => {
-    if (data.refreshToken) {
-      try {
+
+  }): Promise<void> => {
+
+    try {
+      if (data.refreshToken) {
         const decoded = verifyRefreshToken(data.refreshToken);
-        await refreshTokenRepository.revokedByTokenId(decoded.tokenId, 'logout')
 
-        // Registrar evento de seguridad
-        if (decoded.userId) {
-          await securityEventRepository.create({
-            userId: decoded.userId,
-            eventType: 'logout',
-            tokenId: decoded.tokenId,
-            ipAddress: data.ipAddress || null,
-            userAgent: data.userAgent || null,
-            success: true,
-            details: 'User logged out successfully'
-          })
+        if (decoded?.tokenId) {
+          await refreshTokenRepository.revokedByTokenId(decoded.tokenId, 'logout')
+
+          // Registrar evento de seguridad
+          if (decoded.userId) {
+            await securityEventRepository.create({
+              userId: decoded.userId,
+              eventType: 'logout',
+              tokenId: decoded.tokenId,
+              ipAddress: data.ipAddress,
+              success: true,
+              details: 'User logged out successfully'
+            })
+          }
+
         }
-      } catch (error) {
-        // token invalido, pero continuar con logout
 
-
-        throw handleServiceError(
-          error,
-          'AuthService.logout',
-          'Unable to logout with refresh token',
-          { refreshToken: data.refreshToken, userId: data.userId, ipAddress: data.ipAddress }
-        );
       }
+    } catch (error) {
+       // No lanzar error en logout, solo loguear
+      logger.warn('Logout error', { error });
     }
+
   },
 
   /**
    * Revocar todas las sesiones (cambio de contraseña)
    */
-  revokeAllSessions: async (userId: string, reason: SecurityEventType) => {
+  revokeAllSessions: async (userId: string) => {
     try {
       // Incrementar token version del usuario para invalidar todos los tokens existentes
       await userRepository.incrementTokenVersion(userId);
 
+      const reason: SecurityEventType = 'password_change';
       // Revocar todos los refresh tokens
-      await refreshTokenRepository.revokedAllByUserId(userId, reason)
+      await refreshTokenRepository.revokedAllByUserId(userId,reason )
 
       // Registrar evento de seguridad
       await securityEventRepository.create({
         userId,
         eventType: reason,
-        ipAddress: null,
-        userAgent: null,
-        tokenId: null,
         success: true,
         details: 'All user sessions revoked due to password change'
       });

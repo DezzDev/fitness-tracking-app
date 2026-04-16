@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { execute } from "@/config/database";
-import { SecurityEvent, SecurityEventRow } from "@/types/common/auth.types"
+import { SecurityEvent, SecurityEventCreateData, SecurityEventRow } from "@/types/entities/securityEvent.types";
 
 //=================================
 // Mappers
@@ -21,20 +21,20 @@ const mapRowToSecurityEvent = (row: SecurityEventRow): SecurityEvent => ({
 //=================================
 export const queries = {
   // Create a new security event
-  createSecurityEvent: {
+  create: {
     sql: `INSERT INTO security_events
       (id, user_id, event_type, ip_address, user_agent, token_id, success, details, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
       RETURNING *
       `,
-    args: (data: Omit<SecurityEvent, 'createdAt'>) => [
-      data.id,
+    args: (id:string, data:SecurityEventCreateData) => [
+      id,
       data.userId,
       data.eventType,
-      data?.ipAddress || null,
-      data?.userAgent || null,
-      data.tokenId,
-      data.success,
+      data.ipAddress || null,
+      data.userAgent || null,
+      data.tokenId || null,
+      data.success === false ? 0 : 1, // Convert boolean to 0/1
       data?.details || null
     ]
   },
@@ -51,15 +51,12 @@ export const queries = {
 //=================================
 export const securityEventRepository = {
   // Create a new security event
-  create: async (data: Omit<SecurityEvent, 'id' | 'createdAt'>): Promise<SecurityEvent> => {
+  create: async (data: SecurityEventCreateData): Promise<SecurityEvent> => {
     const id = randomUUID();
-    const securityEvent: Omit<SecurityEvent,  'createdAt'> = {
-      id,
-      ...data
-    };
+   
     const results = await execute({
-      sql: queries.createSecurityEvent.sql,
-      args: queries.createSecurityEvent.args(securityEvent)
+      sql: queries.create.sql,
+      args: queries.create.args(id, data)
     });
 
     const row = results.rows[0] as SecurityEventRow | undefined;
@@ -72,7 +69,7 @@ export const securityEventRepository = {
   },
 
   // Get security events by user Id with limit
-  findByUserId: async (userId: string, limit: number = 10): Promise<SecurityEvent[]> => {
+  findByUserId: async (userId: string, limit: number = 50): Promise<SecurityEvent[]> => {
     const result = await execute({
       sql: queries.findByUserId.sql,
       args: queries.findByUserId.args(userId, limit)
@@ -80,7 +77,7 @@ export const securityEventRepository = {
 
     const rows = result.rows as SecurityEventRow[] | [];
 
-    if(rows.length === 0) return [];
+    if(!rows || rows.length === 0) return [];
 
     return rows.map(mapRowToSecurityEvent);
   }

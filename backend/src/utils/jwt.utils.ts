@@ -15,8 +15,8 @@ import { createAppError } from '@/middlewares/error.middleware';
 // ============================================
 const ACCESS_SECRET = env.JWT_ACCESS_SECRET;
 const REFRESH_SECRET = env.JWT_REFRESH_SECRET;
-const ACCESS_TOKEN_EXPIRES_IN = env.JWT_ACCESS_EXPIRY;
-const REFRESH_TOKEN_EXPIRES_IN = env.JWT_REFRESH_EXPIRY;
+const ACCESS_TOKEN_EXPIRES_IN = env.JWT_ACCESS_EXPIRY || '15m';
+const REFRESH_TOKEN_EXPIRES_IN = env.JWT_REFRESH_EXPIRY || '7d';
 const ISSUER_VALUE = 'fitness-tracker-app';
 const AUDIENCE_VALUE = 'fitness-tracker-users';
 

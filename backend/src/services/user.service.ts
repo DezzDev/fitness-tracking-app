@@ -83,13 +83,7 @@ export const userService = {
    * INPUT: LoginInput (schema)
    * OUTPUT: User (entity)
    */
-  login: async (
-    input: LoginInput,
-    { ipAddress,
-      deviceInfo }: {
-        ipAddress: string | undefined;
-        deviceInfo: string | undefined
-      }): Promise<{
+  login: async (input: LoginInput): Promise<{
         user: User;
         tokens: { accessToken: string; refreshToken: string, tokenId: string }
       }> => {
@@ -112,17 +106,13 @@ export const userService = {
         userId: user.id,
         role: user.role,
         tokenVersion: user.tokenVersion || 0,
-        ipAddress: ipAddress,
-        deviceInfo: deviceInfo,
       })
 
       // Registrar evento de login exitoso
       await securityEventRepository.create({
         userId: user.id,
         eventType: 'login',
-        ipAddress: ipAddress || null,
-        tokenId: tokens.tokenId,
-        userAgent: deviceInfo || null,
+        tokenId: tokens.tokenId,      
         success: true,
         details: 'User logged in successfully'
       })

@@ -4,13 +4,14 @@ import { asyncHandler, createAppError } from '@/middlewares/error.middleware';
 import { ResponseHandler } from '@/utils/response';
 import { userService } from '@/services/user.service';
 import {
-	RegisterInput,
-	LoginInput,
-	UpdateUserInput,
-	PaginationQuery,
-	ChangePasswordInput,
-	UserIdParam
+  RegisterInput,
+  LoginInput,
+  UpdateUserInput,
+  PaginationQuery,
+  ChangePasswordInput,
+  UserIdParam
 } from '@/schemas/user.schema';
+import { authService } from '@/services/auth.service';
 
 
 // ============================================
@@ -18,13 +19,13 @@ import {
 // ============================================
 
 const extractId = (params: Record<string, string | undefined>): string => {
-	const { id } = params;
+  const { id } = params;
 
-	if (!id) {
-		throw createAppError('User ID not found in request', 400);
-	}
+  if (!id) {
+    throw createAppError('User ID not found in request', 400);
+  }
 
-	return id;
+  return id;
 };
 
 // ============================================
@@ -37,11 +38,11 @@ const extractId = (params: Record<string, string | undefined>): string => {
  */
 export const register = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 
-	const input = req.validatedBody as RegisterInput;
+  const input = req.validatedBody as RegisterInput;
 
-	const result = await userService.register(input);
+  const result = await userService.register(input);
 
-	ResponseHandler.created(res, result, 'User register successfully');
+  ResponseHandler.created(res, result, 'User register successfully');
 });
 
 /**
@@ -50,11 +51,27 @@ export const register = asyncHandler(async (req: Request, res: Response): Promis
  */
 export const login = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 
-	const input = req.validatedBody as LoginInput;
+  const input = req.validatedBody as LoginInput;
 
-	const result = await userService.login(input);
+  const result = await userService.login(input);
 
-	ResponseHandler.success(res, result, 'Login successfully');
+  // Configurar refresh token como httpOnly cookie
+  res.cookie('refreshToken', result.tokens.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Solo en producción
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+    path: '/'
+  });
+
+  // Devolver access token y usuario
+  ResponseHandler.success(
+    res,
+    {
+      user: result.user,
+      accessToken: result.tokens.accessToken
+    },
+    'Login successfully');
 });
 
 // ============================================
@@ -66,11 +83,11 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
  * Obtener usuario por ID
  */
 export const getUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.validatedParams as UserIdParam);
+  const id = extractId(req.validatedParams as UserIdParam);
 
-	const user = await userService.findById(id);
+  const user = await userService.findById(id);
 
-	ResponseHandler.success(res, user);
+  ResponseHandler.success(res, user);
 
 });
 
@@ -79,14 +96,14 @@ export const getUser = asyncHandler(async (req: Request, res: Response): Promise
  * Listar usuarios (paginado)
  */
 export const listUsers = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const { page, limit } = req.validatedQuery as PaginationQuery;
+  const { page, limit } = req.validatedQuery as PaginationQuery;
 
-	const result = await userService.findAll(
-		page ? page : 1,
-		limit ? limit : 10
-	);
+  const result = await userService.findAll(
+    page ? page : 1,
+    limit ? limit : 10
+  );
 
-	ResponseHandler.success(res, result);
+  ResponseHandler.success(res, result);
 });
 
 /**
@@ -94,22 +111,22 @@ export const listUsers = asyncHandler(async (req: Request, res: Response): Promi
  * Actualizar usuario
  */
 export const updateUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.validatedParams as UserIdParam);
-	const data = req.validatedBody as UpdateUserInput;
-	const user = req.user; // del middleware de auth
+  const id = extractId(req.validatedParams as UserIdParam);
+  const data = req.validatedBody as UpdateUserInput;
+  const user = req.user; // del middleware de auth
 
-	if (!user) {
-		throw createAppError('User not authenticated', 401);
-	}
+  if (!user) {
+    throw createAppError('User not authenticated', 401);
+  }
 
-	// si el usuario no es admin y no intenta actualizar su propio perfil, error
-	if (user.role !== 'admin' && user.userId !== id) {
-		throw createAppError('You are not authorized to update this user', 403);
-	}
+  // si el usuario no es admin y no intenta actualizar su propio perfil, error
+  if (user.role !== 'admin' && user.userId !== id) {
+    throw createAppError('You are not authorized to update this user', 403);
+  }
 
-	const userUpdated = await userService.update(id, data);
+  const userUpdated = await userService.update(id, data);
 
-	ResponseHandler.success(res, userUpdated, 'User updated successfully');
+  ResponseHandler.success(res, userUpdated, 'User updated successfully');
 });
 
 /**
@@ -117,10 +134,10 @@ export const updateUser = asyncHandler(async (req: Request, res: Response): Prom
  * Eliminar usuario - desactivar (soft delete)
  */
 export const softDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.validatedParams as UserIdParam);
-	await userService.softDelete(id);
+  const id = extractId(req.validatedParams as UserIdParam);
+  await userService.softDelete(id);
 
-	ResponseHandler.noContent(res);
+  ResponseHandler.noContent(res);
 
 });
 
@@ -129,11 +146,11 @@ export const softDeleteUser = asyncHandler(async (req: Request, res: Response): 
  * Eliminar usuario permanentemente (hard delete)
  */
 export const hardDeleteUser = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
-	const id = extractId(req.validatedParams as UserIdParam);
-	console.log({ id });
-	await userService.hardDelete(id);
+  const id = extractId(req.validatedParams as UserIdParam);
+  console.log({ id });
+  await userService.hardDelete(id);
 
-	ResponseHandler.noContent(res);
+  ResponseHandler.noContent(res);
 
 });
 
@@ -143,16 +160,16 @@ export const hardDeleteUser = asyncHandler(async (req: Request, res: Response): 
  */
 export const getProfile = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
 
-	// no se debería dar el caso porque el middleware de auth ya lo verifica
-	// pero lo prefiero a usar el operador "!" por seguridad
-	if (!req.user) {
-		throw createAppError('User not authenticated', 401);
-	}
-	const userId = req.user.userId;
+  // no se debería dar el caso porque el middleware de auth ya lo verifica
+  // pero lo prefiero a usar el operador "!" por seguridad
+  if (!req.user) {
+    throw createAppError('User not authenticated', 401);
+  }
+  const userId = req.user.userId;
 
-	const user = await userService.findById(userId);
+  const user = await userService.findById(userId);
 
-	ResponseHandler.success(res, user);
+  ResponseHandler.success(res, user);
 });
 
 /**
@@ -161,18 +178,27 @@ export const getProfile = asyncHandler(async (req: Request, res: Response): Prom
  */
 
 export const changePassword = asyncHandler(
-	async (req: Request, res: Response): Promise<undefined> => {
+  async (req: Request, res: Response): Promise<undefined> => {
 
-		// no se debería dar el caso porque el middleware de auth ya lo verifica
-		// pero lo prefiero a usar el operador "!" por seguridad
-		if (!req.user) {
-			throw createAppError('User not authenticated', 401);
-		}
-		const userId = req.user.userId;
+    // no se debería dar el caso porque el middleware de auth ya lo verifica
+    // pero lo prefiero a usar el operador "!" por seguridad
+    if (!req.user) {
+      throw createAppError('User not authenticated', 401);
+    }
+    const userId = req.user.userId;
 
-		const { oldPassword, newPassword } = req.validatedBody as ChangePasswordInput;
+    const { oldPassword, newPassword } = req.validatedBody as ChangePasswordInput;
 
-		await userService.changePassword(userId, oldPassword, newPassword);
+    await userService.changePassword(userId, oldPassword, newPassword);
 
-		ResponseHandler.success(res, null, 'Password changed successfully');
-	});
+    // Revocar todas las sesiones (tokens) del usuario para forzar re-login
+    await authService.revokeAllSessions(userId);
+
+    // Limpiar cookie del dispositivo actual
+    res.clearCookie('refreshToken');
+
+    ResponseHandler.success(
+      res,
+      null,
+      'Password changed successfully. Please log in again.');
+  });

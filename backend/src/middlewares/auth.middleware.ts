@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { createAppError } from '@/middlewares/error.middleware';
-import { verifyToken, extractTokenFromHeader } from '@/utils/jwt.utils';
+import { extractTokenFromHeader, verifyAccessToken } from '@/utils/jwt.utils';
 import logger from '@/utils/logger';
 import { env } from '@/config/env';
 import { userService } from '@/services/user.service';
@@ -15,8 +15,8 @@ import { userService } from '@/services/user.service';
 // ============================================
 
 interface AuthOptions {
-	required?: boolean;
-	allowExpired?: boolean;
+  required?: boolean;
+  allowExpired?: boolean;
 }
 
 // ============================================
@@ -38,76 +38,95 @@ interface AuthOptions {
  * router.get('/posts', authenticate({ required: false }), listPosts);
  */
 export const authenticate = (options: AuthOptions = {}) => {
-	const { required = true, allowExpired = false } = options;
-	logger.debug('Authenticating request');
+  const { required = true, allowExpired = false } = options;
+  logger.debug('Authenticating request');
 
-	return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-		
-
-		try {
-			// Extraer token del header
-			const token = extractTokenFromHeader(req.headers.authorization);
-
-			// Si no hay token y es opcional, continuar sin autenticar
-			if (!token && !required) {
-				return next();
-			}
-
-			// Si no hay token y es requerido, error
-			if (!token) {
-				throw createAppError('Authorization token is required', 401, true, { code: 'NO_TOKEN' });
-			}
-
-			// Verificar y decodificar token
-			const payload = verifyToken(token);
-
-			const user = userService.findById(payload.userId);
-			if (!user) {
-				throw createAppError('User not found for the provided token', 401, true, { code: 'USER_NOT_FOUND' });
-			}
+  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
 
 
-			// Adjuntar usuario a la request
-			req.user = {
-				userId: payload.userId,
-				email: payload.email,
-				role: payload.role,
-			};
+    try {
+      // Extraer token del header
+      const token = extractTokenFromHeader(req.headers.authorization);
 
-			// Log de autenticación exitosa (en modo desarrollo)
-			if (env.NODE_ENV === 'development') {
-				logger.debug('User authenticated', {
-					userId: payload.userId,
-					email: payload.email,
-					role: payload.role,
-					path: req.path,
-				});
-			}
+      // Si no hay token y es opcional, continuar sin autenticar
+      if (!token && !required) {
+        return next();
+      }
 
-			next();
+      // Si no hay token y es requerido, error
+      if (!token) {
+        throw createAppError('Authorization token is required', 401, true, { code: 'NO_TOKEN' });
+      }
 
-		} catch (error) {
-			
-			// Si allowExpired y el error es TOKEN_EXPIRED, permitir
-			if(
-				allowExpired &&
-				error instanceof Error &&
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(error as any).details?.code === 'TOKEN_EXPIRED'
-			){
-				return next();
-			}
 
-			// Log de error de autenticación
-			logger.warn('Authentication failed', {
-				error: error instanceof Error ? error.message : 'Unknown',
-				path: req.path,
-				ip: req.ip,
-			});
+      // Verificar y decodificar token
+      let payload;
+      try {
+        payload = verifyAccessToken(token);
+      } catch (error: unknown) {
+        // Si allowExpired y el error es TOKEN_EXPIRED, permitir
+        if (
+          allowExpired &&
+          error instanceof Error &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (error as any).details?.code === 'TOKEN_EXPIRED'
+        ) {
+          return next();
+        }
+        throw error;
+      }
 
-			next(error);
-		}
-	};
+      // Buscar usuario en DB para verificar que exista y esté activo
+      const user = await userService.findById(payload.userId);
+      if (!user) {
+        throw createAppError('User not found for the provided token', 401, true, {
+          code: 'USER_NOT_FOUND'
+        });
+      }
+
+      if (!user.isActive) {
+        throw createAppError('Account suspended', 401, true, {
+          code: 'ACCOUNT_SUSPENDED'
+        });
+      }
+
+      // Verificar token version
+      if(user.tokenVersion !== payload.tokenVersion){
+        throw createAppError('Token Invalidated', 401, true, {
+          code: 'TOKEN_INVALIDATED'
+        });
+      }
+
+      // Adjuntar usuario a la request
+      req.user = {
+        userId: payload.userId,
+        role: payload.role,
+        tokenVersion: payload.tokenVersion,
+      };
+
+      // Log de autenticación exitosa (en modo desarrollo)
+      if (env.NODE_ENV === 'development') {
+        logger.debug('User authenticated', {
+          userId: payload.userId,
+          role: payload.role,
+          path: req.path,
+        });
+      }
+
+      next();
+
+    } catch (error) {
+
+      // Log de error de autenticación
+      logger.warn('Authentication failed', {
+        error: error instanceof Error ? error.message : 'Unknown',
+        path: req.path,
+        ip: req.ip,
+      });
+
+      next(error);
+    }
+  };
 };
 
 
