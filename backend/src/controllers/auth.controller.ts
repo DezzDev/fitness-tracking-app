@@ -65,7 +65,7 @@ export const logout = asyncHandler(async (req: Request, res: Response): Promise<
  * POST /auth/logout-all
  * Logout de todas las sesiones (revocar todos los refresh tokens)
  */
-export const logOutAll = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+export const logoutAll = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
   if (!req.user) {
     throw createAppError('User not authenticated', 401, true);
   }

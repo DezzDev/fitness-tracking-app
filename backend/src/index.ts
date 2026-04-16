@@ -6,6 +6,7 @@ import { connectDatabase, disconnectDatabase } from "@/config/database";
 import { env, isDevelopment } from "@/config/env";
 import logger from "@/utils/logger";
 import { errorHandler, notFoundHandler } from "@/middlewares/error.middleware";
+import { startCleanupJobs } from "./jobs/cleanup.job";
 
 // ============================================
 // IMPORTAR RUTAS
@@ -16,6 +17,7 @@ import tagRoutes from "@/routes/tag.routes";
 import personalRecordRoutes from "@/routes/personalRecord.routes";
 import workoutTemplatesRoutes from "@/routes/workoutTemplate.routes";
 import workoutSessionRoutes from "@/routes/workoutSession.routes";
+import authRoutes from "@/routes/auth.routes";
 
 // ============================================
 // CONFIGURACIÓN
@@ -76,6 +78,7 @@ app.use('/api/tags', tagRoutes);
 app.use('/api/personal-records', personalRecordRoutes);
 app.use('/api/workoutTemplates', workoutTemplatesRoutes);
 app.use('/api/workoutSessions', workoutSessionRoutes);
+app.use('/api/auth', authRoutes);
 
 // ============================================
 // ERROR HANDLERS
@@ -91,7 +94,9 @@ app.use(errorHandler);
 async function startServer() {
 	try {
 		
-		await connectDatabase();
+		await connectDatabase().then(
+      () => startCleanupJobs()
+    );
 
 		const server = app.listen(env.PORT, () => {
 			logger.info(`🚀 Server running on http://localhost:${env.PORT}`);
