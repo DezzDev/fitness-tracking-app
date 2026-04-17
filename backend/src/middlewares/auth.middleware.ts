@@ -1,4 +1,4 @@
-// src/middlewares/auth.meddleware.ts
+// src/middlewares/auth.middleware.ts
 
 import { Request, Response, NextFunction } from 'express';
 import { createAppError } from '@/middlewares/error.middleware';
