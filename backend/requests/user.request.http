@@ -90,12 +90,12 @@ content-type: application/json
 
 ### list users (requiere adminToken)
 GET {{baseUrl}}/users?page=1&limit=10 HTTP/1.1
-Authorization: Bearer {{adminToken.response.body.data.token}}
+Authorization: Bearer {{adminToken.response.body.data.accessToken}}
 Accept: application/json
 
 ### DELETE /users/hardDelete:id
 # hard delete user by id
 DELETE {{baseUrl}}/users/hardDelete/394db242-5e3c-48db-8d0b-6762f0a3dce5 HTTP/1.1
-Authorization: Bearer {{adminToken.response.body.data.token}}
+Authorization: Bearer {{adminToken.response.body.data.accessToken}}
 Accept: application/json
 
