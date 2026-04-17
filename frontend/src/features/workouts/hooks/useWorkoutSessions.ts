@@ -1,3 +1,5 @@
+// src/features/workouts/hooks/useWorkoutSessions.ts
+
 import { handleApiError } from "@/api/client";
 import { workoutSessionsApi, type CreateSessionFromTemplateData } from "@/api/endpoints/workoutSessions";
 import type { CreateWorkoutSessionData, SessionFilters } from "@/types";

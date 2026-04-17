@@ -20,23 +20,23 @@ content-type: application/json
 
 ### GET /sessions/stats - Obtener estadísticas de sesiones
 GET {{baseUrl}}/workoutSessions/stats HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions/recent - Obtener sesiones recientes (últimas 5)
 GET {{baseUrl}}/workoutSessions/recent HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions/recent - Obtener sesiones recientes (últimas x)
 GET {{baseUrl}}/workoutSessions/recent?limit=200 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions/date-range - Obtener sesiones por rango de fechas
 GET {{baseUrl}}/workoutSessions/date-range?startDate=2024-01-01T00:00:00Z&endDate=2024-12-31T23:59:59Z HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### POST /sessions/from-template - Crear sesión desde template
 POST {{baseUrl}}/workoutSessions/from-template HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -52,7 +52,7 @@ content-type: application/json
 
 ### POST /sessions - Crear nueva sesión de entrenamiento
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -113,7 +113,7 @@ content-type: application/json
 
 ### POST /sessions - Crear sesión sin template (independiente)
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -138,35 +138,35 @@ content-type: application/json
 
 ### GET /sessions - Listar sesiones del usuario (con paginación por defecto)
 GET {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions - Listar sesiones con paginación personalizada
 GET {{baseUrl}}/workoutSessions?page=1&limit=200 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions - Filtrar por template
 GET {{baseUrl}}/workoutSessions?templateId=d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions - Filtrar por rango de fechas
 GET {{baseUrl}}/workoutSessions?startDate=2025-02-01T00:00:00Z&endDate=2026-03-25T23:59:59Z HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions - Buscar por término
 GET {{baseUrl}}/workoutSessions?searchTerm=push HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions - Filtros combinados
 GET {{baseUrl}}/workoutSessions?startDate=2025-02-01T00:00:00Z&endDate=2026-03-25T23:59:59Z&searchTerm=pecho&page=1&limit=200 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /sessions/:id - Obtener sesión por id
 GET {{baseUrl}}/workoutSessions/4567ce54-deb1-497e-a553-d33c28bba781 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### PATCH /sessions/:id - Actualizar sesión completa
 PATCH {{baseUrl}}/workoutSessions/e0955aaa-cef1-4990-8494-d9186a9fdff8 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -210,7 +210,7 @@ content-type: application/json
 
 ### PATCH /sessions/:id - Actualizar solo título y notas
 PATCH {{baseUrl}}/workoutSessions/f6f50fc0-5403-40b0-9a76-e73d10f60387 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -220,7 +220,7 @@ content-type: application/json
 
 ### PATCH /sessions/:id - Actualizar solo duración
 PATCH {{baseUrl}}/workoutSessions/f6f50fc0-5403-40b0-9a76-e73d10f60387 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -229,7 +229,7 @@ content-type: application/json
 
 ### POST /sessions/:id/duplicate - Duplicar sesión con nueva fecha
 POST {{baseUrl}}/workoutSessions/f6f50fc0-5403-40b0-9a76-e73d10f60387/duplicate HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -238,7 +238,7 @@ content-type: application/json
 
 ### DELETE /sessions/:id - Eliminar sesión
 DELETE {{baseUrl}}/workoutSessions/11d2bfa1-1a74-47f9-9253-004710d272e7 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 # ============================================
 # CASOS DE PRUEBA - VALIDACIONES
@@ -246,7 +246,7 @@ Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### ERROR - Crear sesión sin título
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -267,7 +267,7 @@ content-type: application/json
 
 ### ERROR - Crear sesión sin ejercicios
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -278,7 +278,7 @@ content-type: application/json
 
 ### ERROR - Crear sesión con fecha futura
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -300,7 +300,7 @@ content-type: application/json
 
 ### ERROR - Crear sesión con ejercicios duplicados
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -332,7 +332,7 @@ content-type: application/json
 
 ### ERROR - Crear sesión con set sin setNumber
 POST {{baseUrl}}/workoutSessions HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -353,11 +353,11 @@ content-type: application/json
 
 ### ERROR - Actualizar sesión sin campos
 PATCH {{baseUrl}}/workoutSessions/f6f50fc0-5403-40b0-9a76-e73d10f60387 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {}
 
 ### ERROR - Rango de fechas inválido (endDate antes de startDate)
 GET {{baseUrl}}/workoutSessions/date-range?startDate=2025-12-31T00:00:00Z&endDate=2025-01-01T00:00:00Z HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}

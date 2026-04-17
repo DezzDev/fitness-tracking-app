@@ -31,7 +31,7 @@ export const authApi = {
 		const authData = response.data.data!;
 
 		// Guardar token y usuario en localStorage
-		localStorage.setItem('authToken', authData.token);
+		localStorage.setItem('accessToken', authData.accessToken);
 		localStorage.setItem('user', JSON.stringify(authData.user))
 
 		return authData;
@@ -41,7 +41,7 @@ export const authApi = {
 	 * Cerrar sesión
 	 */
 	logout: () =>{
-		localStorage.removeItem('authToken');
+		localStorage.removeItem('accessToken');
 		localStorage.removeItem('user');
 	},
 
@@ -73,7 +73,7 @@ export const authApi = {
 	 * @returns true si hay un token de autenticación en localStorage
 	 */
 	isAuthenticated: (): boolean => {
-		return !!localStorage.getItem('authToken');
+		return !!localStorage.getItem('accessToken');
 	},
 
 	/**

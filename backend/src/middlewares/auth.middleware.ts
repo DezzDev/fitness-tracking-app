@@ -69,7 +69,7 @@ export const authenticate = (options: AuthOptions = {}) => {
           allowExpired &&
           error instanceof Error &&
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (error as any).details?.code === 'TOKEN_EXPIRED'
+          (error as any).message === 'TOKEN_EXPIRED'
         ) {
           return next();
         }
