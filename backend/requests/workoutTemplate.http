@@ -25,7 +25,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Crear template (modo clásico: suggestedSets/suggestedReps)
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -52,7 +52,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Crear template (modo detallado: sets individuales)
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -85,7 +85,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Crear template (modo mixto: algunos ejercicios con sets, otros sin)
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -114,7 +114,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Error: sin ejercicios
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -124,7 +124,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Error: nombre muy corto
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -139,7 +139,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Error: orderIndex duplicado
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -158,7 +158,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Error: setNumber duplicado dentro de un ejercicio
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -177,7 +177,7 @@ content-type: application/json
 
 ### POST /workoutTemplates - Error: ejercicio inexistente
 POST {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -210,39 +210,39 @@ content-type: application/json
 
 ### GET /workoutTemplates - Listar templates (defaults: page=1, limit=10)
 GET {{baseUrl}}/workoutTemplates HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates - Listar con paginación
 GET {{baseUrl}}/workoutTemplates?page=1&limit=5 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates - Buscar por nombre
 GET {{baseUrl}}/workoutTemplates?searchTerm=Push HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates - Solo favoritos
 GET {{baseUrl}}/workoutTemplates?favoritesOnly=true HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates - Combinando filtros
 GET {{baseUrl}}/workoutTemplates?page=1&limit=5&searchTerm=Day&favoritesOnly=false HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates/:id - Obtener template por ID
 GET {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates/:id - Error: ID inexistente (404)
 GET {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates/:id - Error: ID inválido (422)
 GET {{baseUrl}}/workoutTemplates/not-a-uuid HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### GET /workoutTemplates/today - Templates programados para hoy
 GET {{baseUrl}}/workoutTemplates/today HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 # ----------------------------------------
 # UPDATE
@@ -250,7 +250,7 @@ Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### PATCH /workoutTemplates/:id - Actualizar solo nombre y descripción
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -260,7 +260,7 @@ content-type: application/json
 
 ### PATCH /workoutTemplates/:id - Actualizar ejercicios (modo clásico)
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -277,7 +277,7 @@ content-type: application/json
 
 ### PATCH /workoutTemplates/:id - Actualizar ejercicios con sets detallados
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -308,7 +308,7 @@ content-type: application/json
 
 ### PATCH /workoutTemplates/:id - Actualizar scheduledDayOfWeek
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -317,7 +317,7 @@ content-type: application/json
 
 ### PATCH /workoutTemplates/:id - Error: campo desconocido (strict mode)
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -327,7 +327,7 @@ content-type: application/json
 
 ### PATCH /workoutTemplates/:id - Error: ID inexistente (404)
 PATCH {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 content-type: application/json
 
 {
@@ -340,11 +340,11 @@ content-type: application/json
 
 ### DELETE /workoutTemplates/:id - Eliminar template
 DELETE {{baseUrl}}/workoutTemplates/c8928807-9322-4e74-8d1b-da1a88794044 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### DELETE /workoutTemplates/:id - Error: ID inexistente (404)
 DELETE {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000 HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 # ----------------------------------------
 # DUPLICATE
@@ -352,11 +352,11 @@ Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### POST /workoutTemplates/:id/duplicate - Duplicar template (copia sets también)
 POST {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9/duplicate HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### POST /workoutTemplates/:id/duplicate - Error: ID inexistente (404)
 POST {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000/duplicate HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 # ----------------------------------------
 # FAVORITE
@@ -364,8 +364,8 @@ Authorization: Bearer {{userToken.response.body.data.token}}
 
 ### PATCH /workoutTemplates/:id/favorite - Toggle favorito
 PATCH {{baseUrl}}/workoutTemplates/d2c31fd5-5720-459c-964b-17f9cad150a9/favorite HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
 
 ### PATCH /workoutTemplates/:id/favorite - Error: ID inexistente (404)
 PATCH {{baseUrl}}/workoutTemplates/00000000-0000-0000-0000-000000000000/favorite HTTP/1.1
-Authorization: Bearer {{userToken.response.body.data.token}}
+Authorization: Bearer {{userToken.response.body.data.accessToken}}
