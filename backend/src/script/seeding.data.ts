@@ -8,21 +8,21 @@ const app = express();
 
 // 1. Tags
 
-// const tags = [
-// 	"sin material",
-// 	"barra fija",
-// 	"anillas",
-// 	"explosivo",
-// 	"core",
-// 	"piernas",
-// 	"push",
-// 	"pull",
-// 	"equilibrio",
-// 	"movilidad"
-// ].map(name => ({
-// 	id: uuidv4(),
-// 	name
-// }));
+export const tags = [
+	"sin material",
+	"barra fija",
+	"anillas",
+	"explosivo",
+	"core",
+	"piernas",
+	"push",
+	"pull",
+	"equilibrio",
+	"movilidad"
+].map(name => ({
+	id: randomUUID(),
+	name
+}));
 
 // 2. Exercises
 
