@@ -217,6 +217,7 @@ export const workoutTemplateService = {
 			name: input.name,
 			description: input.description,
 			exercises: input.exercises,
+      scheduledDayOfWeek: input.scheduledDayOfWeek 
 		}
 
 		try {

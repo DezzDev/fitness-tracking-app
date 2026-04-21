@@ -5,7 +5,7 @@
 // ============================================
 
 export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'advanced';
-export type ExerciseType = 'strength' | 'endurance' | 'skill' | 'explosive';
+export type ExerciseType = 'fuerza' | 'resistencia' | 'skill' | 'explosivo' | 'isométrico' | 'mobilidad' | 'cardio';
 
 export type Exercise = {
 	id: string;

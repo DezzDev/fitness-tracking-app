@@ -23,7 +23,7 @@ import {
 } from '../hooks/useWorkoutTemplates';
 import type { WorkoutTemplateExercise, WorkoutTemplateSet } from '@/types';
 
-const DAY_NAMES = [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado' ];
+const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export default function TemplateDetailPage() {
 	const { id } = useParams<{ id: string }>();

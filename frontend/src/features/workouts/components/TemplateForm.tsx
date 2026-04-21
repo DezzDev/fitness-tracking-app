@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Trash2, Loader2, AlertTriangle } from 'lucide-react';
+import { Trash2, Loader2, AlertTriangle, ArrowDown, ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ExerciseSelector from './ExerciseSelector';
@@ -28,10 +28,10 @@ import {
 const DAY_OPTIONS = [
 	{ value: '0', label: 'Lunes' },
 	{ value: '1', label: 'Martes' },
-	{ value: '2', label: 'Miercoles' },
+	{ value: '2', label: 'Miércoles' },
 	{ value: '3', label: 'Jueves' },
 	{ value: '4', label: 'Viernes' },
-	{ value: '5', label: 'Sabado' },
+	{ value: '5', label: 'Sábado' },
 	{ value: '6', label: 'Domingo' },
 ];
 
@@ -106,6 +106,7 @@ export default function TemplateForm({
 	};
 
 	const handleDayChange = (value: string) => {
+   
 		if (value === 'none') {
 			setValue('scheduledDayOfWeek', undefined, { shouldDirty: true });
 		} else {
@@ -117,7 +118,7 @@ export default function TemplateForm({
 
 	return (
 		<form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6'>
-			{/* Alerta de navegacion bloqueada */}
+			{/* Alerta de navegación bloqueada */}
 			{blocker.state === 'blocked' && (
 				<Alert variant="destructive">
 					<AlertTriangle className="h-4 w-4" />
@@ -145,7 +146,7 @@ export default function TemplateForm({
 				</Alert>
 			)}
 
-			{/* Informacion basica */}
+			{/* Información básica */}
 			<Card className="p-6 space-y-4 rounded-none border-border">
 				{/* Nombre */}
 				<div className='space-y-2'>
@@ -167,13 +168,13 @@ export default function TemplateForm({
 					)}
 				</div>
 
-				{/* Descripcion */}
+				{/* Descripción */}
 				<div className='space-y-2'>
 					<Label
 						htmlFor='description'
 						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
 					>
-						Descripcion (opcional)
+						Descripción (opcional)
 					</Label>
 					<Textarea
 						id='description'
@@ -193,7 +194,7 @@ export default function TemplateForm({
 					<Label
 						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
 					>
-						Dia programado (opcional)
+						Día programado (opcional)
 					</Label>
 					<Select
 						value={scheduledDay !== undefined ? String(scheduledDay) : 'none'}
@@ -246,15 +247,60 @@ export default function TemplateForm({
 								<div className='space-y-4'>
 									{/* Header del ejercicio */}
 									<div className='flex items-start gap-3'>
-										{/* Numero de orden */}
-										<div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mt-1">
-											<span className="text-sm font-bebas text-primary">
-												{index + 1}
-											</span>
-										</div>
+                    <div className="flex flex-col items-center gap-1">
+                      {/* Numero de orden */}
+                      <div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mt-1">
+                        <span className="text-sm font-bebas text-primary">
+                          {index + 1}
+                        </span>
+                      </div>
+
+                      {/* Botones de mover */}
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            if (index === 0) return;
+                            const newFields = [...fields];
+                            const temp = newFields[index - 1];
+                            temp.orderIndex= index;
+                            newFields[index - 1] = newFields[index];
+                            newFields[index-1].orderIndex = index - 1;
+                            newFields[index] = temp;
+                            setValue('exercises', newFields, { shouldDirty: true });
+                          }}
+                          disabled={isSubmitting || index === 0}
+                          className="text-muted-foreground hover:text-muted-foreground/80"
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            if (index === fields.length - 1) return;
+                            const newFields = [...fields];
+                            const temp = newFields[index + 1];
+                            temp.orderIndex= index;
+                            newFields[index + 1] = newFields[index];
+                            newFields[index].orderIndex = index + 1;
+                            newFields[index] = temp;
+                            setValue('exercises', newFields, { shouldDirty: true });
+                          }}
+                          disabled={isSubmitting || index === fields.length - 1}
+                          className="text-muted-foreground hover:text-muted-foreground/80"
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                    </div>
 
 										<div className='flex-1 min-w-0 space-y-3'>
-											{/* Info del ejercicio y boton eliminar */}
+											{/* Info del ejercicio y botón eliminar */}
 											<div className="flex items-start justify-between gap-3">
 												<ExerciseInfo exerciseId={field.exerciseId} index={index} />
 
@@ -286,7 +332,7 @@ export default function TemplateForm({
 				<p className='text-sm text-destructive font-barlow'>{errors.exercises.message}</p>
 			)}
 
-			{/* Boton de accion */}
+			{/* Botón de acción */}
 			<Button
 				type='submit'
 				size={'lg'}

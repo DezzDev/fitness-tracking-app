@@ -46,7 +46,7 @@ export interface RefreshTokenResponse {
 // =================================
 
 export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'advanced';
-export type ExerciseType = 'strength' | 'endurance' | 'skill' | 'explosive';
+export type ExerciseType = 'fuerza' | 'resistencia' | 'skill' | 'explosivo' | 'mobilidad' | 'isométrico';
 
 export interface Exercise {
 	id: string;

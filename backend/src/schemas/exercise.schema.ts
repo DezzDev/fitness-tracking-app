@@ -11,10 +11,13 @@ export const ExerciseDifficultyEnum = z.enum([
 	'advanced'
 ]);
 export const ExerciseTypeEnum = z.enum([
-	'strength',
-	'endurance',
+	'fuerza',
+	'resistencia',
 	'skill',
-	'explosive'
+	'explosivo', 
+  'isométrico',
+  'mobilidad',
+  'cardio',
 ]);
 
 // ============================================

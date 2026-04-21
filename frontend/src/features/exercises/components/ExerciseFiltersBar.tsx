@@ -55,15 +55,15 @@ export default function ExerciseFiltersBar({
             <SelectTrigger className="tracking-[2px] rounded-none">
               <SelectValue placeholder="Grupo muscular" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none border-border" position="popper" align="start">
               <SelectItem value="all">Musculo</SelectItem>
               <SelectItem value="pecho">Pecho</SelectItem>
               <SelectItem value="espalda">Espalda</SelectItem>
               <SelectItem value="piernas">Piernas</SelectItem>
               <SelectItem value="hombros">Hombros</SelectItem>
-              <SelectItem value="brazos">Brazos</SelectItem>
+              <SelectItem value="bíceps">Bíceps</SelectItem>
+              <SelectItem value="tríceps">Tríceps</SelectItem>
               <SelectItem value="core">Core</SelectItem>
-              <SelectItem value="cardio">Cardio</SelectItem>
             </SelectContent>
           </Select>
 
@@ -77,7 +77,7 @@ export default function ExerciseFiltersBar({
             <SelectTrigger className="tracking-[2px] rounded-none">
               <SelectValue placeholder="Dificultad" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none border-border" position="popper" align="start">
               <SelectItem value="all">Dificultad</SelectItem>
               <SelectItem value="beginner">Principiante</SelectItem>
               <SelectItem value="intermediate">Intermedio</SelectItem>
@@ -95,12 +95,14 @@ export default function ExerciseFiltersBar({
             <SelectTrigger className="tracking-[2px] rounded-none">
               <SelectValue placeholder="Tipo" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none border-border" position="popper" align="start">
               <SelectItem value="all">Tipo</SelectItem>
-              <SelectItem value="strength">Fuerza</SelectItem>
-              <SelectItem value="endurance">Resistencia</SelectItem>
-              <SelectItem value="skill">Habilidad</SelectItem>
-              <SelectItem value="explosive">Explosivo</SelectItem>
+              <SelectItem value="fuerza">Fuerza</SelectItem>
+              <SelectItem value="resistencia">Resistencia</SelectItem>
+              <SelectItem value="skill">Skill</SelectItem>
+              <SelectItem value="explosivo">Explosivo</SelectItem>
+              <SelectItem value="mobilidad">mobilidad</SelectItem>
+              <SelectItem value="isométrico">isométrico</SelectItem>
             </SelectContent>
           </Select>
 
