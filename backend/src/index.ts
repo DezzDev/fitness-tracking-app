@@ -47,7 +47,7 @@ if (isDevelopment) {
 
 app.use(helmet());
 app.use(cors({
-	origin: isDevelopment ? '*' : process.env.ALLOWED_ORIGINS?.split(','),
+	origin: isDevelopment ? 'http://localhost:5173' : process.env.ALLOWED_ORIGINS?.split(','),
 	credentials: true,
 }));
 app.use(express.json());
