@@ -3,7 +3,6 @@
 import type { RefreshTokenResponse } from '@/types';
 import axios, { AxiosError } from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
-import { set } from 'zod';
 
 // Configuración base
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
@@ -44,12 +43,12 @@ const getAccessToken = (): string | null => {
 }
 
 // Guardar access token en localStorage
-export const setAccessToken = (token: string) => {
+const setAccessToken = (token: string) => {
   localStorage.setItem('accessToken', token);
 }
 
-// Limpiar acessToken de localStorage
-export const clearAccessToken = () => {
+// Limpiar accessToken de localStorage
+const clearAccessToken = () => {
   localStorage.removeItem('accessToken');
 }
 
@@ -69,39 +68,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Interceptor para manejar respuestas y errores
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config;
-
-    // Solo cerrar sesión en 401 si es un error de autenticación
-    // No cerrar sesión si es un error de validación (contraseña incorrecta, etc)
-    if (error.response?.status === 401 && originalRequest) {
-
-      // Rutas que no deben cerrar sesión automáticamente en 401
-      const noLogoutRoutes = [
-        '/users/me/password',
-        '/users/login',
-        '/users/register',
-        '/user/forgot-password',
-        '/user/reset-password',
-      ];
-
-      const shouldNotLogout = noLogoutRoutes.some(route =>
-        originalRequest.url?.includes(route)
-      );
-
-      // Solo cerrar sesión si no es una de las rutas excluidas
-      if (!shouldNotLogout) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-      }
-    }
-    return Promise.reject(error);
-  }
-);
 
 //  Interceptador para manejar refresco de token
 apiClient.interceptors.response.use(
@@ -137,7 +103,11 @@ apiClient.interceptors.response.use(
         // LLamada al endpoint de refresh 
         const response = await apiClient.post<ApiResponse<RefreshTokenResponse>>('/auth/refresh');
 
-        const newAccessToken = response.data.data!.accessToken;
+        const newAccessToken = response.data.data?.accessToken;
+
+        if (!newAccessToken) {
+          throw new Error('No se recibió nuevo access token');
+        }
 
         // Guardar nuevo token en localStorage
         setAccessToken(newAccessToken);
@@ -171,9 +141,44 @@ apiClient.interceptors.response.use(
     
     if(error.response?.status === 401 &&
       (error.response?.data as any)?.error === 'TOKEN_REUSE_DETECTED'
-    )
+    ){
+      // limpiar todo
+      clearAccessToken();
+      localStorage.removeItem('user');
+
+      // mostrar mensaje de seguridad
+      alert('Se ha detectado un intento de reutilización de token. Por seguridad, se ha cerrado tu sesión. Por favor, inicia sesión nuevamente.');  
+
+      // redirigir a login
+      window.location.href = '/login';
+      
+      return Promise.reject(error);
+    }
+
+    // caso 3: otros errores 401
+    if (error.response?.status === 401 && originalRequest) {
+      // rutas que no deben cerrar sesión automáticamente en 401
+      const noLogoutRoutes = [
+        '/users/me/password',
+        '/users/login',
+        '/users/register',
+        '/auth/refresh',
+      ]
+
+      const shouldNotLogout = noLogoutRoutes.some(route =>
+        originalRequest.url?.includes(route) 
+      )
+
+      // solo cerrar sesión si no es una de las rutas excluidas
+      if (!shouldNotLogout){
+        clearAccessToken();
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    }
 
     return Promise.reject(error);
+
   }
 )
 
@@ -206,5 +211,8 @@ export const handleApiError = (error: unknown, messageManual: string = 'Error de
   }
   return 'Error de conexión';
 }
+
+// Exportar funciones de token
+export {getAccessToken, setAccessToken, clearAccessToken}
 
 

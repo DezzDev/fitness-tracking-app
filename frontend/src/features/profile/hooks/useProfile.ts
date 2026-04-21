@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usersApi, type UpdateUserData, type ChangePasswordData } from '@/api/endpoints/users';
+import { authApi } from '@/api/endpoints/auth';
 import { queryKeys } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
@@ -55,7 +56,7 @@ export function useUpdateProfile() {
  */
 export function useChangePassword() {
 	return useMutation({
-		mutationFn: (data: ChangePasswordData) => usersApi.changePassword(data),
+		mutationFn: (data: ChangePasswordData) => authApi.changePassword(data),
 		onSuccess: () => {
 			toast.success('Contraseña cambiada correctamente');
 		},

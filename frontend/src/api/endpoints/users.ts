@@ -38,13 +38,6 @@ export const usersApi={
 	},
 
 	/**
-	 * Cambiar contraseña
-	 */
-	changePassword: async (data: ChangePasswordData): Promise<void>=>{
-		await apiClient.patch('/users/me/password', data);
-	},
-
-	/**
 	 * Subir imagen de perfil
 	 */
 	uploadProfileImage: async (file: File): Promise<string> =>{

@@ -4,12 +4,14 @@ import type { User } from '@/types';
 import { authApi } from '@/api/endpoints/auth';
 import { clearWorkoutStorage } from '@/lib/workoutStorage';
 import type { AxiosError } from 'axios';
+import { getAccessToken, setAccessToken } from '@/api/client';
 
 interface AuthState {
 	user: User | null;
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	error: string | null;
+  accessToken: string | null;
 
 	// Actions
 	login: (email: string, password: string) => Promise<void>;
@@ -22,9 +24,11 @@ interface AuthState {
 		role?: ('user' | 'admin'),
 		profile_image?:string 
 	}) => Promise<void>;
-	logout: () => void;
+	logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
 	loadUser: () => void;
 	clearError: () => void;
+  setAccessToken: (token: string) => void; 
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -32,6 +36,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 	isAuthenticated: authApi.isAuthenticated(),
 	isLoading: false,
 	error: null,
+  accessToken: null,
 
 	/**
 	 * Iniciar sesión
@@ -46,6 +51,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 				user,
 				isAuthenticated: true,
 				isLoading: false,
+				accessToken : getAccessToken()
 			});
 
 		} catch (error: unknown) {
@@ -79,6 +85,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 				user,
 				isAuthenticated: true,
 				isLoading: false,
+				accessToken: getAccessToken()
 			})
 		} catch (error: unknown) {
 			let errorMessage = 'Error al registrar usuario';
@@ -97,18 +104,49 @@ export const useAuthStore = create<AuthState>((set) => ({
 	/**
 	 * Cerrar sesión
 	 */
-	logout: () => {
-		authApi.logout();
-		
-		// Clear active workout sessions
-		clearWorkoutStorage();
+	logout: async () => {
 
-		set({
-			user: null,
-			isAuthenticated: false,
-			error: null
-		})
+    try{
+      // llamar backend para revocar refresh token
+      await authApi.logout();
+
+    }catch(error){
+      console.error("Logout error: ", error);
+    }finally{
+      // Clear active workout sessions
+      clearWorkoutStorage();
+  
+      set({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+        accessToken: null,
+      })
+
+    }
+		
 	},
+
+  /**
+   * Cerrar sesión en todas las sesiones
+   */
+  logoutAll: async () => {
+    
+    try{
+      await authApi.logoutAll();
+    }catch(error){
+      console.error("Logout all error:", error);
+    }finally{
+      clearWorkoutStorage();
+
+      set({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+        accessToken: null
+      })
+    }
+  },
 
 	/**
 	 * Cargar usuario desde localStorage
@@ -128,7 +166,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 	 */
 	clearError: () => {
 		set({ error: null });
-	}
+	},
+
+  /**
+   * Actualizar access token (llamado por interceptor)
+   */
+  setAccessToken: (token: string) => {
+    // actualizar token en el estado
+    set({ accessToken: token })
+    // actualiza token en localStorage
+    setAccessToken(token);
+  },
 
 
 }))

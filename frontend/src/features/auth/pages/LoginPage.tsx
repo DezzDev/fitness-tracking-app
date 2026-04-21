@@ -111,7 +111,7 @@ function LoginPage() {
 					<label className="flex items-center gap-2 cursor-pointer">
 						<input
 							type="checkbox"
-							className="w-4 h-4 rounded border-border accent-primary bg-[var(--surface)]"
+							className="w-4 h-4 rounded border-border accent-primary bg-(--surface)"
 						/>
 						<span className="text-muted-foreground">Recordarme</span>
 					</label>
@@ -146,7 +146,7 @@ function LoginPage() {
 						<div className="w-full border-t border-border"/>
 					</div>
 					<div className="relative flex justify-center text-sm">
-						<span className="px-4 bg-[var(--surface)] text-muted-foreground">
+						<span className="px-4 bg-(--surface) text-muted-foreground">
 							Continua con
 						</span>
 					</div>

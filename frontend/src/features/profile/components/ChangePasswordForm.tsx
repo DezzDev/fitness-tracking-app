@@ -4,12 +4,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useChangePassword } from '../hooks/useProfile';
+import { useAuthStore } from '@/store/authStore';
 
 const ChangePasswordSchema = z.object({
 	currentPassword: z
@@ -47,6 +48,8 @@ export default function ChangePasswordForm(){
 	const [showCurrent, setShowCurrent] = useState(false);
 	const [showNew, setShowNew] = useState(false);
 	const [showConfirm, setShowConfirm] = useState(false);
+  const {logoutAll} = useAuthStore();
+  const navigate = useNavigate();
 
 	const {
 		register,
@@ -73,7 +76,7 @@ export default function ChangePasswordForm(){
 		number : /[0-9]/.test(newPassword || ''),
 	}
 
-	const onSubmit = (data: ChangePasswordFormData) => {
+	const onSubmit = async (data: ChangePasswordFormData) => {
 		changePassword(
 			{
 				oldPassword: data.currentPassword,
@@ -85,6 +88,10 @@ export default function ChangePasswordForm(){
 				}
 			}
 		)
+
+    // Cerrar sesión en todos los dispositivos después de cambiar la contraseña
+    await logoutAll(); 
+    navigate('/login');
 	}
 
 	return (
@@ -243,7 +250,7 @@ export default function ChangePasswordForm(){
 // Componente auxiliar
 function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
 	return (
-		<div className={`flex items-center gap-2 ${met ? 'text-[var(--success)]' : 'text-muted-foreground'}`}>
+		<div className={`flex items-center gap-2 ${met ? 'text-(--success)' : 'text-muted-foreground'}`}>
 			{met ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
 			<span>{text}</span>
 		</div>

@@ -1,7 +1,8 @@
 // src/api/endpoints/auth.ts
 
-import {apiClient, type ApiResponse} from "@/api/client";
-import type{ LoginCredentials, RegisterData, AuthResponse, User } from "@/types";
+import {apiClient, type ApiResponse, setAccessToken, clearAccessToken, getAccessToken} from "@/api/client";
+import type{ LoginCredentials, RegisterData, AuthResponse, User, RefreshTokenResponse } from "@/types";
+import type { ChangePasswordData } from "./users";
 
 export const authApi = {
 	/**
@@ -31,19 +32,61 @@ export const authApi = {
 		const authData = response.data.data!;
 
 		// Guardar token y usuario en localStorage
-		localStorage.setItem('accessToken', authData.accessToken);
+		setAccessToken(authData.accessToken);
 		localStorage.setItem('user', JSON.stringify(authData.user))
 
 		return authData;
 	},
 
+  /**
+   * Refresh tokens
+   * Renovar access token usando refresh token almacenado en cookies
+   */
+
+  refresh: async (): Promise<string> => {
+    const response = await apiClient.post<ApiResponse<RefreshTokenResponse>>(
+      '/auth/refresh'
+    );
+
+    const newAccessToken = response.data.data!.accessToken;
+
+    // guardar nuevo access token en localStorage
+    setAccessToken(newAccessToken);
+
+    return newAccessToken;
+  },
+
 	/**
 	 * Cerrar sesión
 	 */
-	logout: () =>{
-		localStorage.removeItem('accessToken');
-		localStorage.removeItem('user');
+	logout: async ():Promise<void> =>{
+    try{
+      // llamar backend para revocar refresh token
+      await apiClient.post('/users/logout');
+    }catch(error){
+      // aunque falle, limpiar localmente
+      console.error("Logout error:", error);
+    }finally {
+      // Limpiar localStorage
+      clearAccessToken();
+      localStorage.removeItem('user');
+    }
 	},
+
+  /**
+   * Cerrar sesión en todos los dispositivos
+   */
+  logoutAll: async ():Promise<void> =>{
+    try{
+      await apiClient.post('auth/logout-all');
+    }catch(error){
+      console.error('Logout all error: ',error );
+    }finally{
+      // Limpiar localStorage
+      clearAccessToken();
+      localStorage.removeItem('user');
+    }
+  },
 
 	/**
 	 * Obtener perfil del usuario actual
@@ -61,20 +104,23 @@ export const authApi = {
 	 * @param data Datos para cambiar la contraseña (currentPassword, newPassword)
 	 * @returns void
 	 */
-	changePassword: async(data:{
-		currentPassword: string;
-		newPassword: string;
-	}): Promise<void> => {
+	changePassword: async(data: ChangePasswordData): Promise<void> => {
 		await apiClient.patch('/users/me/password', data);
+
+    // limpiar token local
+    clearAccessToken();
+    localStorage.removeItem('user');
 	},
 
 	/**
 	 * Verificar si hay un usuario autenticado
 	 * @returns true si hay un token de autenticación en localStorage
 	 */
-	isAuthenticated: (): boolean => {
-		return !!localStorage.getItem('accessToken');
-	},
+	  isAuthenticated: (): boolean => {
+    const token = getAccessToken();
+    const user = localStorage.getItem('user');
+    return !!(token && user);
+  },
 
 	/**
 	 * Obtener usuario desde localStorage
