@@ -23,10 +23,10 @@ export const authApi = {
 	 * @param credentials Credenciales de login (email y password)
 	 * @returns datos de autenticación (token y usuario)
 	 */
-	login: async (credentials: LoginCredentials): Promise<AuthResponse> =>{
+	login: async (data: LoginCredentials): Promise<AuthResponse> =>{
 		const response = await apiClient.post<ApiResponse<AuthResponse>>(
 			'/users/login',
-			credentials
+			data
 		);
 
 		const authData = response.data.data!;

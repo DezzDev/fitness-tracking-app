@@ -223,7 +223,7 @@ function RegisterPage() {
 						<input
 							type="checkbox"
 							id="terms"
-							className="w-4 h-4 rounded border-border accent-primary bg-[var(--surface)]"
+							className="w-4 h-4 rounded border-border accent-primary bg-(--surface)"
 							{...register('acceptTerms')}
 						/>
 					<label htmlFor="terms" className="text-sm text-muted-foreground">
@@ -278,7 +278,7 @@ function RegisterPage() {
 // Componente auxiliar para mostrar requisitos de contraseña
 function PasswordRequirement({ met, text }: { met: boolean, text: string }) {
 	return (
-		<div className={`flex items-center gap-2 ${met ? 'text-[var(--success)]' : 'text-muted-foreground'}`}>
+		<div className={`flex items-center gap-2 ${met ? 'text-(--success)' : 'text-muted-foreground'}`}>
 			{met ? (
 				<CheckCircle2 size={14} />
 			) : (

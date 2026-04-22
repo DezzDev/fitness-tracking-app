@@ -43,7 +43,7 @@ export const userService = {
   /**
     * Registrar un nuevo usuario
   */
-  register: async (input: RegisterInput): Promise<{ user: User; token: string }> => {
+  register: async (input: RegisterInput): Promise<{ user: User; accessToken: string }> => {
     try {
       // 1. Verificar si el email ya existe
       const existingUser = await userRepository.existByEmail(input.email);
@@ -59,12 +59,12 @@ export const userService = {
       const user = await userRepository.create(input, passwordHash);
 
       // 4. Generar token
-      const token = generateToken({ userId: user.id, email: user.email, role: user.role }, { expiresIn: '1d' });
+      const {accessToken} = await authService.generateTokenPair({ userId: user.id, role: user.role, tokenVersion: user.tokenVersion || 0 });
 
       // 5. Retornar usuario sanitizado y token
       return {
         user: sanitizeUser(user),
-        token
+        accessToken
       };
     } catch (error) {
       // se utiliza handleServiceError para manejar errores que provienen del repository u otros

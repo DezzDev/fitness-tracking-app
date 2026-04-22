@@ -7,6 +7,7 @@ import { env, isDevelopment } from "@/config/env";
 import logger from "@/utils/logger";
 import { errorHandler, notFoundHandler } from "@/middlewares/error.middleware";
 import { startCleanupJobs } from "./jobs/cleanup.job";
+import cookieParser from "cookie-parser";
 
 // ============================================
 // IMPORTAR RUTAS
@@ -50,9 +51,11 @@ app.use(cors({
 	origin: isDevelopment ? 'http://localhost:5173' : process.env.ALLOWED_ORIGINS?.split(','),
 	credentials: true,
 }));
+// body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+// cookie parser
+app.use(cookieParser());
 
 
 // ============================================

@@ -59,9 +59,9 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
   res.cookie('refreshToken', result.tokens.refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // Solo en producción
-    sameSite: 'strict',
+    sameSite: 'lax', // o 'strict' según necesidades
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-    path: '/'
+    path: '/' //cookie disponible en todas las rutas
   });
 
   // Devolver access token y usuario
