@@ -62,7 +62,7 @@ function RegisterPage() {
 				age: data.age,
 				acceptTerms: data.acceptTerms,
 				role: data.role,
-				profile_image: data.profile_image
+				profileImage: data.profileImage
 			});
 
 			console.log("after register")

@@ -47,7 +47,7 @@ export const registerSchema = baseUserSchema.extend({
 	acceptTerms: z.boolean().refine((val: boolean) => val === true, { error: 'You must accept the terms and conditions' }),
 	confirmPassword: z.string().min(1, { error: 'Confirm password is required' }),
 	role: z.enum([ 'user', 'admin' ]),
-	profile_image: z.string().optional(),
+	profileImage: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword,{
 	error: 'Passwords do not match',
 	path: ['confirmPassword']

@@ -6,3 +6,5 @@
 🔜 Notificaciones (alertar cuando se logra un PR)
 🔜 Analytics/Dashboard (gráficas de progreso)
 🔜 Testing completo
+
+- Remover description

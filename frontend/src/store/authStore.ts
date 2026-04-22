@@ -1,6 +1,6 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
-import type { User } from '@/types';
+import type { RegisterData, User } from '@/types';
 import { authApi } from '@/api/endpoints/auth';
 import { clearWorkoutStorage } from '@/lib/workoutStorage';
 import type { AxiosError } from 'axios';
@@ -15,15 +15,7 @@ interface AuthState {
 
 	// Actions
 	login: (email: string, password: string) => Promise<void>;
-	register: (data: { 
-		email: string, 
-		password: string, 
-		name: string, 
-		age: number, 
-		acceptTerms: boolean, 
-		role?: ('user' | 'admin'),
-		profile_image?:string 
-	}) => Promise<void>;
+	register: (data: RegisterData) => Promise<void>;
 	logout: () => Promise<void>;
   logoutAll: () => Promise<void>;
 	loadUser: () => void;
@@ -71,7 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 	/**
 	 * Registrar nuevo usuario
 	 */
-	register: async (data) => {
+	register: async (data: RegisterData) => {
 		set({ isLoading: true, error: null });
 		try {
 			await authApi.register(data);
