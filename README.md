@@ -1,6 +1,6 @@
 # Fitness Tracking App
 
-Aplicacion full-stack para seguimiento de entrenamiento fisico: registro de usuarios, ejercicios, plantillas de rutina, sesiones de entrenamiento y records personales.
+Aplicación full-stack para seguimiento de entrenamiento físico: registro de usuarios, ejercicios, plantillas de rutina, sesiones de entrenamiento y récords personales.
 
 ## Tech Stack
 
@@ -15,8 +15,8 @@ Aplicacion full-stack para seguimiento de entrenamiento fisico: registro de usua
 fitness-tracking-app/
 |- backend/      # API REST con Express + TypeScript
 |- frontend/     # App web con React + Vite
-|- docs/         # Documentacion tecnica y decisiones (ADRs)
-`- AGENTS.md     # Guia del proyecto para agentes
+|- docs/         # Documentación técnica y decisiones (ADRs)
+`- AGENTS.md     # Guía del proyecto para agentes
 ```
 
 ## Requisitos previos
@@ -25,7 +25,7 @@ fitness-tracking-app/
 - **pnpm** 10+
 - Cuenta/proyecto en **Turso** (URL + auth token)
 
-## Instalacion
+## Instalación
 
 Clona el repositorio y luego instala dependencias por separado:
 
@@ -60,7 +60,7 @@ JWT_REFRESH_EXPIRY=7d
 COOKIE_SECURE=false
 COOKIE_DOMAIN=localhost
 
-# Opcional para CORS en produccion:
+# Opcional para CORS en producción:
 # ALLOWED_ORIGINS=https://tu-frontend.com
 ```
 
@@ -95,11 +95,11 @@ pnpm run dev
 ### Backend (`/backend`)
 
 - `pnpm run dev` - servidor en desarrollo (hot reload)
-- `pnpm run build` - compilacion TypeScript a `dist/`
-- `pnpm run start` - ejecutar build de produccion
+- `pnpm run build` - compilación TypeScript a `dist/`
+- `pnpm run start` - ejecutar build de producción
 - `pnpm run seed` - seeding de datos
 
-Tambien existen scripts de test:
+También existen scripts de test:
 - `pnpm run test`
 - `pnpm run test:unit`
 - `pnpm run test:integration`
@@ -123,7 +123,7 @@ Routes -> Controllers -> Services -> Repositories -> Database
 
 - **Routes:** endpoints y middlewares
 - **Controllers:** capa HTTP
-- **Services:** logica de negocio
+- **Services:** lógica de negocio
 - **Repositories:** consultas SQL y mapeo de datos
 
 ### Frontend (Feature-Based)
@@ -131,15 +131,15 @@ Routes -> Controllers -> Services -> Repositories -> Database
 - `features/` por dominio (auth, exercises, profile, workouts)
 - `api/` para cliente Axios y endpoints
 - `store/` para estado global (Zustand)
-- `lib/queryClient.ts` para configuracion React Query
+- `lib/queryClient.ts` para configuración React Query
 
 ## Endpoints principales
 
 Base URL: `http://localhost:3000/api`
 
-- **Users/Auth:** registro, login, perfil, actualizacion, cambio de contrasena
+- **Users/Auth:** registro, login, perfil, actualización, cambio de contraseña
 - **Exercises:** listado, detalle, filtros, stats
-- **Tags:** CRUD basico
+- **Tags:** CRUD básico
 - **Personal Records:** CRUD + stats
 - **Workout Templates:** CRUD, duplicar, favorito, plantilla de hoy
 - **Workout Sessions:** CRUD, por rango de fecha, recientes, desde plantilla
@@ -148,14 +148,14 @@ Base URL: `http://localhost:3000/api`
 Para detalle completo, revisar:
 - `backend/endpoints.md`
 - `docs/endpoints.md`
-- `AGENTS.md` (seccion de endpoints)
+- `AGENTS.md` (sección de endpoints)
 
 ## Estado del proyecto
 
-Proyecto en evolucion activa.
-La base de tests esta preparada en backend, pero puede haber areas aun en implementacion o ajuste.
+Proyecto en evolución activa.
+La base de tests está preparada en backend, pero puede haber áreas aún en implementación o ajuste.
 
-## Documentacion util
+## Documentación útil
 
 - `PROJECT_STRUCTURE.md`
 - `docs/architecture/architecture.md`
