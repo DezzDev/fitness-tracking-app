@@ -133,7 +133,7 @@ export default function ExercisesPage() {
 				</Card>
 			) : (
 				<>
-					<div className="divide-y divide-border rounded-none">
+					<div className="flex flex-col gap-1">
 						{exercises.map((exercise) => (
 							<ExerciseCard
 								key={exercise.id}

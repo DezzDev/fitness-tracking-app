@@ -1,5 +1,5 @@
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+// import { format } from "date-fns";
+// import { es } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -80,7 +80,7 @@ export default function ExerciseDetailDialog({
                   {exercise.muscleGroup && (
                     <Badge
                       variant="secondary"
-                      className="text-sm font-medium rounded-none tracking-widest"
+                      className="text-sm text-primary bg-popover font-medium rounded-none tracking-widest"
                     >
                       {capitalize(exercise.muscleGroup)}
                     </Badge>
@@ -89,7 +89,7 @@ export default function ExerciseDetailDialog({
                   {exercise.difficulty && (
                     <Badge
                       variant="secondary"
-                      className={`text-sm font-medium rounded-none tracking-widest`}
+                      className={`text-sm font-medium bg-popover text-muted-foreground rounded-none tracking-widest`}
                     >
                       {difficultyConfig[exercise.difficulty].label}
                     </Badge>
@@ -99,7 +99,7 @@ export default function ExerciseDetailDialog({
                   {exercise.type && (
                     <Badge
                       variant="secondary"
-                      className={`text-sm font-medium rounded-none tracking-widest`}
+                      className={`text-sm font-medium bg-popover text-muted-foreground rounded-none tracking-widest`}
                     >
                       {capitalize(exercise.type)}
                     </Badge>
@@ -110,14 +110,14 @@ export default function ExerciseDetailDialog({
               </div>
 
               {/* Fecha de creación */}
-              <div className="pt-4 border-t border-border">
+              {/* <div className="pt-4 border-t border-border">
                 <p className="text-xs text-muted-foreground">
                   Creado el{' '}
                   {format(new Date(exercise.createdAt), "dd 'de' MMMM 'de' yyyy", {
                     locale: es
                   })}
                 </p>
-              </div>
+              </div> */}
             </div>
           </>
         ) : (
