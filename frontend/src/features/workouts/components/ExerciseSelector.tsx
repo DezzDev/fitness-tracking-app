@@ -47,7 +47,7 @@ export default function ExerciseSelector({
 				variant="outline"
 				size="lg"
 				onClick={() => setIsOpen(true)}
-				className="w-full border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-colors uppercase font-barlow font-semibold tracking-wide"
+				className="w-full border-2 border-dashed border-border rounded-none hover:border-primary/50 hover:bg-primary/5 transition-colors uppercase font-barlow font-semibold tracking-wide"
 			>
 				<Plus className="h-5 w-5 mr-2" />
 				<span className="tracking-[2px]">Añadir Ejercicio</span>
@@ -70,6 +70,7 @@ export default function ExerciseSelector({
 						setIsOpen(false);
 						setSearchTerm('');
 					}}
+          className="rounded-none"
 				>
 					<X className="h-4 w-4" />
 				</Button>
@@ -88,7 +89,7 @@ export default function ExerciseSelector({
 			</div>
 
 			{/* Lista de ejercicios */}
-			<div className="max-h-96 overflow-y-auto overflow-x-hidden border divide-y">
+			<div className="max-h-96 overflow-y-auto overflow-x-hidden border border-border divide-y divide-border">
 				{isLoading ? (
 					<div className="p-4 space-y-3">
 						{[ ...Array(5) ].map((_, i) => (
@@ -135,7 +136,7 @@ export default function ExerciseSelector({
 											{exercise.muscleGroup && (
 												<Badge 
 													variant={'secondary'} 
-													className="text-xs font-barlow uppercase tracking-wide rounded-none"
+													className="text-xs font-medium bg-popover text-primary rounded-none tracking-widest uppercase"
 												>
 													{exercise.muscleGroup}
 												</Badge>
@@ -143,14 +144,8 @@ export default function ExerciseSelector({
 
 											{exercise.difficulty && (
 												<Badge
-													variant={'outline'}
-													className={`text-xs font-barlow uppercase tracking-wide rounded-none ${
-														exercise.difficulty === 'beginner'
-															? 'border-green-500/50 text-green-500'
-															: exercise.difficulty === 'intermediate'
-																? 'border-yellow-500/50 text-yellow-500'
-																: 'border-red-500/50 text-red-500'
-													}`}
+													variant={'secondary'}
+													className="text-xs font-medium bg-popover text-muted-foreground rounded-none tracking-widest uppercase"
 												>
 													{
 														difficultNameMap[exercise.difficulty] || exercise.difficulty
@@ -161,7 +156,7 @@ export default function ExerciseSelector({
                       {exercise.type && (
                         <Badge
                           variant={'secondary'}
-                          className="text-xs font-barlow uppercase tracking-wide rounded-none"
+                          className="text-xs font-medium bg-popover text-muted-foreground rounded-none tracking-widest uppercase"
                         >
                           {exercise?.type  || exercise.type}
                         </Badge>
@@ -175,7 +170,7 @@ export default function ExerciseSelector({
 										variant={isSelected ? 'secondary' : 'default'}
 										onClick={() => handleSelectExercise(exercise.id, exercise.name)}
 										disabled={isSelected}
-										className="shrink-0 uppercase font-barlow font-semibold tracking-wide text-xs"
+										className="shrink-0 uppercase font-barlow font-semibold tracking-wide text-xs rounded-none"
 									>
 										{isSelected ? (
 											<>

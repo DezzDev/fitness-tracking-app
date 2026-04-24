@@ -18,235 +18,240 @@ import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ExerciseInfo from './ExerciseInfo';
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 
 const DAY_OPTIONS = [
-	{ value: '0', label: 'Lunes' },
-	{ value: '1', label: 'Martes' },
-	{ value: '2', label: 'Miércoles' },
-	{ value: '3', label: 'Jueves' },
-	{ value: '4', label: 'Viernes' },
-	{ value: '5', label: 'Sábado' },
-	{ value: '6', label: 'Domingo' },
+  { value: '0', label: 'Lunes' },
+  { value: '1', label: 'Martes' },
+  { value: '2', label: 'Miércoles' },
+  { value: '3', label: 'Jueves' },
+  { value: '4', label: 'Viernes' },
+  { value: '5', label: 'Sábado' },
+  { value: '6', label: 'Domingo' },
 ];
 
 interface TemplateFormProps {
-	initialData?: CreateTemplateFormData;
-	onSubmit: (data: CreateTemplateFormData) => void;
-	isSubmitting?: boolean;
-	submitLabel?: string;
+  initialData?: CreateTemplateFormData;
+  onSubmit: (data: CreateTemplateFormData) => void;
+  isSubmitting?: boolean;
+  submitLabel?: string;
 }
 
 export default function TemplateForm({
-	initialData,
-	onSubmit,
-	isSubmitting = false,
-	submitLabel = 'Guardar Plantilla'
+  initialData,
+  onSubmit,
+  isSubmitting = false,
+  submitLabel = 'Guardar Plantilla'
 }: TemplateFormProps) {
-	const {
-		register,
-		control,
-		handleSubmit,
-		setValue,
-		watch,
-		formState: { errors, isDirty }
-	} = useForm<CreateTemplateFormData>({
-		resolver: zodResolver(createTemplateSchema),
-		values: initialData ?? {
-			name: '',
-			description: '',
-			exercises: []
-		}
-	});
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isDirty }
+  } = useForm<CreateTemplateFormData>({
+    resolver: zodResolver(createTemplateSchema),
+    values: initialData ?? {
+      name: '',
+      description: '',
+      exercises: []
+    }
+  });
 
-	const { fields, append, remove } = useFieldArray({
-		control,
-		name: 'exercises'
-	});
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'exercises'
+  });
 
-	// Detectar cambios no guardados
-	const [hasSubmitted, setHasSubmitted] = useState(false);
-	const blocker = useUnsavedChanges(isDirty && !hasSubmitted && !isSubmitting);
+  // Detectar cambios no guardados
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const blocker = useUnsavedChanges(isDirty && !hasSubmitted && !isSubmitting);
 
-	const scheduledDay = watch('scheduledDayOfWeek');
+  const scheduledDay = watch('scheduledDayOfWeek');
 
-	const handleFormSubmit = (data: CreateTemplateFormData) => {
-		setHasSubmitted(true);
-		onSubmit(data);
-	};
+  const handleFormSubmit = (data: CreateTemplateFormData) => {
+    setHasSubmitted(true);
+    onSubmit(data);
+  };
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const handleAddExercise = (exerciseId: string, _exerciseName: string) => {
-		// Verificar que no este ya agregado
-		const exists = fields.some(f => f.exerciseId === exerciseId);
-		if (exists) {
-			toast.error('Ya existe este ejercicio');
-			return;
-		}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleAddExercise = (exerciseId: string, _exerciseName: string) => {
+    // Verificar que no este ya agregado
+    const exists = fields.some(f => f.exerciseId === exerciseId);
+    if (exists) {
+      toast.error('Ya existe este ejercicio');
+      return;
+    }
 
-		append({
-			exerciseId,
-			orderIndex: fields.length,
-		});
-	};
+    append({
+      exerciseId,
+      orderIndex: fields.length,
+    });
+  };
 
-	const handleRemoveExercise = (index: number) => {
-		remove(index);
-		// Reordenar indices
-		fields.forEach((_, i) => {
-			if (i > index) {
-				setValue(`exercises.${i - 1}.orderIndex`, i - 1);
-			}
-		});
-	};
+  const handleRemoveExercise = (index: number) => {
+    remove(index);
+    // Reordenar indices
+    fields.forEach((_, i) => {
+      if (i > index) {
+        setValue(`exercises.${i - 1}.orderIndex`, i - 1);
+      }
+    });
+  };
 
-	const handleDayChange = (value: string) => {
-   
-		if (value === 'none') {
-			setValue('scheduledDayOfWeek', undefined, { shouldDirty: true });
-		} else {
-			setValue('scheduledDayOfWeek', Number(value), { shouldDirty: true });
-		}
-	};
+  const handleDayChange = (value: string) => {
 
-	const selectedExerciseIds = fields.map(f => f.exerciseId);
+    if (value === 'none') {
+      setValue('scheduledDayOfWeek', undefined, { shouldDirty: true });
+    } else {
+      setValue('scheduledDayOfWeek', Number(value), { shouldDirty: true });
+    }
+  };
 
-	return (
-		<form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6'>
-			{/* Alerta de navegación bloqueada */}
-			{blocker.state === 'blocked' && (
-				<Alert variant="destructive">
-					<AlertTriangle className="h-4 w-4" />
-					<AlertDescription className="flex items-center justify-between">
-						<span>Tienes cambios sin guardar. ¿Deseas descartarlos?</span>
-						<div className="flex gap-2">
-							<Button
-								type="button"
-								size="sm"
-								variant="outline"
-								onClick={() => blocker.reset?.()}
-							>
-								Cancelar
-							</Button>
-							<Button
-								type="button"
-								size="sm"
-								variant="destructive"
-								onClick={() => blocker.proceed?.()}
-							>
-								Descartar
-							</Button>
-						</div>
-					</AlertDescription>
-				</Alert>
-			)}
+  const selectedExerciseIds = fields.map(f => f.exerciseId);
 
-			{/* Información básica */}
-			<Card className="p-6 space-y-4 rounded-none border-border">
-				{/* Nombre */}
-				<div className='space-y-2'>
-					<Label
-						htmlFor='name'
-						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
-					>
-						Nombre de la plantilla <span className='text-destructive'>*</span>
-					</Label>
-					<Input
-						id='name'
-						placeholder='Ej: Push Day - Pecho y Triceps'
-						disabled={isSubmitting}
-						className="font-barlow rounded-none"
-						{...register('name')}
-					/>
-					{errors.name && (
-						<p className='text-sm text-destructive font-barlow'>{errors.name.message}</p>
-					)}
-				</div>
+  return (
+    <form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6'>
+      {/* Alerta de navegación bloqueada */}
+      {blocker.state === 'blocked' && (
+        <Alert variant="destructive" className="rounded-none flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="flex items-center justify-between">
+              <span>Tienes cambios sin guardar. ¿Deseas descartarlos?</span>
+            </AlertDescription>
 
-				{/* Descripción */}
-				<div className='space-y-2'>
-					<Label
-						htmlFor='description'
-						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
-					>
-						Descripción (opcional)
-					</Label>
-					<Textarea
-						id='description'
-						placeholder='Describe brevemente esta plantilla...'
-						rows={3}
-						disabled={isSubmitting}
-						className="font-barlow resize-none rounded-none"
-						{...register('description')}
-					/>
-					{errors.description && (
-						<p className='text-sm text-destructive font-barlow'>{errors.description.message}</p>
-					)}
-				</div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => blocker.reset?.()}
+              className='rounded-none tracking-wide'
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              onClick={() => blocker.proceed?.()}
+              className='rounded-none tracking-wide'
+            >
+              Descartar
+            </Button>
+          </div>
+        </Alert>
+      )}
 
-				{/* Dia programado */}
-				<div className='space-y-2'>
-					<Label
-						className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
-					>
-						Día programado (opcional)
-					</Label>
-					<Select
-						value={scheduledDay !== undefined ? String(scheduledDay) : 'none'}
-						onValueChange={handleDayChange}
-						disabled={isSubmitting}
-					>
-						<SelectTrigger className="font-barlow rounded-none">
-							<SelectValue placeholder="Sin programar" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="none">Sin programar</SelectItem>
-							{DAY_OPTIONS.map((day) => (
-								<SelectItem key={day.value} value={day.value}>
-									{day.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-					{errors.scheduledDayOfWeek && (
-						<p className='text-sm text-destructive font-barlow'>{errors.scheduledDayOfWeek.message}</p>
-					)}
-				</div>
-			</Card>
+      {/* Información básica */}
+      <Card className="p-6 space-y-4 rounded-none border-border">
+        {/* Nombre */}
+        <div className='space-y-2'>
+          <Label
+            htmlFor='name'
+            className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
+          >
+            Nombre de la plantilla <span className='text-destructive'>*</span>
+          </Label>
+          <Input
+            id='name'
+            placeholder='Ej: Push Day - Pecho y Triceps'
+            disabled={isSubmitting}
+            className="font-barlow rounded-none"
+            {...register('name')}
+          />
+          {errors.name && (
+            <p className='text-sm text-destructive font-barlow'>{errors.name.message}</p>
+          )}
+        </div>
 
-			{/* Selector de ejercicios */}
-			<div className="space-y-3">
-				<ExerciseSelector
-					onSelectExercise={handleAddExercise}
-					selectedExerciseIds={selectedExerciseIds}
-				/>
-			</div>
+        {/* Descripción */}
+        <div className='space-y-2'>
+          <Label
+            htmlFor='description'
+            className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
+          >
+            Descripción (opcional)
+          </Label>
+          <Textarea
+            id='description'
+            placeholder='Describe brevemente esta plantilla...'
+            rows={3}
+            disabled={isSubmitting}
+            className="font-barlow resize-none rounded-none"
+            {...register('description')}
+          />
+          {errors.description && (
+            <p className='text-sm text-destructive font-barlow'>{errors.description.message}</p>
+          )}
+        </div>
 
-			{/* Lista de ejercicios agregados */}
-			{fields.length > 0 && (
-				<Card className="p-6 space-y-4 rounded-none border-border">
-					<div className="flex items-center gap-3">
-						<h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
-							Ejercicios
-						</h2>
-						<Badge variant="secondary" className="font-barlow font-semibold">
-							{fields.length}
-						</Badge>
-					</div>
+        {/* Dia programado */}
+        <div className='space-y-2'>
+          <Label
+            className="text-xs uppercase tracking-wide font-barlow font-semibold text-muted-foreground"
+          >
+            Día programado (opcional)
+          </Label>
+          <Select
+            value={scheduledDay !== undefined ? String(scheduledDay) : 'none'}
+            onValueChange={handleDayChange}
+            disabled={isSubmitting}
+          >
+            <SelectTrigger className="font-barlow rounded-none">
+              <SelectValue placeholder="Sin programar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Sin programar</SelectItem>
+              {DAY_OPTIONS.map((day) => (
+                <SelectItem key={day.value} value={day.value}>
+                  {day.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.scheduledDayOfWeek && (
+            <p className='text-sm text-destructive font-barlow'>{errors.scheduledDayOfWeek.message}</p>
+          )}
+        </div>
+      </Card>
 
-					<div className='space-y-6'>
-						{fields.map((field, index) => (
-							<div key={field.id}>
-								{index > 0 && <Separator className="my-6" />}
+      {/* Selector de ejercicios */}
+      <div className="space-y-3">
+        <ExerciseSelector
+          onSelectExercise={handleAddExercise}
+          selectedExerciseIds={selectedExerciseIds}
+        />
+      </div>
 
-								<div className='space-y-4'>
-									{/* Header del ejercicio */}
-									<div className='flex items-start gap-3'>
+      {/* Lista de ejercicios agregados */}
+      {fields.length > 0 && (
+        <Card className="p-6 space-y-4 rounded-none border-border">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bebas tracking-widest uppercase text-foreground">
+              Ejercicios
+            </h2>
+            <Badge variant="secondary" className="font-barlow font-semibold">
+              {fields.length}
+            </Badge>
+          </div>
+
+          <div className='space-y-6'>
+            {fields.map((field, index) => (
+              <div key={field.id}>
+                {index > 0 && <Separator className="my-6" />}
+
+                <div className='space-y-4'>
+                  {/* Header del ejercicio */}
+                  <div className='flex items-start gap-3'>
                     <div className="flex flex-col items-center gap-1">
                       {/* Numero de orden */}
                       <div className="shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mt-1">
@@ -265,9 +270,9 @@ export default function TemplateForm({
                             if (index === 0) return;
                             const newFields = [...fields];
                             const temp = newFields[index - 1];
-                            temp.orderIndex= index;
+                            temp.orderIndex = index;
                             newFields[index - 1] = newFields[index];
-                            newFields[index-1].orderIndex = index - 1;
+                            newFields[index - 1].orderIndex = index - 1;
                             newFields[index] = temp;
                             setValue('exercises', newFields, { shouldDirty: true });
                           }}
@@ -284,7 +289,7 @@ export default function TemplateForm({
                             if (index === fields.length - 1) return;
                             const newFields = [...fields];
                             const temp = newFields[index + 1];
-                            temp.orderIndex= index;
+                            temp.orderIndex = index;
                             newFields[index + 1] = newFields[index];
                             newFields[index].orderIndex = index + 1;
                             newFields[index] = temp;
@@ -299,55 +304,54 @@ export default function TemplateForm({
 
                     </div>
 
-										<div className='flex-1 min-w-0 space-y-3'>
-											{/* Info del ejercicio y botón eliminar */}
-											<div className="flex items-start justify-between gap-3">
-												<ExerciseInfo exerciseId={field.exerciseId} index={index} />
+                    <div className='flex-1 min-w-0 space-y-3'>
+                      {/* Info del ejercicio y botón eliminar */}
+                      <div className="flex items-start justify-between gap-3">
+                        <ExerciseInfo exerciseId={field.exerciseId} index={index} />
 
-												<Button
-													type='button'
-													variant={'ghost'}
-													size={'sm'}
-													onClick={() => handleRemoveExercise(index)}
-													className='text-destructive hover:text-destructive/80 shrink-0'
-													disabled={isSubmitting}
-												>
-													<Trash2 className='h-4 w-4' />
-												</Button>
-											</div>
+                        <Button
+                          type='button'
+                          variant={'ghost'}
+                          size={'sm'}
+                          onClick={() => handleRemoveExercise(index)}
+                          className='text-destructive hover:text-destructive/80 shrink-0'
+                          disabled={isSubmitting}
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
+                      </div>
 
-											{/* Series del ejercicio */}
-											<TemplateSetList errors={errors} control={control} exerciseIndex={index} />
-										</div>
-									</div>
-								</div>
-							</div>
-						))}
-					</div>
-				</Card>
-			)}
+                      {/* Series del ejercicio */}
+                      <TemplateSetList errors={errors} control={control} exerciseIndex={index} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
-			{/* Error de ejercicios */}
-			{errors.exercises && (
-				<p className='text-sm text-destructive font-barlow'>{errors.exercises.message}</p>
-			)}
+      {/* Error de ejercicios */}
+      {errors.exercises && (
+        <p className='text-sm text-destructive font-barlow'>{errors.exercises.message}</p>
+      )}
 
-			{/* Botón de acción */}
-			<Button
-				type='submit'
-				size={'lg'}
-				disabled={isSubmitting || fields.length === 0}
-				className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] border-none text-black font-bebas text-[22px] tracking-[4px] py-5 cursor-pointer transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-none mb-6"
-			>
-				{isSubmitting ? (
-					<>
-						<Loader2 className='mr-2 h-5 w-5 animate-spin' />
-						Guardando...
-					</>
-				) : (
-					submitLabel
-				)}
-			</Button>
-		</form>
-	);
+      {/* Botón de acción */}
+      <button
+        type='submit'
+        disabled={isSubmitting || fields.length === 0}
+        className="w-full bg-primary hover:bg-primary/80 active:scale-[0.98] text-background font-medium font-bebas text-[22px] tracking-[4px] py-3 cursor-pointer transition-all duration-100 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className='mr-2 h-5 w-5 animate-spin' />
+            Guardando...
+          </>
+        ) : (
+          submitLabel
+        )}
+      </button>
+    </form>
+  );
 }

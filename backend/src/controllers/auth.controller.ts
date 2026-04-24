@@ -10,9 +10,7 @@ import { asyncHandler, createAppError } from '@/middlewares/error.middleware';
  */
 export const refresh = asyncHandler(
   async (req: Request, res: Response): Promise<undefined> => {
-    console.log({'cookies recibidas': req.cookies});
-    console.log({'Signed cookies': req.signedCookies});
-    
+  
     const oldRefreshToken = req.cookies?.refreshToken;
 
     if(!oldRefreshToken){

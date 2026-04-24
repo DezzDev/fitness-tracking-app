@@ -20,7 +20,6 @@ export function useUnsavedChanges(
 		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (hasUnsavedChanges){
 				e.preventDefault();
-				e.returnValue = message;
 				return message;
 			}
 		}

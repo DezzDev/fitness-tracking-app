@@ -62,18 +62,12 @@ export default function ExerciseInfo({
   const difficultyConfig = {
     beginner: {
       label: 'Principiante',
-      color: 'border-[var(--success)] text-[var(--success)] bg-[var(--success)]/10',
-      emoji: '🟢'
     },
     intermediate: {
       label: 'Intermedio',
-      color: 'border-[var(--warning)] text-[var(--warning)] bg-[var(--warning)]/10',
-      emoji: '🟡'
     },
     advanced: {
       label: 'Avanzado',
-      color: 'border-destructive text-destructive bg-destructive/10',
-      emoji: '🔴'
     }
   }
 
@@ -91,8 +85,8 @@ export default function ExerciseInfo({
         <span className="font-semibold text-muted-foreground text-sm">{index + 1}.</span>
         <span className="font-medium text-foreground">{exercise.name}</span>
         {difficulty && (
-          <Badge variant="outline" className={`text-xs ${difficulty.color}`}>
-            {difficulty.emoji}
+          <Badge variant="outline" className={`text-xs`}>
+            {difficulty.label}
           </Badge>
         )}
       </div>
@@ -134,31 +128,31 @@ export default function ExerciseInfo({
 
       {/* Badges informativos */}
       <div className="flex items-center gap-2 flex-wrap">
-        {/* Dificultad */}
-        {difficulty && (
-          <Badge
-            variant="outline"
-            className={`text-xs font-medium ${difficulty.color} rounded-none`}
-          >
-            {difficulty.label}
-          </Badge>
-        )}
-
         {/* Grupo muscular */}
         {exercise.muscleGroup && (
           <Badge
             variant="secondary"
-            className="text-xs font-medium bg-popover text-muted-foreground rounded-none"
+            className="text-xs font-medium bg-popover text-primary rounded-none tracking-widest uppercase"
           >
             {capitalize(exercise.muscleGroup)}
+          </Badge>
+        )}
+
+        {/* Dificultad */}
+        {difficulty && (
+          <Badge
+            variant="secondary"
+            className={`text-xs font-medium bg-popover text-muted-foreground rounded-none tracking-widest uppercase`}
+          >
+            {difficulty.label}
           </Badge>
         )}
 
         {/* Tipo */}
         {type && (
           <Badge
-            variant="outline"
-            className={`text-xs font-medium rounded-none capitalize`}
+            variant="secondary"
+            className={`text-xs font-medium bg-popover text-muted-foreground rounded-none tracking-widest uppercase`}
           >
             {type}
           </Badge>
