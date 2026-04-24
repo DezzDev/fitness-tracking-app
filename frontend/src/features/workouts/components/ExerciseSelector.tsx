@@ -14,18 +14,6 @@ const difficultNameMap: Record<string, string> = {
   advanced: 'Avanzado'
 }
 
-const typeNameMap: Record<string, string> = {
-  strength: 'Fuerza',
-  skill: 'Habilidad',
-  explosive: 'Explosivo',
-  endurance: 'Resistencia',
-  cardio: 'Cardio',
-  flexibility: 'Flexibilidad',
-  balance: 'Equilibrio',
-  mobility: 'Movilidad',
-  other: 'Otro'
-}
-
 interface ExerciseSelectorProps {
 	onSelectExercise: (exerciseId: string, exerciseName: string) => void;
 	selectedExerciseIds?: string[];
@@ -175,7 +163,7 @@ export default function ExerciseSelector({
                           variant={'secondary'}
                           className="text-xs font-barlow uppercase tracking-wide rounded-none"
                         >
-                          {typeNameMap[exercise.type] || exercise.type}
+                          {exercise?.type  || exercise.type}
                         </Badge>
                       )}
 										</div>

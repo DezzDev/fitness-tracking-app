@@ -77,33 +77,11 @@ export default function ExerciseInfo({
     }
   }
 
-  const typeConfig = {
-    strength: {
-      label: 'Fuerza',
-      icon: '💪',
-      color: 'bg-primary/10 text-primary',
-    },
-    endurance: {
-      label: 'Resistencia',
-      icon: '🏋️‍♀️',
-      color: 'bg-[var(--success)]/10 text-[var(--success)]',
-    },
-    skill: {
-      label: 'Habilidad',
-      icon: '🧠',
-      color: 'bg-[#A855F7]/10 text-[#A855F7]',
-    },
-    explosive: {
-      label: 'Explosivo',
-      icon: '💥',
-      color: 'bg-accent/10 text-accent',
-    }
-  }
 
   const difficulty = exercise.difficulty
     ? difficultyConfig[exercise.difficulty]
     : null;
-  const type = exercise.type ? typeConfig[exercise.type] : null;
+  const type = exercise.type ? exercise.type : null;
 
 
   // Versión compacta (para listas pequeñas)
@@ -180,9 +158,9 @@ export default function ExerciseInfo({
         {type && (
           <Badge
             variant="outline"
-            className={`text-xs font-medium ${type.color} rounded-none`}
+            className={`text-xs font-medium rounded-none capitalize`}
           >
-            {type.label}
+            {type}
           </Badge>
         )}
       </div>

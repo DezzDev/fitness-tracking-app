@@ -15,7 +15,7 @@ export const generateTokenTest = (user:Partial<User>): string =>{
 			email: user.email ?? 'test@example.com',
 			role: user.role ?? 'user'
 		},
-		env.JWT_SECRET,
+		env.JWT_ACCESS_SECRET,
 		{expiresIn: '1h'}
 	);
 };
@@ -29,10 +29,11 @@ export const createMockUser = (overrides?: Partial<User>): User =>({
 	name: 'Test User',
 	age: 25,
 	role: 'user',
-	profile_image: 'http://localhost:3000/public/images/default-avatar.jpg',
-	is_active: true,
+	profileImage: 'http://localhost:3000/public/images/default-avatar.jpg',
+	isActive: true,
 	createdAt: new Date(),
 	updatedAt: new Date(),
+  tokenVersion: 0,
 	...overrides,
 });
 

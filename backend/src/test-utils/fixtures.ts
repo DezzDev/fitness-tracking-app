@@ -10,7 +10,7 @@ export const validateRegisterData: RegisterInput ={
 	name: 'New User',
 	age: 25,
 	role: 'user',
-	profile_image: 'http://localhost:3000/public/images/default-avatar.jpg',
+	profileImage: 'http://localhost:3000/public/images/default-avatar.jpg',
 	acceptTerms: true
 }
 
