@@ -33,7 +33,7 @@ export default function ExerciseFiltersBar({
 
       <div className="flex flex-col items-center gap-4">
         {/* Búsqueda */}
-        <div className=" w-full max-w-[450px] self-start relative col-span-4">
+        <div className=" w-full self-start relative col-span-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar ejercicios..."
