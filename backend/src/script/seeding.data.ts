@@ -1,120 +1,60 @@
 import { randomUUID } from 'crypto';
-import { connectDatabase, batch} from '@/config/database';
-import express from 'express';
-
-// init express
-const app = express();
+import { connectDatabase, batch, disconnectDatabase } from '@/config/database';
 
 
 // 1. Tags
 
 export const tags = [
-	"sin material",
-	"barra fija",
-	"anillas",
-	"explosivo",
-	"core",
-	"piernas",
-	"push",
-	"pull",
-	"equilibrio",
-	"movilidad"
+  "sin material",
+  "barra fija",
+  "anillas",
+  "explosivo",
+  "core",
+  "piernas",
+  "push",
+  "pull",
+  "equilibrio",
+  "movilidad"
 ].map(name => ({
-	id: randomUUID(),
-	name
+  id: randomUUID(),
+  name
 }));
 
 // 2. Exercises
 
 const exercises = [
-	
-	{
-		name: "Dominadas con agarre neutro",
-		description: "Dominadas con agarre paralelo que reducen el estrés en hombros y maximizan la activación de dorsales y bíceps",
-		difficulty: "intermediate",
-		muscle_group: "espalda",
-		type: "fuerza"
-	},
-	{
-		name: "Flexiones escapulares",
-		description: "Flexión escapular sin doblar brazos, ideal para activar serrato anterior y mejorar la estabilidad del hombro",
-		difficulty: "beginner",
-		muscle_group: "hombros",
-		type: "mobilidad"
-	},
-	{
-		name: "Rotaciones externas de hombros",
-		description: "Ejercicio correctivo para fortalecer el manguito rotador y prevenir lesiones en el hombro",
-		difficulty: "beginner",
-		muscle_group: "hombros",
-		type: "mobilidad"
-	},
-	{
-		name: "Face pull",
-		description: "Tirón hacia la cara con enfoque en deltoides posterior y estabilidad escapular",
-		difficulty: "beginner",
-		muscle_group: "hombros",
-		type: "fuerza"
-	},
-	{
-		name: "Flexiones declinadas",
-		description: "Flexiones con pies elevados para aumentar la carga sobre pecho superior y hombros",
-		difficulty: "intermediate",
-		muscle_group: "pecho",
-		type: "fuerza"
-	},
-	{
-		name: "Elevaciones Y",
-		description: "Elevaciones en forma de Y para activar trapecio inferior y mejorar postura",
-		difficulty: "beginner",
-		muscle_group: "hombros",
-		type: "mobilidad"
-	},
-	{
-		name: "Elevaciones T",
-		description: "Elevaciones en forma de T centradas en deltoides posterior y control escapular",
-		difficulty: "beginner",
-		muscle_group: "hombros",
-		type: "mobilidad"
-	},
-	{
-		name: "Elevaciones W",
-		description: "Movimiento en W enfocado en la retracción escapular y fortalecimiento del manguito rotador",
-		difficulty: "beginner",
-		muscle_group: "hombros",
-		type: "mobilidad"
-	},
-	{
-		name: "Hollow body hold",
-		description: "Ejercicio isométrico clave para desarrollar un core sólido y transferir fuerza en calistenia",
-		difficulty: "intermediate",
-		muscle_group: "core",
-		type: "isométrico"
-	},
-	{
-		name: "Dead hang",
-		description: "Suspensión pasiva en barra que mejora agarre, descompresión espinal y salud del hombro",
-		difficulty: "beginner",
-		muscle_group: "espalda",
-		type: "isométrico"
-	},
-	{
-		name: "Dominadas negativas",
-		description: "Fase excéntrica controlada de la dominada para ganar fuerza y progresar hacia dominadas completas",
-		difficulty: "beginner",
-		muscle_group: "espalda",
-		type: "fuerza"
-	},
-	{
-		name: "Extensores de muñeca",
-		description: "Trabajo específico de antebrazo para equilibrar musculatura y prevenir lesiones en muñeca y codo",
-		difficulty: "beginner",
-		muscle_group: "antebrazo",
-		type: "fuerza"
-	}
+
+  {
+    name: "Crunch abdominal",
+    description: "Flexión de tronco controlada enfocada en el recto abdominal, ideal para principiantes",
+    difficulty: "beginner",
+    muscle_group: "core",
+    type: "fuerza"
+  },
+  {
+    name: "Hanging knee raises",
+    description: "Elevación de rodillas en barra, perfecta para iniciar el trabajo de core en suspensión",
+    difficulty: "beginner",
+    muscle_group: "core",
+    type: "fuerza"
+  },
+  {
+    name: "Hanging leg raises",
+    description: "Elevación de piernas estiradas en barra que exige mayor control y fuerza abdominal",
+    difficulty: "intermediate",
+    muscle_group: "core",
+    type: "fuerza"
+  },
+  {
+    name: "Toes to bar",
+    description: "Elevación explosiva hasta tocar la barra con los pies, máxima activación del core y coordinación",
+    difficulty: "advanced",
+    muscle_group: "core",
+    type: "fuerza"
+  }
 ].map(e => ({
-	id: randomUUID(),
-	...e
+  id: randomUUID(),
+  ...e
 }));
 
 // 3. ejercicio - tags
@@ -157,64 +97,61 @@ const exercises = [
 
 async function seed() {
 
-	// console.log("seeding tags...")
-	// for(const t of tags){
-	// 	await executeWithRetry(client => 
-	// 		client.execute({
-	// 			sql: `INSERT INTO tags (id, name) VALUES (?,?)`,
-	// 			args: [t.id, t.name]
-	// 		})
-	// 	)
-	// }
+  // console.log("seeding tags...")
+  // for(const t of tags){
+  // 	await executeWithRetry(client => 
+  // 		client.execute({
+  // 			sql: `INSERT INTO tags (id, name) VALUES (?,?)`,
+  // 			args: [t.id, t.name]
+  // 		})
+  // 	)
+  // }
 
   const exerciseQueries: Array<{ sql: string, args: any[] }> = [];
 
- for(const e of exercises){
-  exerciseQueries.push({
-    sql: `
-					INSERT INTO exercises (id, name, description, difficulty, muscle_group, type)
-					VALUES (?,?,?,?,?,?)
+  for (const e of exercises) {
+    exerciseQueries.push({
+      sql: `
+					INSERT INTO exercises (id, name, description, difficulty, muscle_group, type, created_at)
+					VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP)
 				`,
-    args: [e.id, e.name, e.description, e.difficulty, e.muscle_group, e.type]
-  })
- }
+      args: [e.id, e.name, e.description, e.difficulty, e.muscle_group, e.type]
+    })
+  }
+  console.log({ exerciseQueries: exerciseQueries.map(q => ({ sql: q.sql, args: q.args.map(a => typeof a === 'string' ? a.substring(0, 20) : a) })) });
+  console.log("seeding exercises...")
+  await batch(exerciseQueries);
 
- console.log("seeding exercises...")
- await batch(exerciseQueries);
-	
-	
 
-	// console.log("seeding exercises tags...")
-	// for(const et of exerciseTags){		
-	// 	await executeWithRetry(client =>
-	// 		client.execute({
-	// 			sql:`
-	// 				INSERT INTO exercise_tags (exercise_id, tag_id) VALUES (?,?)
-	// 			`,
-	// 			args: [et.exercise_id, et.tag_id]
-	// 		})
-	// 	)
-	// }
-	console.log("seed completo")
+
+  // console.log("seeding exercises tags...")
+  // for(const et of exerciseTags){		
+  // 	await executeWithRetry(client =>
+  // 		client.execute({
+  // 			sql:`
+  // 				INSERT INTO exercise_tags (exercise_id, tag_id) VALUES (?,?)
+  // 			`,
+  // 			args: [et.exercise_id, et.tag_id]
+  // 		})
+  // 	)
+  // }
+  console.log("seed completo")
 }
 
-const start = async () => {
-	// connect database
-	await connectDatabase();
+const start = async (): Promise<void> => {
+  let exitCode = 0;
 
-	app.listen(3000, () => {
-		console.log('Server started on port 3000');
-		
-		seed()
-    .then(process.exit(0))
-    .catch(err => {
-			console.error("seed failed", err);
-			process.exit(1)
-		}).finally(()=>{
-			process.exit(1);
-		})
-	});
+  try {
+    await connectDatabase();
+    await seed();
+  } catch (err) {
+    exitCode = 1;
+    console.error('seed failed', err);
+  } finally {
+    await disconnectDatabase();
+  }
 
-}
+  process.exit(exitCode);
+};
 
-start();
+void start();
