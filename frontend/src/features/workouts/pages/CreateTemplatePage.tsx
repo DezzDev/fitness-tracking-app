@@ -44,7 +44,7 @@ export default function CreateTemplatePage() {
 				variant="ghost"
 				size="sm"
 				onClick={() => navigate('/workouts?tab=templates')}
-				className="font-barlow uppercase  tracking-[2px] text-xs"
+				className="font-barlow uppercase  tracking-widest text-xs rounded-none"
 			>
 				<ArrowLeft className="h-4 w-4 mr-2" />
 				Plantillas

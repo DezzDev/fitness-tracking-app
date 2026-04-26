@@ -1,8 +1,6 @@
 // src/features/workouts/pages/WorkoutsPage.tsx
 import { Link, useSearchParams } from 'react-router-dom';
 import { Plus } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TemplatesList from '../components/TemplatesList';
 import SessionsList from '../components/SessionsList';
@@ -51,15 +49,15 @@ export default function WorkoutsPage() {
 					<TemplatesList />
 
 					{/* Bottom CTA */}
-					<div className="flex justify-center pt-4">
+					<div>
 						<Link to="/workouts/templates/new">
-							<Button
-								size="lg"
-								className="w-full sm:w-auto uppercase font-barlow font-semibold tracking-wide"
+							<button
+								className="flex items-center justify-center w-full uppercase font-bebas font-medium tracking-widest bg-primary hover:bg-primary/80 
+                text-background text-[22px] rounded-none transition-all py-3 "
 							>
 								<Plus className="mr-2 h-5 w-5" />
-								Nuevo Entrenamiento
-							</Button>
+								<p>Nuevo Entrenamiento</p>
+							</button>
 						</Link>
 					</div>
 				</TabsContent>

@@ -116,6 +116,7 @@ export default function SessionDetailPage() {
 
 
   const session = response || null;
+  console.log({session});
 
   const {
     data: previousSession,
@@ -246,7 +247,7 @@ export default function SessionDetailPage() {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/workouts?tab=sessions")}
-          className="font-barlow uppercase tracking-[2px] text-xs"
+          className="font-barlow uppercase tracking-widest text-xs rounded-none"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
@@ -419,6 +420,13 @@ export default function SessionDetailPage() {
                                     <span className="text-muted-foreground ml-1">seg</span>
                                   </div>
                                 )}
+
+                                {set.restSeconds !== null && set.restSeconds !== undefined && set.restSeconds > 0 && (
+                                  <div>
+                                    <span className="font-semibold text-foreground">{set.restSeconds}</span>
+                                    <span className="text-muted-foreground ml-1">seg desc</span>
+                                  </div>
+                                )}
                               </div>
 
                               {set.notes && (
@@ -467,9 +475,9 @@ export default function SessionDetailPage() {
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
       >
-        <DialogContent>
+        <DialogContent className="rounded-none border-border">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive">
+            <DialogTitle className="flex items-center gap-2 text-destructive tracking-widest">
               <AlertTriangle className="h-5 w-5" />
               ¿Eliminar sesión?
             </DialogTitle>
@@ -491,6 +499,7 @@ export default function SessionDetailPage() {
               variant={'outline'}
               onClick={() => setShowDeleteDialog(false)}
               disabled={isDeleting}
+              className="rounded-none tracking-widest"
             >
               Cancelar
             </Button>
@@ -498,6 +507,7 @@ export default function SessionDetailPage() {
               variant={'destructive'}
               onClick={handleDelete}
               disabled={isDeleting}
+              className="rounded-none tracking-widest"
             >
               {isDeleting ? 'Eliminando...' : 'Eliminar'}
             </Button>

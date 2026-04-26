@@ -151,12 +151,12 @@ export default function TemplatesList() {
 
 					{/* Acciones */}
 					<div className="flex justify-between text-2xl flex-wrap align-middle">
-            <div >
+            <div className='flex gap-2'>
               <Button
                 onClick={() => handleStartSession(template.id)}
                 size="sm"
                 variant="ghost"
-                className="uppercase font-barlow font-semibold tracking-[3px] text-primary px-2"
+                className="uppercase font-barlow font-semibold tracking-widest text-primary px-2 rounded-none"
               >
                 Iniciar
               </Button>
@@ -165,7 +165,7 @@ export default function TemplatesList() {
                 onClick={() => handleEdit(template.id)}
                 size="sm"
                 variant="ghost"
-                className="uppercase font-barlow font-semibold tracking-[3px] px-2"
+                className="uppercase font-barlow font-semibold tracking-widest px-2 rounded-none"
               >
                 Editar
               </Button>
@@ -174,7 +174,7 @@ export default function TemplatesList() {
                 onClick={() => handleDuplicate(template.id)}
                 size="sm"
                 variant="ghost"
-                className="uppercase font-barlow font-semibold tracking-[3px] px-2"
+                className="uppercase font-barlow font-semibold tracking-widest px-2 rounded-none"
               >
                 Duplicar
               </Button>
@@ -209,7 +209,7 @@ export default function TemplatesList() {
 				</div>
 			) : templates.length === 0 ? (
 				/* Empty state */
-				<Card className="border-2 border-dashed border-border bg-muted/5">
+				<Card className="border-2 border-dashed border-border bg-muted/5 rounded-none">
 					<div className="p-12 text-center max-w-sm mx-auto space-y-4">
 						<div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto">
 							<Dumbbell className="h-8 w-8 text-muted-foreground" />
@@ -261,30 +261,30 @@ export default function TemplatesList() {
 			)}
 		</div>
 
-			{/* Modal de confirmacion de eliminacion */}
+			{/* Modal de confirmación de eliminación */}
 			<Dialog
 				open={deletingId !== null}
 				onOpenChange={(open) => { if (!open) handleCancelDelete(); }}
 			>
-				<DialogContent showCloseButton={false} className="rounded-none">
+				<DialogContent showCloseButton={false} className="rounded-none border-border">
 					<DialogHeader>
-						<DialogTitle className="font-bebas tracking-[2px] text-xl uppercase">
+						<DialogTitle className="font-bebas tracking-widest text-xl uppercase">
 							Eliminar plantilla
 						</DialogTitle>
 						<DialogDescription className="font-barlow">
-							Esta accion no se puede deshacer. Se eliminara la plantilla{' '}
+							Esta acción no se puede deshacer. Se eliminara la plantilla{' '}
 							<span className="font-semibold text-foreground">
 								{deletingTemplateName}
 							</span>{' '}
 							permanentemente.
 						</DialogDescription>
 					</DialogHeader>
-					<DialogFooter className="gap-2 sm:gap-0">
+					<DialogFooter>
 						<Button
-							variant="ghost"
+							variant="outline"
 							onClick={handleCancelDelete}
 							disabled={deleteTemplateMutation.isPending}
-							className="uppercase font-barlow font-semibold tracking-[3px] rounded-none"
+							className="uppercase font-barlow font-semibold tracking-widest rounded-none"
 						>
 							Cancelar
 						</Button>
@@ -292,7 +292,7 @@ export default function TemplatesList() {
 							variant="destructive"
 							onClick={() => deletingId && handleConfirmDelete(deletingId)}
 							disabled={deleteTemplateMutation.isPending}
-							className="uppercase font-barlow font-semibold tracking-[3px] rounded-none"
+							className="uppercase font-barlow font-semibold tracking-widest rounded-none"
 						>
 							{deleteTemplateMutation.isPending ? 'Eliminando...' : 'Eliminar'}
 						</Button>

@@ -341,7 +341,7 @@ export default function TemplateForm({
       <button
         type='submit'
         disabled={isSubmitting || fields.length === 0}
-        className="w-full bg-primary hover:bg-primary/80 active:scale-[0.98] text-background font-medium font-bebas text-[22px] tracking-[4px] py-3 cursor-pointer transition-all duration-100 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-primary hover:bg-primary/80 active:scale-[0.98] text-background font-medium font-bebas text-[22px] tracking-widest py-3 transition-all duration-100 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? (
           <>
