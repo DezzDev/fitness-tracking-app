@@ -138,6 +138,14 @@ const getSetDelta = (
   return { difference, direction: 'neutral' };
 };
 
+const getSetVolume = (set: WorkoutSessionSet | undefined) => {
+  if (!set || set.reps === undefined || set.weight === undefined) {
+    return undefined;
+  }
+
+  return set.reps * set.weight;
+};
+
 const getDeltaClasses = (delta: SetDelta) => {
   if (!delta || delta.direction === 'neutral') {
     return 'text-muted-foreground border-border';
@@ -518,10 +526,15 @@ export default function SessionDetailPage() {
                                     set.durationSeconds,
                                     previousSet?.durationSeconds
                                   );
+                                  const volumeDelta = getSetDelta(
+                                    getSetVolume(set),
+                                    getSetVolume(previousSet)
+                                  );
 
                                   const repsDeltaLabel = formatSignedDelta(repsDelta, 'reps');
                                   const weightDeltaLabel = formatSignedDelta(weightDelta, 'kg');
                                   const durationDeltaLabel = formatSignedDelta(durationDelta, 'seg');
+                                  const volumeDeltaLabel = formatSignedDelta(volumeDelta, 'kg vol');
 
                                   return (
                                     <div key={set.setNumber} className="space-y-2">
@@ -559,7 +572,10 @@ export default function SessionDetailPage() {
                                             </span>
                                           )}
 
-                                          {(repsDeltaLabel || weightDeltaLabel || durationDeltaLabel) && (
+                                          {(repsDeltaLabel ||
+                                            weightDeltaLabel ||
+                                            durationDeltaLabel ||
+                                            volumeDeltaLabel) && (
                                             <div className="flex items-center gap-2 flex-wrap">
                                               {repsDeltaLabel && (
                                                 <span
@@ -580,6 +596,13 @@ export default function SessionDetailPage() {
                                                   className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(durationDelta)}`}
                                                 >
                                                   {durationDeltaLabel}
+                                                </span>
+                                              )}
+                                              {volumeDeltaLabel && (
+                                                <span
+                                                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(volumeDelta)}`}
+                                                >
+                                                  {volumeDeltaLabel}
                                                 </span>
                                               )}
                                             </div>
