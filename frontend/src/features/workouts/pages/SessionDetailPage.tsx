@@ -30,6 +30,11 @@ type SessionMetrics = {
   totalCompletedSets: number;
 };
 
+type SetDelta = {
+  difference: number;
+  direction: 'up' | 'down' | 'neutral';
+} | null;
+
 const getSessionTimestamp = (session: { sessionDate: string; createdAt?: string }) => {
   const sessionDateTime = new Date(session.sessionDate).getTime();
   if (!Number.isNaN(sessionDateTime) && sessionDateTime > 0) {
@@ -105,6 +110,99 @@ const formatDelta = (current: number, previous: number | null) => {
   return { difference, percentage, direction: 'neutral' as const };
 };
 
+const formatSignedDelta = (delta: SetDelta, unit: string) => {
+  if (!delta || delta.direction === 'neutral') {
+    return null;
+  }
+
+  return `${delta.difference > 0 ? '+' : ''}${delta.difference} ${unit}`;
+};
+
+const getSetDelta = (
+  currentValue: number | undefined,
+  previousValue: number | undefined
+): SetDelta => {
+  if (currentValue === undefined || previousValue === undefined) {
+    return null;
+  }
+
+  const difference = currentValue - previousValue;
+  if (difference > 0) {
+    return { difference, direction: 'up' };
+  }
+
+  if (difference < 0) {
+    return { difference, direction: 'down' };
+  }
+
+  return { difference, direction: 'neutral' };
+};
+
+const getDeltaClasses = (delta: SetDelta) => {
+  if (!delta || delta.direction === 'neutral') {
+    return 'text-muted-foreground border-border';
+  }
+
+  if (delta.direction === 'up') {
+    return 'text-green-500 border-green-500/30';
+  }
+
+  return 'text-red-500 border-red-500/30';
+};
+
+const getPreviousExercise = (
+  currentExercise: WorkoutSessionExercise,
+  previousExercises: WorkoutSessionExercise[]
+) => {
+  const byExerciseId = previousExercises.find(
+    (exercise) => exercise.exerciseId === currentExercise.exerciseId
+  );
+
+  if (byExerciseId) {
+    return byExerciseId;
+  }
+
+  return previousExercises.find(
+    (exercise) => exercise.exerciseName === currentExercise.exerciseName
+  );
+};
+
+const renderSetMetrics = (set: WorkoutSessionSet) => {
+  return (
+    <>
+      {set.reps !== null && set.reps !== undefined && (
+        <div>
+          <span className="font-semibold text-foreground">{set.reps}</span>
+          <span className="text-muted-foreground ml-1">reps</span>
+        </div>
+      )}
+
+      {set.weight !== null && set.weight !== undefined && set.weight > 0 && (
+        <div>
+          <span className="font-semibold text-foreground">{set.weight}</span>
+          <span className="text-muted-foreground ml-1">kg</span>
+        </div>
+      )}
+
+      {set.durationSeconds !== null &&
+        set.durationSeconds !== undefined &&
+        set.durationSeconds > 0 && (
+          <div>
+            <span className="font-semibold text-foreground">{set.durationSeconds}</span>
+            <span className="text-muted-foreground ml-1">seg</span>
+          </div>
+        )}
+
+      {set.restSeconds !== null && set.restSeconds !== undefined && set.restSeconds > 0 && (
+        <div>
+          <span className="font-semibold text-foreground">{set.restSeconds}</span>
+          <span className="text-muted-foreground ml-1">seg desc</span>
+        </div>
+      )}
+    </>
+  );
+};
+
 export default function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -116,7 +214,6 @@ export default function SessionDetailPage() {
 
 
   const session = response || null;
-  console.log({session});
 
   const {
     data: previousSession,
@@ -189,6 +286,7 @@ export default function SessionDetailPage() {
   const currentMetrics = calculateMetrics(session);
   const previousMetrics = calculateMetrics(previousSession ?? null);
   const hasPreviousSession = Boolean(previousSession);
+  const previousExercises = previousSession?.exercises ?? [];
 
   const volumeDelta = formatDelta(
     currentMetrics.totalVolume,
@@ -384,58 +482,135 @@ export default function SessionDetailPage() {
                             {workoutExercise.exerciseName || 'Ejercicio'}
                           </h3>
 
+                          {hasPreviousSession && !getPreviousExercise(workoutExercise, previousExercises) && (
+                            <span className="inline-flex items-center rounded-full border border-primary/30 px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] text-primary">
+                              Ejercicio nuevo
+                            </span>
+                          )}
+
                         </div>
                       </div>
 
                       {/* Series */}
                       {workoutExercise.sets && workoutExercise.sets.length > 0 && (
                         <div className="space-y-2">
-                          {workoutExercise.sets.map((set: WorkoutSessionSet) => (
-                            <div
-                              key={set.setNumber}
-                              className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg"
-                            >
-                              <span className="text-xs font-barlow font-bold uppercase text-muted-foreground tracking-wide min-w-[60px]">
-                                Serie {set.setNumber}
-                              </span>
+                          {(() => {
+                            const previousExercise = hasPreviousSession
+                              ? getPreviousExercise(workoutExercise, previousExercises)
+                              : undefined;
+                            const previousSetsByNumber = new Map(
+                              (previousExercise?.sets ?? []).map((set) => [set.setNumber, set])
+                            );
+                            const currentSetNumbers = new Set(
+                              workoutExercise.sets.map((set) => set.setNumber)
+                            );
+                            const missingCurrentSets = (previousExercise?.sets ?? []).filter(
+                              (previousSet) => !currentSetNumbers.has(previousSet.setNumber)
+                            );
 
-                              <div className="flex items-center gap-4 flex-wrap text-sm font-barlow">
-                                {set.reps !== null && set.reps !== undefined && (
-                                  <div>
-                                    <span className="font-semibold text-foreground">{set.reps}</span>
-                                    <span className="text-muted-foreground ml-1">reps</span>
+                            return (
+                              <>
+                                {workoutExercise.sets.map((set: WorkoutSessionSet) => {
+                                  const previousSet = previousSetsByNumber.get(set.setNumber);
+                                  const repsDelta = getSetDelta(set.reps, previousSet?.reps);
+                                  const weightDelta = getSetDelta(set.weight, previousSet?.weight);
+                                  const durationDelta = getSetDelta(
+                                    set.durationSeconds,
+                                    previousSet?.durationSeconds
+                                  );
+
+                                  const repsDeltaLabel = formatSignedDelta(repsDelta, 'reps');
+                                  const weightDeltaLabel = formatSignedDelta(weightDelta, 'kg');
+                                  const durationDeltaLabel = formatSignedDelta(durationDelta, 'seg');
+
+                                  return (
+                                    <div key={set.setNumber} className="space-y-2">
+                                      <div className="flex items-center gap-4 p-3 bg-muted/20 rounded-lg">
+                                        <span className="text-xs font-barlow font-bold uppercase text-muted-foreground tracking-wide min-w-[60px]">
+                                          Serie {set.setNumber}
+                                        </span>
+
+                                        <div className="flex items-center gap-4 flex-wrap text-sm font-barlow">
+                                          {renderSetMetrics(set)}
+                                        </div>
+
+                                        {set.notes && (
+                                          <p className="text-sm text-muted-foreground ml-auto font-barlow">
+                                            {set.notes}
+                                          </p>
+                                        )}
+                                      </div>
+
+                                      {hasPreviousSession && (
+                                        <div className="pl-2 space-y-2">
+                                          {previousSet ? (
+                                            <div className="flex items-center gap-4 p-3 bg-muted/10 border border-border/70 rounded-lg">
+                                              <span className="text-[10px] font-barlow font-semibold uppercase text-muted-foreground tracking-[2px] min-w-[60px]">
+                                                Anterior
+                                              </span>
+
+                                              <div className="flex items-center gap-4 flex-wrap text-sm font-barlow text-muted-foreground">
+                                                {renderSetMetrics(previousSet)}
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <span className="inline-flex items-center rounded-full border border-primary/30 px-2 py-1 text-[10px] font-barlow uppercase tracking-[2px] text-primary">
+                                              Nuevo set
+                                            </span>
+                                          )}
+
+                                          {(repsDeltaLabel || weightDeltaLabel || durationDeltaLabel) && (
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                              {repsDeltaLabel && (
+                                                <span
+                                                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(repsDelta)}`}
+                                                >
+                                                  {repsDeltaLabel}
+                                                </span>
+                                              )}
+                                              {weightDeltaLabel && (
+                                                <span
+                                                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(weightDelta)}`}
+                                                >
+                                                  {weightDeltaLabel}
+                                                </span>
+                                              )}
+                                              {durationDeltaLabel && (
+                                                <span
+                                                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(durationDelta)}`}
+                                                >
+                                                  {durationDeltaLabel}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+
+                                {hasPreviousSession && missingCurrentSets.length > 0 && (
+                                  <div className="space-y-2 pt-1">
+                                    {missingCurrentSets.map((missingSet) => (
+                                      <div
+                                        key={`missing-${missingSet.setNumber}`}
+                                        className="flex items-center gap-4 p-3 border border-dashed border-border rounded-lg bg-muted/5"
+                                      >
+                                        <span className="text-[10px] font-barlow font-semibold uppercase text-muted-foreground tracking-[2px] min-w-[60px]">
+                                          Anterior
+                                        </span>
+
+                                        <div className="flex items-center gap-4 flex-wrap text-sm font-barlow text-muted-foreground">
+                                          <span>Serie {missingSet.setNumber} no realizada en esta sesión</span>
+                                        </div>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
-
-                                {set.weight !== null && set.weight !== undefined && set.weight > 0 && (
-                                  <div>
-                                    <span className="font-semibold text-foreground">{set.weight}</span>
-                                    <span className="text-muted-foreground ml-1">kg</span>
-                                  </div>
-                                )}
-
-                                {set.durationSeconds !== null && set.durationSeconds !== undefined && set.durationSeconds > 0 && (
-                                  <div>
-                                    <span className="font-semibold text-foreground">{set.durationSeconds}</span>
-                                    <span className="text-muted-foreground ml-1">seg</span>
-                                  </div>
-                                )}
-
-                                {set.restSeconds !== null && set.restSeconds !== undefined && set.restSeconds > 0 && (
-                                  <div>
-                                    <span className="font-semibold text-foreground">{set.restSeconds}</span>
-                                    <span className="text-muted-foreground ml-1">seg desc</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              {set.notes && (
-                                <p className="text-sm text-muted-foreground ml-auto font-barlow">
-                                  {set.notes}
-                                </p>
-                              )}
-                            </div>
-                          ))}
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>

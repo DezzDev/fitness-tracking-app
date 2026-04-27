@@ -145,7 +145,7 @@ export const executeWithRetry = async <T>(
 
   for (let attempt = 1; attempt <= retries + 1; attempt++) {
     try {
-			// 👇 ejecuta tu función, pasándole el cliente
+			// 👇 ejecuta la función, pasándole el cliente
       return await queryFn(client);
     } catch (error) {
       if (attempt > retries) throw error;
