@@ -573,7 +573,9 @@ export default function ActiveSession({
               className={cn(
                 'h-2 rounded-full transition-all duration-200',
                 index === activeSetIdx
-                  ? 'w-6 bg-primary'
+                  ? set.isCompleted
+                    ? 'w-6 bg-primary'
+                    : 'w-6 bg-transparent border border-border'
                   : set.isCompleted
                   ? 'w-2 bg-primary/70'
                   : 'w-2 bg-border'
@@ -619,7 +621,14 @@ export default function ActiveSession({
               <div className="font-barlow text-[11px] tracking-[3px] text-secondary-foreground font-semibold uppercase">
                 Set actual · {activeSet.setNumber}
               </div>
-              <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_var(--orange-glow)]" />
+              <div
+                className={cn(
+                  'w-2.5 h-2.5 rounded-full transition-all duration-150',
+                  activeSet.isCompleted
+                    ? 'bg-primary shadow-[0_0_8px_var(--orange-glow)]'
+                    : 'bg-transparent border border-border'
+                )}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
