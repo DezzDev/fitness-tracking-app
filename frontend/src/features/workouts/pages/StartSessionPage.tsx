@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-import { useCreateSession } from '../hooks/useWorkoutSessions';
+import { useCreateSession, usePreviousSessionForTemplate } from '../hooks/useWorkoutSessions';
 import { useWorkoutTemplate } from '../hooks/useWorkoutTemplates';
 import ActiveSession from '@/features/dashboard/components/ActiveSession';
 import CompletionScreen from '@/features/dashboard/components/CompletionScreen';
@@ -42,6 +42,7 @@ export default function StartSessionPage() {
 
 	// Fetch the template — no session is created in DB until completion
 	const { data: template, isLoading, isError } = useWorkoutTemplate(templateId ?? '');
+	const { data: previousSession } = usePreviousSessionForTemplate(templateId ?? undefined);
 
 	// Once the template is loaded, check for persisted state
 	useEffect(() => {
@@ -281,6 +282,7 @@ export default function StartSessionPage() {
 		return (
 			<ActiveSession
 				session={localSession}
+				previousSession={previousSession ?? null}
 				onComplete={handleComplete}
 				onCancel={handleCancel}
 				initialEditableSets={persisted?.editableSets}

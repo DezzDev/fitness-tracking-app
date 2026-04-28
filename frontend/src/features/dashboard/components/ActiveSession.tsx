@@ -1,10 +1,16 @@
-import type { WorkoutSessionWithExercises, EditableSet } from '@/types';
-import { useState, useEffect, useRef } from 'react';
+import type {
+  WorkoutSessionWithExercises,
+  WorkoutSessionExercise,
+  WorkoutSessionSet,
+  EditableSet,
+} from '@/types';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { X, MessageSquare, Trash2 } from 'lucide-react';
 
 interface ActiveSessionProps {
   session: WorkoutSessionWithExercises;
+  previousSession?: WorkoutSessionWithExercises | null;
   onComplete: (editedSets: EditableSet[][]) => void;
   onCancel?: () => void;
   isCancelling?: boolean;
@@ -13,23 +19,109 @@ interface ActiveSessionProps {
   onStateChange?: (sets: EditableSet[][], idx: number) => void;
 }
 
-/** Build initial editable state from the session's pre-populated sets. */
+type SetDelta = {
+  difference: number;
+  direction: 'up' | 'down' | 'neutral';
+} | null;
+
 function buildEditableSets(session: WorkoutSessionWithExercises): EditableSet[][] {
-  return session.exercises.map((ex) =>
-    ex.sets.map((s) => ({
-      setNumber: s.setNumber,
-      reps: s.reps,
-      weight: s.weight,
-      durationSeconds: s.durationSeconds,
-      restSeconds: s.restSeconds,
-      notes: s.notes,
+  return session.exercises.map((exercise) =>
+    exercise.sets.map((set) => ({
+      setNumber: set.setNumber,
+      reps: set.reps,
+      weight: set.weight,
+      durationSeconds: set.durationSeconds,
+      restSeconds: set.restSeconds,
+      notes: set.notes,
       isCompleted: false,
     }))
   );
 }
 
+const getPreviousExercise = (
+  currentExercise: WorkoutSessionExercise,
+  previousExercises: WorkoutSessionExercise[]
+) => {
+  const byExerciseId = previousExercises.find(
+    (exercise) => exercise.exerciseId === currentExercise.exerciseId
+  );
+
+  if (byExerciseId) {
+    return byExerciseId;
+  }
+
+  return previousExercises.find(
+    (exercise) => exercise.exerciseName === currentExercise.exerciseName
+  );
+};
+
+const getSetDelta = (
+  currentValue: number | undefined,
+  previousValue: number | undefined
+): SetDelta => {
+  if (currentValue === undefined || previousValue === undefined) {
+    return null;
+  }
+
+  const difference = currentValue - previousValue;
+  if (difference > 0) {
+    return { difference, direction: 'up' };
+  }
+
+  if (difference < 0) {
+    return { difference, direction: 'down' };
+  }
+
+  return { difference, direction: 'neutral' };
+};
+
+const formatSignedDelta = (delta: SetDelta, unit: string) => {
+  if (!delta || delta.direction === 'neutral') {
+    return null;
+  }
+
+  return `${delta.difference > 0 ? '+' : ''}${delta.difference} ${unit}`;
+};
+
+const getDeltaClasses = (delta: SetDelta) => {
+  if (!delta || delta.direction === 'neutral') {
+    return 'text-muted-foreground border-border';
+  }
+
+  return delta.direction === 'up'
+    ? 'text-green-500 border-green-500/30'
+    : 'text-red-500 border-red-500/30';
+};
+
+const getSetVolume = (set: EditableSet | WorkoutSessionSet | undefined) => {
+  if (!set || set.reps === undefined || set.weight === undefined) {
+    return undefined;
+  }
+
+  return set.reps * set.weight;
+};
+
+const getSetSummary = (set: EditableSet | WorkoutSessionSet) => {
+  const parts: string[] = [];
+
+  if (set.reps !== undefined) {
+    parts.push(`${set.reps} reps`);
+  }
+
+  if (set.weight !== undefined) {
+    parts.push(`${set.weight} kg`);
+  }
+
+  if (set.durationSeconds !== undefined && set.durationSeconds > 0) {
+    parts.push(`${set.durationSeconds} seg`);
+  }
+
+  return parts.join(' · ') || 'Sin datos';
+};
+
 export default function ActiveSession({
   session,
+  previousSession,
   onComplete,
   onCancel,
   isCancelling = false,
@@ -41,9 +133,10 @@ export default function ActiveSession({
   const [editableSets, setEditableSets] = useState<EditableSet[][]>(() =>
     initialEditableSets ?? buildEditableSets(session)
   );
-  const [animating, setAnimating] = useState(false);
+  const [activeSetIdx, setActiveSetIdx] = useState(0);
+  const [animatingExercise, setAnimatingExercise] = useState(false);
   const [slideDir, setSlideDir] = useState(0);
-  const [pulse, setPulse] = useState(false);
+  const [setPulse, setSetPulse] = useState(false);
   const [visible, setVisible] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -51,13 +144,11 @@ export default function ActiveSession({
     setIdx: number;
   } | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
+  const [exerciseFlash, setExerciseFlash] = useState(false);
 
-  // Ref for auto-scrolling to active set
-  const activeSetRef = useRef<HTMLDivElement | null>(null);
-
-  // Keep a ref in sync so setTimeout callbacks can read the latest state
-  // without abusing state updaters (which StrictMode calls twice).
+  const cardRef = useRef<HTMLDivElement | null>(null);
   const editableSetsRef = useRef(editableSets);
+
   useEffect(() => {
     editableSetsRef.current = editableSets;
   }, [editableSets]);
@@ -66,30 +157,67 @@ export default function ActiveSession({
     setTimeout(() => setVisible(true), 50);
   }, []);
 
-  // Auto-scroll to the next incomplete set when it changes
   useEffect(() => {
-    if (activeSetRef.current) {
-      activeSetRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  }, [currentIdx, editableSets]);
+  }, [currentIdx, activeSetIdx]);
 
-  // Call onStateChange callback when state changes (for persistence)
   useEffect(() => {
     if (onStateChange) {
       onStateChange(editableSets, currentIdx);
     }
   }, [editableSets, currentIdx, onStateChange]);
 
-
   const exercise = session.exercises[currentIdx];
   const currentSets = editableSets[currentIdx];
-  const exCompleted = currentSets.every((s) => s.isCompleted);
-  const nextSetIdx = currentSets.findIndex((s) => !s.isCompleted);
-  const totalCompleted = editableSets.filter((sets) =>
-    sets.every((s) => s.isCompleted)
+  const totalCompletedExercises = editableSets.filter((sets) =>
+    sets.every((set) => set.isCompleted)
   ).length;
 
-  // ── Handlers ──────────────────────────────────────────────
+  const isExerciseCompleted = currentSets.every((set) => set.isCompleted);
+  const activeSet = currentSets[activeSetIdx];
+
+  useEffect(() => {
+    const firstPendingSetIdx = currentSets.findIndex((set) => !set.isCompleted);
+
+    if (firstPendingSetIdx === -1) {
+      setActiveSetIdx(0);
+      return;
+    }
+
+    setActiveSetIdx((prev) => (prev >= currentSets.length ? firstPendingSetIdx : prev));
+  }, [currentIdx, currentSets]);
+
+  const previousExercise = useMemo(() => {
+    if (!previousSession) {
+      return undefined;
+    }
+
+    return getPreviousExercise(exercise, previousSession.exercises);
+  }, [exercise, previousSession]);
+
+  const previousSetsByNumber = useMemo(
+    () => new Map((previousExercise?.sets ?? []).map((set) => [set.setNumber, set])),
+    [previousExercise]
+  );
+
+  const activePreviousSet = activeSet
+    ? previousSetsByNumber.get(activeSet.setNumber)
+    : undefined;
+
+  const repsDelta = getSetDelta(activeSet?.reps, activePreviousSet?.reps);
+  const weightDelta = getSetDelta(activeSet?.weight, activePreviousSet?.weight);
+  const durationDelta = getSetDelta(
+    activeSet?.durationSeconds,
+    activePreviousSet?.durationSeconds
+  );
+  const volumeDelta = getSetDelta(getSetVolume(activeSet), getSetVolume(activePreviousSet));
+
+  const repsDeltaLabel = formatSignedDelta(repsDelta, 'reps');
+  const weightDeltaLabel = formatSignedDelta(weightDelta, 'kg');
+  const durationDeltaLabel = formatSignedDelta(durationDelta, 'seg');
+  const volumeDeltaLabel = formatSignedDelta(volumeDelta, 'kg vol');
 
   const updateSetField = (
     exerciseIdx: number,
@@ -100,49 +228,36 @@ export default function ActiveSession({
     setEditableSets((prev) =>
       prev.map((sets, ei) =>
         ei === exerciseIdx
-          ? sets.map((s, si) =>
-            si === setIdx ? { ...s, [field]: value } : s
-          )
+          ? sets.map((set, si) => (si === setIdx ? { ...set, [field]: value } : set))
           : sets
       )
     );
   };
 
-  const completeSet = () => {
-    if (nextSetIdx === -1) return;
+  const goToExercise = (idx: number, dir: number) => {
+    if (idx < 0 || idx >= session.exercises.length || animatingExercise) return;
 
-    setPulse(true);
-    setTimeout(() => setPulse(false), 300);
-
-    updateSetField(currentIdx, nextSetIdx, 'isCompleted', true);
-
-    // Check if all sets are now done after this toggle
-    const allDoneAfter = currentSets.every((s, i) =>
-      i === nextSetIdx ? true : s.isCompleted
-    );
-
-    if (allDoneAfter) {
-      if (currentIdx === session.exercises.length - 1) {
-        // Use the ref to read the latest state — avoids the state updater
-        // which StrictMode invokes twice, causing duplicate onComplete calls.
-        setTimeout(() => {
-          onComplete(editableSetsRef.current);
-        }, 600);
-      } else {
-        setTimeout(() => goTo(currentIdx + 1, 1), 700);
-      }
-    }
-  };
-
-  const goTo = (idx: number, dir: number) => {
-    if (idx < 0 || idx >= session.exercises.length || animating) return;
-    setAnimating(true);
+    setAnimatingExercise(true);
     setSlideDir(dir);
+
     setTimeout(() => {
       setCurrentIdx(idx);
+
+      const nextSets = editableSetsRef.current[idx];
+      const nextPendingSetIdx = nextSets.findIndex((set) => !set.isCompleted);
+      setActiveSetIdx(nextPendingSetIdx === -1 ? 0 : nextPendingSetIdx);
+
       setSlideDir(0);
-      setAnimating(false);
-    }, 300);
+      setAnimatingExercise(false);
+    }, 280);
+  };
+
+  const goToSet = (setIdx: number) => {
+    if (setIdx < 0 || setIdx >= currentSets.length) {
+      return;
+    }
+
+    setActiveSetIdx(setIdx);
   };
 
   const toggleNotes = (setIdx: number) => {
@@ -166,6 +281,18 @@ export default function ActiveSession({
       })
     );
 
+    setActiveSetIdx((prev) => {
+      if (prev === setIdx) {
+        return Math.max(0, prev - 1);
+      }
+
+      if (prev > setIdx) {
+        return prev - 1;
+      }
+
+      return prev;
+    });
+
     setDeleteConfirm(null);
   };
 
@@ -184,41 +311,77 @@ export default function ActiveSession({
   };
 
   const addSet = (exerciseIdx: number) => {
+    const shouldMoveToNewSet = editableSets[exerciseIdx]?.[activeSetIdx]?.isCompleted;
+
     setEditableSets((prev) =>
       prev.map((sets, ei) =>
         ei === exerciseIdx
           ? [
-            ...sets,
-            {
-              setNumber: sets.length + 1,
-              reps: undefined,
-              weight: undefined,
-              durationSeconds: undefined,
-              restSeconds: undefined,
-              notes: undefined,
-              isCompleted: false,
-            },
-          ]
+              ...sets,
+              {
+                setNumber: sets.length + 1,
+                reps: undefined,
+                weight: undefined,
+                durationSeconds: undefined,
+                restSeconds: undefined,
+                notes: undefined,
+                isCompleted: false,
+              },
+            ]
           : sets
       )
     );
+
+    if (shouldMoveToNewSet) {
+      setActiveSetIdx(currentSets.length);
+    }
   };
 
-  const progress = (totalCompleted / session.exercises.length) * 100;
+  const completeSet = () => {
+    if (!activeSet || activeSet.isCompleted) {
+      return;
+    }
 
-  // ── Helpers for numeric inputs ────────────────────────────
+    setSetPulse(true);
+    setTimeout(() => setSetPulse(false), 250);
 
-  const parseNumericInput = (
-    val: string,
-    integer: boolean
-  ): number | undefined => {
-    if (val === '') return undefined;
-    const n = integer ? parseInt(val, 10) : parseFloat(val);
-    if (isNaN(n) || n < 0) return undefined;
+    updateSetField(currentIdx, activeSetIdx, 'isCompleted', true);
+
+    const currentSetsSnapshot = editableSetsRef.current[currentIdx];
+    const nextPendingInExercise = currentSetsSnapshot.findIndex(
+      (set, index) => !set.isCompleted && index !== activeSetIdx
+    );
+
+    if (nextPendingInExercise >= 0) {
+      setTimeout(() => {
+        setActiveSetIdx(nextPendingInExercise);
+      }, 220);
+      return;
+    }
+
+    const isLastExercise = currentIdx === session.exercises.length - 1;
+    if (isLastExercise) {
+      setTimeout(() => {
+        onComplete(editableSetsRef.current);
+      }, 450);
+      return;
+    }
+
+    setExerciseFlash(true);
+    setTimeout(() => {
+      setExerciseFlash(false);
+      goToExercise(currentIdx + 1, 1);
+    }, 620);
+  };
+
+  const parseNumericInput = (raw: string, integer: boolean): number | undefined => {
+    if (raw === '') return undefined;
+    const n = integer ? parseInt(raw, 10) : parseFloat(raw);
+    if (Number.isNaN(n) || n < 0) return undefined;
     return n;
   };
 
-  // ── Render ────────────────────────────────────────────────
+  const progress = (totalCompletedExercises / session.exercises.length) * 100;
 
   return (
     <div
@@ -227,7 +390,6 @@ export default function ActiveSession({
         visible ? 'opacity-100' : 'opacity-0'
       )}
     >
-      {/* Header */}
       <div className="px-8 pt-5 pb-4 flex justify-between items-center border-b border-border">
         <div>
           <div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground">
@@ -240,6 +402,7 @@ export default function ActiveSession({
             {session.title}
           </div>
         </div>
+
         <div className="flex items-center gap-4">
           <div className="font-bebas text-[28px] text-primary">
             {String(currentIdx + 1).padStart(2, '0')}
@@ -248,6 +411,7 @@ export default function ActiveSession({
               {session.exercises.length}
             </span>
           </div>
+
           {onCancel && (
             <button
               onClick={() => setShowCancelConfirm(true)}
@@ -260,17 +424,16 @@ export default function ActiveSession({
         </div>
       </div>
 
-      {/* Cancel confirmation overlay */}
       {showCancelConfirm && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
           <div className="mx-8 w-full max-w-sm border border-border bg-background p-8 space-y-6">
             <div>
               <div className="font-bebas text-2xl tracking-[2px] text-foreground mb-2">
-                CANCELAR SESIÓN
+                CANCELAR SESION
               </div>
               <p className="font-barlow text-sm text-muted-foreground">
-                Se perderá todo el progreso de esta sesión. Esta acción no se
-                puede deshacer.
+                Se perdera todo el progreso de esta sesion. Esta accion no se puede
+                deshacer.
               </p>
             </div>
             <div className="flex flex-col gap-3">
@@ -282,7 +445,7 @@ export default function ActiveSession({
                 disabled={isCancelling}
                 className="w-full bg-destructive border-none text-destructive-foreground font-bebas text-[18px] tracking-[3px] py-4 cursor-pointer transition-colors hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isCancelling ? 'CANCELANDO...' : 'CANCELAR SESIÓN'}
+                {isCancelling ? 'CANCELANDO...' : 'CANCELAR SESION'}
               </button>
               <button
                 onClick={() => setShowCancelConfirm(false)}
@@ -296,7 +459,6 @@ export default function ActiveSession({
         </div>
       )}
 
-      {/* Delete set confirmation overlay */}
       {deleteConfirm && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
           <div className="mx-8 w-full max-w-sm border border-border bg-background p-8 space-y-6">
@@ -328,237 +490,279 @@ export default function ActiveSession({
         </div>
       )}
 
-      {/* Exercise area */}
       <div
         className={cn(
           'flex-1 flex flex-col p-8 overflow-y-auto transition-all duration-300 ease-in-out',
-          animating ? 'opacity-0' : 'opacity-100'
+          animatingExercise ? 'opacity-0' : 'opacity-100'
         )}
         style={{
-          transform: animating
-            ? `translateX(${slideDir * -60}px)`
-            : 'translateX(0)',
+          transform: animatingExercise ? `translateX(${slideDir * -56}px)` : 'translateX(0)',
         }}
       >
-        {/* Muscle group tag */}
-        <div className="font-barlow text-[10px] tracking-[4px] text-primary font-semibold mb-3">
+        <div className="font-barlow text-[10px] tracking-[4px] text-primary font-semibold mb-3 uppercase">
           {exercise.muscleGroup}
         </div>
 
-        {/* Exercise name */}
         <div
           className={cn(
-            'font-bebas text-[clamp(40px,10vw,64px)] leading-[0.9] tracking-[2px] mb-6 transition-colors duration-300 ease-in-out',
-            exCompleted ? 'text-muted-foreground' : 'text-foreground'
+            'font-bebas text-[clamp(40px,10vw,64px)] leading-[0.9] tracking-[2px] mb-5 transition-colors duration-300 ease-in-out',
+            isExerciseCompleted ? 'text-muted-foreground' : 'text-foreground'
           )}
         >
           {exercise.exerciseName}
         </div>
 
-        {/* Sets — inline editable rows */}
-        <div className="flex flex-col gap-1">
-          {currentSets.map((set, i) => {
-            const isActive = i === nextSetIdx;
-            const notesKey = `${currentIdx}-${i}`;
-            const notesOpen = !!expandedNotes[notesKey];
+        <div className="flex items-center justify-center gap-1.5 mb-4">
+          {currentSets.map((set, index) => (
+            <button
+              key={`set-dot-${set.setNumber}`}
+              onClick={() => goToSet(index)}
+              className={cn(
+                'h-2 rounded-full transition-all duration-200',
+                index === activeSetIdx
+                  ? 'w-6 bg-primary'
+                  : set.isCompleted
+                  ? 'w-2 bg-primary/70'
+                  : 'w-2 bg-border'
+              )}
+              aria-label={`Ir al set ${set.setNumber}`}
+            />
+          ))}
+        </div>
 
-            return (
-              <div
-                key={i}
-                ref={isActive ? activeSetRef : undefined}
-                className={cn(
-                  'border border-border rounded transition-all duration-200',
-                  isActive && 'border-primary/40 bg-primary/5',
-                  set.isCompleted && 'opacity-60'
-                )}
-              >
-                {/* Main set row */}
-                <div className="flex flex-col sm:flex-row items-center  gap-2 px-3 py-2.5 sm:gap-6">
-                  {/* Set label */}
-                  <div
-                    className={cn(
-                      'font-barlow text-[11px] tracking-[3px] font-semibold flex self-start gap-2 items-center sm:self-auto ',
-                      set.isCompleted
-                        ? 'text-muted-foreground'
-                        : 'text-secondary-foreground'
-                    )}
-                  ><p className='flex items-center gap-2'>
-                      <span>SET</span>
-                      <span>
-                        {i + 1}
-                      </span>
-                    </p>
+        {exerciseFlash && (
+          <div className="mb-4 border border-primary/30 bg-primary/10 px-3 py-2 text-center font-barlow text-[11px] tracking-[2px] uppercase text-primary">
+            Ejercicio completado
+          </div>
+        )}
 
-                    {/* Completion dot */}
-                    <div
-                      className={cn(
-                        'w-2.5 h-2.5 rounded-full transition-all duration-200 ease-in-out shrink-0',
-                        set.isCompleted
-                          ? 'bg-primary shadow-[0_0_8px_var(--orange-glow)]'
-                          : 'bg-transparent border-[1.5px] border-border'
-                      )}
-                    />
-                  </div>
-
-                  <div className='flex justify-between w-full gap-6 '>
-                    {/* Editable fields */}
-                    <div className="min-w-0 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:flex-1 sm:flex-wrap">
-
-                      {/* Reps */}
-                      <SetInput
-                        label="REPS"
-                        value={set.reps}
-                        onChange={(v) =>
-                          updateSetField(currentIdx, i, 'reps', parseNumericInput(v, true))
-                        }
-                        integer
-                      />
-
-                      {/* Weight */}
-                      <SetInput
-                        label="KG"
-                        value={set.weight}
-                        onChange={(v) =>
-                          updateSetField(currentIdx, i, 'weight', parseNumericInput(v, false))
-                        }
-                        step="0.5"
-                        integer={false}
-                      />
-
-                      {/* Duration */}
-                      <SetInput
-                        label="SEG"
-                        value={set.durationSeconds}
-                        onChange={(v) =>
-                          updateSetField(
-                            currentIdx,
-                            i,
-                            'durationSeconds',
-                            parseNumericInput(v, true)
-                          )
-                        }
-                        integer
-                      />
-
-                      {/* Rest */}
-                      <SetInput
-                        label="DESC"
-                        value={set.restSeconds}
-                        onChange={(v) =>
-                          updateSetField(
-                            currentIdx,
-                            i,
-                            'restSeconds',
-                            parseNumericInput(v, true)
-                          )
-                        }
-                        integer
-                      />
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className='flex flex-col items-center justify-between gap-3 sm:flex-row'>
-                      {currentSets.length > 1 && (
-                        <button
-                          onClick={() => deleteSet(currentIdx, i)}
-                          className="p-1 shrink-0 text-destructive hover:text-destructive/80 transition-colors"
-                          aria-label="Eliminar set"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 " />
-                        </button>
-                      )}
-
-                      {/* Notes toggle */}
-                      <button
-                        onClick={() => toggleNotes(i)}
-                        className={cn(
-                          'p-1 shrink-0 transition-colors',
-                          set.notes
-                            ? 'text-primary'
-                            : 'text-muted-foreground/40 hover:text-muted-foreground'
-                        )}
-                        aria-label="Notas"
-                      >
-                        <MessageSquare className="h-3.5 w-3.5" />
-                      </button>
-
-                    </div>
-
-                  </div>
-
-
-
-                </div>
-
-                {/* Notes row (collapsible) */}
-                {notesOpen && (
-                  <div className="px-3 pb-2.5">
-                    <input
-                      type="text"
-                      value={set.notes ?? ''}
-                      onChange={(e) =>
-                        updateSetField(currentIdx, i, 'notes', e.target.value || undefined)
-                      }
-                      placeholder="Notas del set..."
-                      className="w-full bg-transparent border border-border rounded px-2 py-1.5 font-barlow text-[11px] tracking-[1px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50"
-                      maxLength={500}
-                    />
-                  </div>
-                )}
+        {activeSet && (
+          <div
+            ref={cardRef}
+            className={cn(
+              'border border-primary/40 bg-primary/5 rounded-none p-4 sm:p-5 transition-transform duration-200',
+              setPulse ? 'scale-[0.98]' : 'scale-100'
+            )}
+          >
+            <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="font-barlow text-[11px] tracking-[3px] text-secondary-foreground font-semibold uppercase">
+                Set actual · {activeSet.setNumber}
               </div>
-            );
-          })}
+              <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_var(--orange-glow)]" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
+              <SetInput
+                label="REPS"
+                value={activeSet.reps}
+                onChange={(value) =>
+                  updateSetField(currentIdx, activeSetIdx, 'reps', parseNumericInput(value, true))
+                }
+                integer
+              />
+
+              <SetInput
+                label="KG"
+                value={activeSet.weight}
+                onChange={(value) =>
+                  updateSetField(
+                    currentIdx,
+                    activeSetIdx,
+                    'weight',
+                    parseNumericInput(value, false)
+                  )
+                }
+                step="0.5"
+                integer={false}
+              />
+
+              <SetInput
+                label="SEG"
+                value={activeSet.durationSeconds}
+                onChange={(value) =>
+                  updateSetField(
+                    currentIdx,
+                    activeSetIdx,
+                    'durationSeconds',
+                    parseNumericInput(value, true)
+                  )
+                }
+                integer
+              />
+
+              <SetInput
+                label="DESC"
+                value={activeSet.restSeconds}
+                onChange={(value) =>
+                  updateSetField(
+                    currentIdx,
+                    activeSetIdx,
+                    'restSeconds',
+                    parseNumericInput(value, true)
+                  )
+                }
+                integer
+              />
+            </div>
+
+            <div className="mt-4 flex items-center gap-2">
+              <button
+                onClick={() => toggleNotes(activeSetIdx)}
+                className={cn(
+                  'p-1 transition-colors',
+                  activeSet.notes
+                    ? 'text-primary'
+                    : 'text-muted-foreground/40 hover:text-muted-foreground'
+                )}
+                aria-label="Notas"
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+              </button>
+
+              {currentSets.length > 1 && (
+                <button
+                  onClick={() => deleteSet(currentIdx, activeSetIdx)}
+                  className="p-1 text-destructive hover:text-destructive/80 transition-colors"
+                  aria-label="Eliminar set"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+
+            {!!expandedNotes[`${currentIdx}-${activeSetIdx}`] && (
+              <div className="mt-3">
+                <input
+                  type="text"
+                  value={activeSet.notes ?? ''}
+                  onChange={(event) =>
+                    updateSetField(
+                      currentIdx,
+                      activeSetIdx,
+                      'notes',
+                      event.target.value || undefined
+                    )
+                  }
+                  placeholder="Notas del set..."
+                  className="w-full bg-transparent border border-border rounded-none px-2 py-1.5 font-barlow text-[11px] tracking-[1px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50"
+                  maxLength={500}
+                />
+              </div>
+            )}
+
+            <div className="mt-4 border-t border-border pt-3 space-y-2">
+              <div className="text-[10px] font-barlow tracking-[2px] uppercase text-muted-foreground">
+                Comparacion con sesion anterior
+              </div>
+
+              {activePreviousSet ? (
+                <>
+                  <div className="text-xs font-barlow text-muted-foreground">
+                    Anterior (set {activePreviousSet.setNumber}): {getSetSummary(activePreviousSet)}
+                  </div>
+                  {(repsDeltaLabel || weightDeltaLabel || durationDeltaLabel || volumeDeltaLabel) && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {repsDeltaLabel && (
+                        <span
+                          className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(repsDelta)}`}
+                        >
+                          {repsDeltaLabel}
+                        </span>
+                      )}
+                      {weightDeltaLabel && (
+                        <span
+                          className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(weightDelta)}`}
+                        >
+                          {weightDeltaLabel}
+                        </span>
+                      )}
+                      {durationDeltaLabel && (
+                        <span
+                          className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(durationDelta)}`}
+                        >
+                          {durationDeltaLabel}
+                        </span>
+                      )}
+                      {volumeDeltaLabel && (
+                        <span
+                          className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] ${getDeltaClasses(volumeDelta)}`}
+                        >
+                          {volumeDeltaLabel}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <span className="inline-flex items-center rounded-full border border-primary/30 px-2 py-0.5 text-[10px] font-barlow uppercase tracking-[2px] text-primary">
+                  Nuevo set
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <button
+            onClick={() => goToSet(activeSetIdx - 1)}
+            disabled={activeSetIdx === 0}
+            className={cn(
+              'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
+              activeSetIdx === 0
+                ? 'text-border cursor-default'
+                : 'text-muted-foreground cursor-pointer'
+            )}
+          >
+            ← SET ANTERIOR
+          </button>
 
           <button
-            onClick={() => addSet(currentIdx)}
-            disabled={animating}
-            className="mt-2 w-full border border-dashed border-border rounded py-3 font-barlow text-[11px] tracking-[3px] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => goToSet(activeSetIdx + 1)}
+            disabled={activeSetIdx === currentSets.length - 1}
+            className={cn(
+              'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
+              activeSetIdx === currentSets.length - 1
+                ? 'text-border cursor-default'
+                : 'text-muted-foreground cursor-pointer'
+            )}
           >
-            + AGREGAR SET
+            SIGUIENTE SET →
           </button>
         </div>
-      </div>
 
-      {/* Navigation dots */}
-      <div className="flex justify-center gap-1.5 px-8 pb-3">
-        {session.exercises.map((_, i) => (
-          <div
-            key={i}
-            onClick={() => goTo(i, i > currentIdx ? 1 : -1)}
-            className={cn(
-              'h-1 rounded-sm cursor-pointer transition-all duration-200 ease-in-out',
-              i === currentIdx
-                ? 'w-5 bg-primary'
-                : editableSets[i].every((s) => s.isCompleted)
-                  ? 'w-1.5 bg-muted-foreground'
-                  : 'w-1.5 bg-border'
-            )}
-          />
-        ))}
-      </div>
-
-      {/* CTA Button */}
-      <div className="px-8 pb-5">
         <button
-          onClick={completeSet}
-          disabled={exCompleted}
-          className={cn(
-            'w-full font-bebas text-[20px] tracking-[4px] py-[18px] transition-all duration-300 ease-in-out',
-            exCompleted
-              ? 'bg-transparent border border-border text-muted-foreground cursor-default'
-              : 'bg-primary border-none text-black cursor-pointer',
-            pulse ? 'scale-[0.97]' : 'scale-100'
-          )}
+          onClick={() => addSet(currentIdx)}
+          disabled={animatingExercise}
+          className="mt-4 w-full border border-dashed border-border rounded-none py-3 font-barlow text-[11px] tracking-[3px] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {exCompleted ? 'EJERCICIO COMPLETADO' : '+ COMPLETAR SET'}
+          + AGREGAR SET
         </button>
       </div>
 
-      {/* Progress bar */}
+      <div className="px-8 pb-5">
+        <button
+          onClick={completeSet}
+          disabled={isExerciseCompleted || !activeSet || activeSet.isCompleted}
+          className={cn(
+            'w-full font-bebas text-[20px] tracking-[4px] py-[18px] transition-all duration-300 ease-in-out',
+            isExerciseCompleted || !activeSet || activeSet.isCompleted
+              ? 'bg-transparent border border-border text-muted-foreground cursor-default'
+              : 'bg-primary border-none text-black cursor-pointer',
+            setPulse ? 'scale-[0.97]' : 'scale-100'
+          )}
+        >
+          {isExerciseCompleted
+            ? 'EJERCICIO COMPLETADO'
+            : activeSet?.isCompleted
+            ? 'SET COMPLETADO'
+            : '+ COMPLETAR SET'}
+        </button>
+      </div>
+
       <div className="px-8 pb-7">
         <div className="flex justify-between mb-2">
           <div className="font-barlow text-[10px] tracking-[3px] text-secondary">
-            {totalCompleted} / {session.exercises.length} EJERCICIOS
+            {totalCompletedExercises} / {session.exercises.length} EJERCICIOS
           </div>
         </div>
         <div className="h-0.5 bg-border rounded-sm overflow-hidden">
@@ -569,10 +773,9 @@ export default function ActiveSession({
         </div>
       </div>
 
-      {/* Swipe hint */}
       <div className="flex justify-between px-8 pb-4">
         <button
-          onClick={() => goTo(currentIdx - 1, -1)}
+          onClick={() => goToExercise(currentIdx - 1, -1)}
           disabled={currentIdx === 0}
           className={cn(
             'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
@@ -581,10 +784,10 @@ export default function ActiveSession({
               : 'text-muted-foreground cursor-pointer'
           )}
         >
-          ← ANTERIOR
+          ← EJERCICIO ANTERIOR
         </button>
         <button
-          onClick={() => goTo(currentIdx + 1, 1)}
+          onClick={() => goToExercise(currentIdx + 1, 1)}
           disabled={currentIdx === session.exercises.length - 1}
           className={cn(
             'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
@@ -593,14 +796,12 @@ export default function ActiveSession({
               : 'text-muted-foreground cursor-pointer'
           )}
         >
-          SIGUIENTE →
+          SIGUIENTE EJERCICIO →
         </button>
       </div>
     </div>
   );
 }
-
-// ── Small numeric input for set fields ──────────────────────
 
 interface SetInputProps {
   label: string;
@@ -617,10 +818,10 @@ function SetInput({ label, value, onChange, step, integer = true }: SetInputProp
         type="number"
         inputMode={integer ? 'numeric' : 'decimal'}
         value={value ?? ''}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         step={step ?? '1'}
         min="0"
-        className="w-14 bg-transparent border border-border rounded px-1.5 py-1 font-bebas text-[16px] text-foreground text-center focus:outline-none focus:border-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-16 bg-transparent border border-border rounded-none px-1.5 py-1 font-bebas text-[18px] text-foreground text-center focus:outline-none focus:border-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <span className="font-barlow text-[9px] tracking-[2px] text-muted-foreground">
         {label}

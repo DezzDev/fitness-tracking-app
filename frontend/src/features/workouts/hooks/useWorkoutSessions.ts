@@ -2,7 +2,7 @@
 
 import { handleApiError } from "@/api/client";
 import { workoutSessionsApi, type CreateSessionFromTemplateData } from "@/api/endpoints/workoutSessions";
-import type { CreateWorkoutSessionData, SessionFilters } from "@/types";
+import type { CreateWorkoutSessionData, SessionFilters, WorkoutSessionWithExercises } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ export const sessionKeys = {
 	details: () => [ ...sessionKeys.all, 'detail' ] as const,
 	detail: (id: string) => [ ...sessionKeys.details(), id ] as const,
 	recent: (limit?: number) => [ ...sessionKeys.all, 'recent', limit ] as const,
+	previousByTemplate: (templateId?: string) => [ ...sessionKeys.all, 'previous-template', templateId ] as const,
 	stats: () => [ ...sessionKeys.all, 'stats' ] as const,
 };
 
@@ -47,6 +48,35 @@ export function useRecentSessions(limit?: number) {
 		queryKey: sessionKeys.recent(limit),
 		queryFn: () => workoutSessionsApi.getRecentSessions(limit),
 		staleTime: 1 * 60 * 1000,
+	});
+}
+
+/**
+ * Hook para obtener la sesión previa de un template
+ */
+export function usePreviousSessionForTemplate(templateId?: string) {
+	return useQuery<WorkoutSessionWithExercises | null>({
+		queryKey: sessionKeys.previousByTemplate(templateId),
+		enabled: !!templateId,
+		queryFn: async () => {
+			if (!templateId) {
+				return null;
+			}
+
+			const response = await workoutSessionsApi.listSessions({
+				templateId,
+				page: 1,
+				limit: 1,
+			});
+
+			const previousSession = response.data.items[0];
+			if (!previousSession) {
+				return null;
+			}
+
+			return workoutSessionsApi.getSession(previousSession.id);
+		},
+		staleTime: 2 * 60 * 1000,
 	});
 }
 
