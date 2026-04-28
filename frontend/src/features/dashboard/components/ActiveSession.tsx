@@ -4,7 +4,7 @@ import type {
   WorkoutSessionSet,
   EditableSet,
 } from '@/types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react';
 import { cn } from '@/lib/utils';
 import { X, MessageSquare, Trash2 } from 'lucide-react';
 
@@ -135,7 +135,10 @@ export default function ActiveSession({
   );
   const [activeSetIdx, setActiveSetIdx] = useState(0);
   const [animatingExercise, setAnimatingExercise] = useState(false);
+  const [animatingSet, setAnimatingSet] = useState(false);
+  const [setTransitionPhase, setSetTransitionPhase] = useState<'idle' | 'out' | 'in'>('idle');
   const [slideDir, setSlideDir] = useState(0);
+  const [setCardSlideDir, setSetCardSlideDir] = useState(0);
   const [setPulse, setSetPulse] = useState(false);
   const [visible, setVisible] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -148,6 +151,7 @@ export default function ActiveSession({
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const editableSetsRef = useRef(editableSets);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     editableSetsRef.current = editableSets;
@@ -253,11 +257,60 @@ export default function ActiveSession({
   };
 
   const goToSet = (setIdx: number) => {
-    if (setIdx < 0 || setIdx >= currentSets.length) {
+    if (setIdx < 0 || setIdx >= currentSets.length || animatingSet || setIdx === activeSetIdx) {
       return;
     }
 
-    setActiveSetIdx(setIdx);
+    const direction = setIdx > activeSetIdx ? 1 : -1;
+    setSetCardSlideDir(direction);
+    setAnimatingSet(true);
+    setSetTransitionPhase('out');
+
+    setTimeout(() => {
+      setActiveSetIdx(setIdx);
+      setSetTransitionPhase('in');
+
+      setTimeout(() => {
+        setSetCardSlideDir(0);
+        setAnimatingSet(false);
+        setSetTransitionPhase('idle');
+      }, 120);
+    }, 120);
+  };
+
+  const handleSetTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleSetTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    if (!start) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+
+    touchStartRef.current = null;
+
+    const isHorizontalSwipe =
+      Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) + 12;
+    if (!isHorizontalSwipe) {
+      return;
+    }
+
+    if (animatingSet) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      goToSet(activeSetIdx + 1);
+      return;
+    }
+
+    goToSet(activeSetIdx - 1);
   };
 
   const toggleNotes = (setIdx: number) => {
@@ -354,7 +407,7 @@ export default function ActiveSession({
 
     if (nextPendingInExercise >= 0) {
       setTimeout(() => {
-        setActiveSetIdx(nextPendingInExercise);
+        goToSet(nextPendingInExercise);
       }, 220);
       return;
     }
@@ -539,9 +592,27 @@ export default function ActiveSession({
         {activeSet && (
           <div
             ref={cardRef}
+            onTouchStart={handleSetTouchStart}
+            onTouchEnd={handleSetTouchEnd}
             className={cn(
-              'border border-primary/40 bg-primary/5 rounded-none p-4 sm:p-5 transition-transform duration-200',
-              setPulse ? 'scale-[0.98]' : 'scale-100'
+              'border border-primary/40 bg-primary/5 rounded-none p-4 sm:p-5 transition-all duration-140 ease-out',
+              setPulse ? 'scale-[0.98]' : 'scale-100',
+              animatingSet &&
+                setTransitionPhase === 'out' &&
+                setCardSlideDir > 0 &&
+                'opacity-0 -translate-x-4',
+              animatingSet &&
+                setTransitionPhase === 'out' &&
+                setCardSlideDir < 0 &&
+                'opacity-0 translate-x-4',
+              animatingSet &&
+                setTransitionPhase === 'in' &&
+                setCardSlideDir > 0 &&
+                'opacity-0 translate-x-4',
+              animatingSet &&
+                setTransitionPhase === 'in' &&
+                setCardSlideDir < 0 &&
+                'opacity-0 -translate-x-4'
             )}
           >
             <div className="flex items-center justify-between gap-2 mb-4">
@@ -705,7 +776,7 @@ export default function ActiveSession({
         <div className="mt-4 flex items-center justify-between gap-3">
           <button
             onClick={() => goToSet(activeSetIdx - 1)}
-            disabled={activeSetIdx === 0}
+            disabled={activeSetIdx === 0 || animatingSet}
             className={cn(
               'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
               activeSetIdx === 0
@@ -718,7 +789,7 @@ export default function ActiveSession({
 
           <button
             onClick={() => goToSet(activeSetIdx + 1)}
-            disabled={activeSetIdx === currentSets.length - 1}
+            disabled={activeSetIdx === currentSets.length - 1 || animatingSet}
             className={cn(
               'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
               activeSetIdx === currentSets.length - 1
@@ -728,6 +799,10 @@ export default function ActiveSession({
           >
             SIGUIENTE SET →
           </button>
+        </div>
+
+        <div className="mt-2 text-center font-barlow text-[10px] tracking-[2px] text-muted-foreground uppercase sm:hidden">
+          Desliza para cambiar set
         </div>
 
         <button
