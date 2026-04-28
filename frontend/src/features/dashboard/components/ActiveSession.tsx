@@ -575,7 +575,7 @@ export default function ActiveSession({
                 index === activeSetIdx
                   ? set.isCompleted
                     ? 'w-6 bg-primary'
-                    : 'w-6 bg-transparent border border-border'
+                    : 'w-6 bg-border'
                   : set.isCompleted
                   ? 'w-2 bg-primary/70'
                   : 'w-2 bg-border'
