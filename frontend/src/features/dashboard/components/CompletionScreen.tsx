@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 interface CompletionScreenProps {
 	session: WorkoutSessionWithExercises;
 	completedSets: EditableSet[][] | null;
-	startTime: Date;
+	durationMinutes: number | null;
 	onReturn: () => void;
 	createdSessionId?: string;
 	isSaving?: boolean;
@@ -15,7 +15,7 @@ interface CompletionScreenProps {
 export default function CompletionScreen({
 	session,
 	completedSets,
-	startTime,
+	durationMinutes,
 	onReturn,
 	createdSessionId,
 	isSaving = false,
@@ -32,11 +32,6 @@ export default function CompletionScreen({
 		];
 		return () => timers.forEach(clearTimeout);
 	}, []);
-
-	// Calculate real duration
-	const endTime = new Date();
-	const durationMs = endTime.getTime() - startTime.getTime();
-	const durationMinutes = Math.round(durationMs / (1000 * 60));
 
 	// Calculate total completed sets
 	const totalSeries = completedSets
@@ -63,7 +58,7 @@ export default function CompletionScreen({
 			value: volume >= 1000 ? `${(volume / 1000).toFixed(1)}K` : Math.round(volume),
 			label: "KG VOLUMEN",
 		},
-		{ value: `${durationMinutes} MIN`, label: "DURACIÓN" },
+		{ value: durationMinutes !== null ? `${durationMinutes} MIN` : 'N/D', label: 'DURACIÓN' },
 	];
 
 	const today = new Date();

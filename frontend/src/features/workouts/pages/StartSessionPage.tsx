@@ -11,6 +11,7 @@ import { templateToSession } from '@/features/dashboard/utils/templateToSession'
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useWorkoutPersistence } from '@/hooks/useWorkoutPersistence';
+import { MAX_VALID_WORKOUT_DURATION_MINUTES } from '@/lib/workoutStorage';
 import type { WorkoutSessionWithExercises, EditableSet } from '@/types';
 import type { PersistedWorkoutState } from '@/types/storage';
 
@@ -28,9 +29,8 @@ export default function StartSessionPage() {
 	const [screen, setScreen] = useState<Screen>('loading');
 	const [localSession, setLocalSession] = useState<WorkoutSessionWithExercises | null>(null);
 	const [completedSets, setCompletedSets] = useState<EditableSet[][] | null>(null);
+	const [completedDurationMinutes, setCompletedDurationMinutes] = useState<number | null>(null);
 	const [startTime, setStartTime] = useState<Date>(new Date());
-	const [accumulatedElapsedMs, setAccumulatedElapsedMs] = useState(0);
-	const [lastResumedAt, setLastResumedAt] = useState<Date>(new Date());
 	const [conflictData, setConflictData] = useState<ConflictData | null>(null);
 	const latestEditableSetsRef = useRef<EditableSet[][] | null>(null);
 	const latestExerciseIndexRef = useRef(0);
@@ -54,8 +54,6 @@ export default function StartSessionPage() {
 					setStartTime(new Date(persisted.startTime));
 					latestEditableSetsRef.current = persisted.editableSets;
 					latestExerciseIndexRef.current = persisted.currentExerciseIndex;
-					setAccumulatedElapsedMs(persisted.accumulatedElapsedMs);
-					setLastResumedAt(new Date());
 					setScreen('restoring');
 					setTimeout(() => setScreen('active'), 1000);
 					return;
@@ -73,8 +71,6 @@ export default function StartSessionPage() {
 			latestEditableSetsRef.current = null;
 			latestExerciseIndexRef.current = 0;
 			setStartTime(new Date());
-			setAccumulatedElapsedMs(0);
-			setLastResumedAt(new Date());
 			setScreen('active');
 		}
 	}, [template, screen, isLoading, persistence]);
@@ -94,8 +90,6 @@ export default function StartSessionPage() {
 			}
 
 			const now = Date.now();
-			const elapsedSinceResume = Math.max(0, now - lastResumedAt.getTime());
-			const frozenElapsed = accumulatedElapsedMs + elapsedSinceResume;
 
 			persistence.saveStateNow({
 				version: 1,
@@ -103,8 +97,6 @@ export default function StartSessionPage() {
 				localSession,
 				editableSets: latestEditableSetsRef.current ?? [],
 				currentExerciseIndex: latestExerciseIndexRef.current,
-				accumulatedElapsedMs: frozenElapsed,
-				lastResumedAt: new Date(now).toISOString(),
 				startTime: startTime.toISOString(),
 				lastUpdated: new Date(now).toISOString(),
 				source: 'start',
@@ -127,8 +119,6 @@ export default function StartSessionPage() {
 		screen,
 		localSession,
 		template,
-		accumulatedElapsedMs,
-		lastResumedAt,
 		startTime,
 		persistence,
 	]);
@@ -145,8 +135,6 @@ export default function StartSessionPage() {
 				localSession,
 				editableSets: sets,
 				currentExerciseIndex: idx,
-				accumulatedElapsedMs,
-				lastResumedAt: lastResumedAt.toISOString(),
 				startTime: startTime.toISOString(),
 				lastUpdated: new Date().toISOString(),
 				source: 'start',
@@ -166,10 +154,11 @@ export default function StartSessionPage() {
 		latestEditableSetsRef.current = sets;
 
 		const now = Date.now();
-		const elapsedSinceResume = Math.max(0, now - lastResumedAt.getTime());
-		const totalElapsedMs = accumulatedElapsedMs + elapsedSinceResume;
-		const computedStartTime = new Date(now - totalElapsedMs);
-		setStartTime(computedStartTime);
+		const totalElapsedMs = Math.max(0, now - startTime.getTime());
+		const rawDurationMinutes = Math.round(totalElapsedMs / 60000);
+		const durationMinutes =
+			rawDurationMinutes > MAX_VALID_WORKOUT_DURATION_MINUTES ? undefined : rawDurationMinutes;
+		setCompletedDurationMinutes(durationMinutes ?? null);
 
 		// Clear persisted state immediately
 		persistence.clearState();
@@ -179,8 +168,6 @@ export default function StartSessionPage() {
 
 		// NOW create the session in the database with actual values
 		if (localSession && template && !createSessionMutation.isPending) {
-			const durationMinutes = Math.round(totalElapsedMs / 60000);
-
 			createSessionMutation.mutate({
 				templateId: localSession.templateId ?? template.id,
 				title: localSession.title,
@@ -254,8 +241,6 @@ export default function StartSessionPage() {
 								setStartTime(new Date(conflictData.persisted.startTime));
 								latestEditableSetsRef.current = conflictData.persisted.editableSets;
 								latestExerciseIndexRef.current = conflictData.persisted.currentExerciseIndex;
-								setAccumulatedElapsedMs(conflictData.persisted.accumulatedElapsedMs);
-								setLastResumedAt(new Date());
 								setConflictData(null);
 								setScreen('restoring');
 								navigate(`/workouts/sessions/start?templateId=${conflictData.persisted.templateId}`, { replace: true });
@@ -273,8 +258,6 @@ export default function StartSessionPage() {
 								latestEditableSetsRef.current = null;
 								latestExerciseIndexRef.current = 0;
 								setStartTime(new Date());
-								setAccumulatedElapsedMs(0);
-								setLastResumedAt(new Date());
 								setConflictData(null);
 								setScreen('active');
 							}}
@@ -328,7 +311,7 @@ export default function StartSessionPage() {
 			<CompletionScreen
 				session={localSession}
 				completedSets={completedSets}
-				startTime={startTime}
+				durationMinutes={completedDurationMinutes}
 				onReturn={handleReturn}
 				createdSessionId={createSessionMutation.data?.id}
 				isSaving={createSessionMutation.isPending}

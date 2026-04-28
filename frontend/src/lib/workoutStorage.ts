@@ -3,6 +3,7 @@ import type { PersistedWorkoutState } from '@/types/storage';
 export const STORAGE_KEY = 'fitness-app:active-session';
 
 export const TTL_HOURS = 24;
+export const MAX_VALID_WORKOUT_DURATION_MINUTES = 6 * 60;
 
 export function isExpired(lastUpdated: string): boolean {
   const now = new Date().getTime();
@@ -20,8 +21,6 @@ export function validatePersistedState(data: any): data is PersistedWorkoutState
     data.localSession &&
     Array.isArray(data.editableSets) &&
     typeof data.currentExerciseIndex === 'number' &&
-    typeof data.accumulatedElapsedMs === 'number' &&
-    typeof data.lastResumedAt === 'string' &&
     typeof data.startTime === 'string' &&
     typeof data.lastUpdated === 'string' &&
     data.source === 'start'

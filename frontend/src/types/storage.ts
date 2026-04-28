@@ -6,8 +6,6 @@ export interface PersistedWorkoutState {
   localSession: WorkoutSessionWithExercises;
   editableSets: EditableSet[][];
   currentExerciseIndex: number;
-  accumulatedElapsedMs: number;
-  lastResumedAt: string;
   startTime: string;
   lastUpdated: string;
   source: 'start';

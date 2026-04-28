@@ -163,7 +163,6 @@ CREATE TABLE workout_session_sets (
   FOREIGN KEY (session_exercise_id) REFERENCES workout_session_exercises(id) ON DELETE CASCADE
 );
 
--- Nueva tabla: refresh_tokens
 CREATE TABLE IF NOT EXISTS refresh_tokens (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
