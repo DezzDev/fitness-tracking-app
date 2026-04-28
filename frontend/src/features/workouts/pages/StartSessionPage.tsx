@@ -8,6 +8,7 @@ import { useWorkoutTemplate } from '../hooks/useWorkoutTemplates';
 import ActiveSession from '@/features/dashboard/components/ActiveSession';
 import CompletionScreen from '@/features/dashboard/components/CompletionScreen';
 import { templateToSession } from '@/features/dashboard/utils/templateToSession';
+import PendingWorkoutDecisionModal from '@/features/workouts/components/PendingWorkoutDecisionModal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useWorkoutPersistence } from '@/hooks/useWorkoutPersistence';
@@ -220,54 +221,38 @@ export default function StartSessionPage() {
 	// Conflict modal
 	if (screen === 'conflict' && conflictData) {
 		return (
-			<div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-				<div className="mx-8 w-full max-w-md border border-border bg-background p-8 space-y-6">
-					<div>
-						<div className="font-bebas text-2xl tracking-[2px] text-foreground mb-2">
-							ENTRENAMIENTO EN PROGRESO
-						</div>
-						<p className="font-barlow text-sm text-muted-foreground">
-							Tienes un entrenamiento en progreso de{' '}
-							<strong className="text-foreground">
-								{conflictData.persisted.localSession.title}
-							</strong>
-							. ¿Qué deseas hacer?
-						</p>
-					</div>
-					<div className="flex flex-col gap-3">
-						<button
-							onClick={() => {
-								setLocalSession(conflictData.persisted.localSession);
-								setStartTime(new Date(conflictData.persisted.startTime));
-								latestEditableSetsRef.current = conflictData.persisted.editableSets;
-								latestExerciseIndexRef.current = conflictData.persisted.currentExerciseIndex;
-								setConflictData(null);
-								setScreen('restoring');
-								navigate(`/workouts/sessions/start?templateId=${conflictData.persisted.templateId}`, { replace: true });
-								setTimeout(() => setScreen('active'), 1000);
-							}}
-							className="w-full bg-primary border-none text-black font-bebas text-[18px] tracking-[3px] py-4 cursor-pointer hover:bg-primary/90 transition-colors"
-						>
-							CONTINUAR ENTRENAMIENTO
-						</button>
-						<button
-							onClick={() => {
-								persistence.clearState();
-								const session = templateToSession(template!);
-								setLocalSession(session);
-								latestEditableSetsRef.current = null;
-								latestExerciseIndexRef.current = 0;
-								setStartTime(new Date());
-								setConflictData(null);
-								setScreen('active');
-							}}
-							className="w-full bg-transparent border border-border text-muted-foreground font-barlow text-[13px] tracking-[3px] py-4 cursor-pointer hover:bg-muted/20 transition-colors"
-						>
-							DESCARTAR E INICIAR NUEVO
-						</button>
-					</div>
-				</div>
-			</div>
+			<PendingWorkoutDecisionModal
+				open
+				title={conflictData.persisted.localSession.title}
+				onOpenChange={(open) => {
+					if (!open) {
+						setConflictData(null);
+						navigate('/workouts');
+					}
+				}}
+				onContinue={() => {
+					setLocalSession(conflictData.persisted.localSession);
+					setStartTime(new Date(conflictData.persisted.startTime));
+					latestEditableSetsRef.current = conflictData.persisted.editableSets;
+					latestExerciseIndexRef.current = conflictData.persisted.currentExerciseIndex;
+					setConflictData(null);
+					setScreen('restoring');
+					navigate(`/workouts/sessions/start?templateId=${conflictData.persisted.templateId}`, {
+						replace: true,
+					});
+					setTimeout(() => setScreen('active'), 1000);
+				}}
+				onCancel={() => {
+					persistence.clearState();
+					const session = templateToSession(template!);
+					setLocalSession(session);
+					latestEditableSetsRef.current = null;
+					latestExerciseIndexRef.current = 0;
+					setStartTime(new Date());
+					setConflictData(null);
+					setScreen('active');
+				}}
+			/>
 		);
 	}
 

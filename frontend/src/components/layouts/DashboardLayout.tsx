@@ -8,9 +8,10 @@ import {
 	LogOut,
 	Menu,
 	LucideSidebarClose,
-	BarChart3
+	BarChart3,
+	Clock3
 } from "lucide-react";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from "@/store/authStore";
 import {
 	DropdownMenu,
@@ -22,6 +23,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Button } from '@/components/ui/button';
+import { useWorkoutPersistence } from '@/hooks/useWorkoutPersistence';
+import type { PersistedWorkoutState } from '@/types/storage';
+import PendingWorkoutDecisionModal from '@/features/workouts/components/PendingWorkoutDecisionModal';
 
 
 function DashboardLayout() {
@@ -29,6 +34,59 @@ function DashboardLayout() {
 	const location = useLocation();
 	const { user, logout } = useAuthStore();
 	const [ sidebarOpen, setSidebarOpen ] = useState(false);
+	const [pendingSession, setPendingSession] = useState<PersistedWorkoutState | null>(null);
+	const [isPendingModalOpen, setIsPendingModalOpen] = useState(false);
+	const { loadPersistedState, clearState } = useWorkoutPersistence();
+	const shouldShowPendingIndicator = location.pathname !== '/workouts/sessions/start' && Boolean(pendingSession);
+
+	useEffect(() => {
+		const checkPendingSession = () => {
+			const isStartSessionPage = location.pathname === '/workouts/sessions/start';
+			if (isStartSessionPage) {
+				setPendingSession(null);
+				setIsPendingModalOpen(false);
+				return;
+			}
+
+			const persisted = loadPersistedState();
+			setPendingSession(persisted);
+		};
+
+		checkPendingSession();
+
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible') {
+				checkPendingSession();
+			}
+		};
+
+		const handleFocus = () => {
+			checkPendingSession();
+		};
+
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+		window.addEventListener('focus', handleFocus);
+
+		return () => {
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
+			window.removeEventListener('focus', handleFocus);
+		};
+	}, [location.pathname, loadPersistedState]);
+
+	const handleContinuePendingSession = () => {
+		if (!pendingSession) {
+			return;
+		}
+
+		setIsPendingModalOpen(false);
+		navigate(`/workouts/sessions/start?templateId=${pendingSession.templateId}`);
+	};
+
+	const handleCancelPendingSession = () => {
+		clearState();
+		setPendingSession(null);
+		setIsPendingModalOpen(false);
+	};
 
 	const handleLogout = () => {
 		logout();
@@ -45,6 +103,19 @@ function DashboardLayout() {
 
 	return (
 		<div className="flex flex-col flex-1 bg-background text-foreground min-h-screen">
+			{pendingSession && (
+				<PendingWorkoutDecisionModal
+					open={isPendingModalOpen}
+					modalTitle="SESIÓN PENDIENTE"
+					title={pendingSession.localSession.title}
+					description={`Tienes un entrenamiento en progreso de ${pendingSession.localSession.title}. ¿Quieres continuarlo o cancelarlo?`}
+					cancelLabel="CANCELAR"
+					onOpenChange={setIsPendingModalOpen}
+					onContinue={handleContinuePendingSession}
+					onCancel={handleCancelPendingSession}
+				/>
+			)}
+
 			{/* Header */}
 			<header className="bg-(--surface) border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-opacity-90">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,6 +143,20 @@ function DashboardLayout() {
 						</div>
 
 						<div className="flex items-center gap-2">
+							{shouldShowPendingIndicator && (
+								<Button
+									variant="outline"
+									onClick={() => setIsPendingModalOpen(true)}
+									className="relative h-9 rounded-none px-2 sm:px-3"
+								>
+									<Clock3 className="h-4 w-4" />
+									<span className="hidden sm:inline font-barlow text-xs tracking-[2px] uppercase">
+										Sesión pendiente
+									</span>
+									<span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-primary" />
+								</Button>
+							)}
+
 							<ThemeToggle />
 
 							{/*  User Menu */}

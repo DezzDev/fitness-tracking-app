@@ -80,7 +80,6 @@ export default function ActiveSession({
     }
   }, [editableSets, currentIdx, onStateChange]);
 
-  console.log({session});
 
   const exercise = session.exercises[currentIdx];
   const currentSets = editableSets[currentIdx];
