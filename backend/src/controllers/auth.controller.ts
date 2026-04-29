@@ -3,6 +3,10 @@ import { Request, Response } from 'express';
 import { authService } from '../services/auth.service';
 import { ResponseHandler } from '@/utils/response';
 import { asyncHandler, createAppError } from '@/middlewares/error.middleware';
+import {
+  getRefreshTokenCookieOptions,
+  getRefreshTokenClearCookieOptions,
+} from '@/utils/cookie.utils';
 
 /**
  * POST /auth/refresh
@@ -25,13 +29,7 @@ export const refresh = asyncHandler(
     })
 
     // configurar Nuevo refresh token en cookie
-    res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-      path: '/'
-    })
+    res.cookie('refreshToken', result.refreshToken, getRefreshTokenCookieOptions())
 
     // Devolver nuevo access token
     ResponseHandler.success(
@@ -56,7 +54,7 @@ export const logout = asyncHandler(async (req: Request, res: Response): Promise<
   })
 
   // Limpiar cookie
-  res.clearCookie('refreshToken')
+  res.clearCookie('refreshToken', getRefreshTokenClearCookieOptions())
 
   ResponseHandler.success(res, null, 'Logout successful');
 
@@ -73,7 +71,7 @@ export const logoutAll = asyncHandler(async (req: Request, res: Response): Promi
   const userId = req.user?.userId; 
   await authService.revokeAllSessions(userId)
 
-  res.clearCookie('refreshToken')
+  res.clearCookie('refreshToken', getRefreshTokenClearCookieOptions())
 
   ResponseHandler.success(res, null, 'All sessions revoked successfully');
 

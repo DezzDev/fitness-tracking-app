@@ -12,6 +12,10 @@ import {
   UserIdParam
 } from '@/schemas/user.schema';
 import { authService } from '@/services/auth.service';
+import {
+  getRefreshTokenCookieOptions,
+  getRefreshTokenClearCookieOptions,
+} from '@/utils/cookie.utils';
 
 
 // ============================================
@@ -56,13 +60,7 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
   const result = await userService.login(input);
 
   // Configurar refresh token como httpOnly cookie
-  res.cookie('refreshToken', result.tokens.refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Solo en producción
-    sameSite: 'lax', // o 'strict' según necesidades
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-    path: '/' //cookie disponible en todas las rutas
-  });
+  res.cookie('refreshToken', result.tokens.refreshToken, getRefreshTokenCookieOptions());
 
   // Devolver access token y usuario
   ResponseHandler.success(
@@ -195,7 +193,7 @@ export const changePassword = asyncHandler(
     await authService.revokeAllSessions(userId);
 
     // Limpiar cookie del dispositivo actual
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', getRefreshTokenClearCookieOptions());
 
     ResponseHandler.success(
       res,
