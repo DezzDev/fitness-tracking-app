@@ -853,6 +853,14 @@ export default function ActiveSession({
           </button>
 
           <button
+            onClick={() => addSet(currentIdx)}
+            disabled={animatingExercise}
+            className="border border-dashed border-border rounded-none px-5 py-2 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            + SET
+          </button>
+
+          <button
             onClick={() => goToSet(activeSetIdx + 1)}
             disabled={activeSetIdx === currentSets.length - 1 || animatingSet}
             className={cn(
@@ -866,17 +874,18 @@ export default function ActiveSession({
           </button>
         </div>
 
-        <div className="mt-3 text-center font-barlow text-[10px] tracking-[2px] text-muted-foreground uppercase sm:hidden">
-          Desliza para cambiar set
+        <div className="mt-3 flex items-center justify-between gap-3 sm:hidden">
+          <div className="font-barlow text-[10px] tracking-[2px] text-muted-foreground uppercase">
+            Desliza para cambiar set
+          </div>
+          <button
+            onClick={() => addSet(currentIdx)}
+            disabled={animatingExercise}
+            className="border border-dashed border-border rounded-none px-4 py-1.5 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            + SET
+          </button>
         </div>
-
-        <button
-          onClick={() => addSet(currentIdx)}
-          disabled={animatingExercise}
-          className="mt-4 w-full border border-dashed border-border rounded-none py-3 font-barlow text-[11px] tracking-[3px] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          + AGREGAR SET
-        </button>
       </div>
 
       <div className="px-8 pb-5">
