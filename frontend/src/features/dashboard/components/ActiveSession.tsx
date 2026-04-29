@@ -137,6 +137,8 @@ export default function ActiveSession({
   const [animatingExercise, setAnimatingExercise] = useState(false);
   const [animatingSet, setAnimatingSet] = useState(false);
   const [setTransitionPhase, setSetTransitionPhase] = useState<'idle' | 'out' | 'in'>('idle');
+  const [isDraggingSet, setIsDraggingSet] = useState(false);
+  const [dragOffsetX, setDragOffsetX] = useState(0);
   const [slideDir, setSlideDir] = useState(0);
   const [setCardSlideDir, setSetCardSlideDir] = useState(0);
   const [setPulse, setSetPulse] = useState(false);
@@ -279,8 +281,39 @@ export default function ActiveSession({
   };
 
   const handleSetTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    if (animatingSet) {
+      return;
+    }
+
     const touch = event.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    setIsDraggingSet(false);
+    setDragOffsetX(0);
+  };
+
+  const handleSetTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    if (!start || animatingSet) {
+      return;
+    }
+
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+
+    const isHorizontalIntent = Math.abs(deltaX) > Math.abs(deltaY) + 8;
+    if (!isHorizontalIntent) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsDraggingSet(true);
+
+    const isFirstSet = activeSetIdx === 0;
+    const isLastSet = activeSetIdx === currentSets.length - 1;
+    const blocked = (isFirstSet && deltaX > 0) || (isLastSet && deltaX < 0);
+    const adjustedDeltaX = blocked ? deltaX * 0.35 : deltaX;
+    setDragOffsetX(adjustedDeltaX);
   };
 
   const handleSetTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
@@ -294,6 +327,14 @@ export default function ActiveSession({
     const deltaY = touch.clientY - start.y;
 
     touchStartRef.current = null;
+
+    if (!isDraggingSet) {
+      setDragOffsetX(0);
+      return;
+    }
+
+    setIsDraggingSet(false);
+    setDragOffsetX(0);
 
     const isHorizontalSwipe =
       Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) + 12;
@@ -311,6 +352,12 @@ export default function ActiveSession({
     }
 
     goToSet(activeSetIdx - 1);
+  };
+
+  const handleSetTouchCancel = () => {
+    touchStartRef.current = null;
+    setIsDraggingSet(false);
+    setDragOffsetX(0);
   };
 
   const toggleNotes = (setIdx: number) => {
@@ -435,6 +482,23 @@ export default function ActiveSession({
   };
 
   const progress = (totalCompletedExercises / session.exercises.length) * 100;
+  const animatedSetOffset =
+    animatingSet && setTransitionPhase === 'out'
+      ? setCardSlideDir > 0
+        ? -16
+        : 16
+      : animatingSet && setTransitionPhase === 'in'
+      ? setCardSlideDir > 0
+        ? 16
+        : -16
+      : 0;
+
+  const cardOffsetX = isDraggingSet ? dragOffsetX : animatedSetOffset;
+  const cardOpacity = isDraggingSet
+    ? Math.max(0.78, 1 - Math.abs(dragOffsetX) / 280)
+    : animatingSet
+    ? 0
+    : 1;
 
   return (
     <div
@@ -595,27 +659,18 @@ export default function ActiveSession({
           <div
             ref={cardRef}
             onTouchStart={handleSetTouchStart}
+            onTouchMove={handleSetTouchMove}
             onTouchEnd={handleSetTouchEnd}
+            onTouchCancel={handleSetTouchCancel}
             className={cn(
-              'border border-primary/40 bg-primary/5 rounded-none p-4 sm:p-5 transition-all duration-140 ease-out',
+              'border border-primary/40 bg-primary/5 rounded-none p-4 sm:p-5 transition-all duration-140 ease-out touch-pan-y',
               setPulse ? 'scale-[0.98]' : 'scale-100',
-              animatingSet &&
-                setTransitionPhase === 'out' &&
-                setCardSlideDir > 0 &&
-                'opacity-0 -translate-x-4',
-              animatingSet &&
-                setTransitionPhase === 'out' &&
-                setCardSlideDir < 0 &&
-                'opacity-0 translate-x-4',
-              animatingSet &&
-                setTransitionPhase === 'in' &&
-                setCardSlideDir > 0 &&
-                'opacity-0 translate-x-4',
-              animatingSet &&
-                setTransitionPhase === 'in' &&
-                setCardSlideDir < 0 &&
-                'opacity-0 -translate-x-4'
+              isDraggingSet && 'transition-none'
             )}
+            style={{
+              transform: `translateX(${cardOffsetX}px)`,
+              opacity: cardOpacity,
+            }}
           >
             <div className="flex items-center justify-between gap-2 mb-4">
               <div className="font-barlow text-[11px] tracking-[3px] text-secondary-foreground font-semibold uppercase">
