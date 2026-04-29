@@ -119,6 +119,9 @@ const getSetSummary = (set: EditableSet | WorkoutSessionSet) => {
   return parts.join(' · ') || 'Sin datos';
 };
 
+const normalizeLabel = (value: string | undefined) =>
+  (value ?? '').trim().toLocaleLowerCase('es-ES');
+
 export default function ActiveSession({
   session,
   previousSession,
@@ -183,6 +186,8 @@ export default function ActiveSession({
 
   const isExerciseCompleted = currentSets.every((set) => set.isCompleted);
   const activeSet = currentSets[activeSetIdx];
+  const showMuscleGroupTag =
+    normalizeLabel(exercise.muscleGroup) !== normalizeLabel(session.title);
 
   useEffect(() => {
     const firstPendingSetIdx = currentSets.findIndex((set) => !set.isCompleted);
@@ -507,40 +512,6 @@ export default function ActiveSession({
         visible ? 'opacity-100' : 'opacity-0'
       )}
     >
-      <div className="px-8 pt-5 pb-4 flex justify-between items-center border-b border-border">
-        <div>
-          <div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground">
-            {new Date(session.sessionDate).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'short',
-            })}
-          </div>
-          <div className="font-barlow text-[15px] tracking-[2px] text-secondary-foreground font-semibold">
-            {session.title}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="font-bebas text-[28px] text-primary">
-            {String(currentIdx + 1).padStart(2, '0')}
-            <span className="text-[16px] text-muted-foreground mx-0.5">/</span>
-            <span className="text-[16px] text-muted-foreground">
-              {session.exercises.length}
-            </span>
-          </div>
-
-          {onCancel && (
-            <button
-              onClick={() => setShowCancelConfirm(true)}
-              className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-              aria-label="Cancelar sesión"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-      </div>
-
       {showCancelConfirm && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
           <div className="mx-8 w-full max-w-sm border border-border bg-background p-8 space-y-6">
@@ -609,16 +580,46 @@ export default function ActiveSession({
 
       <div
         className={cn(
-          'flex-1 flex flex-col p-8 overflow-y-auto transition-all duration-300 ease-in-out',
+          'flex-1 flex flex-col p-8 pt-4 overflow-y-auto transition-all duration-300 ease-in-out',
           animatingExercise ? 'opacity-0' : 'opacity-100'
         )}
         style={{
           transform: animatingExercise ? `translateX(${slideDir * -56}px)` : 'translateX(0)',
         }}
       >
-        <div className="font-barlow text-[10px] tracking-[4px] text-primary font-semibold mb-3 uppercase">
-          {exercise.muscleGroup}
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 flex flex-wrap">
+            <div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground uppercase leading-5">
+              {session.title}
+            </div>
+          </div>
+
+          <div className="shrink-0 flex items-center gap-2">
+            <div className="font-bebas text-[20px] sm:text-[24px] text-primary leading-none">
+              {String(currentIdx + 1).padStart(2, '0')}
+              <span className="text-[12px] sm:text-[14px] text-muted-foreground mx-0.5">/</span>
+              <span className="text-[12px] sm:text-[14px] text-muted-foreground">
+                {String(session.exercises.length).padStart(2, '0')}
+              </span>
+            </div>
+
+            {onCancel && (
+              <button
+                onClick={() => setShowCancelConfirm(true)}
+                className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                aria-label="Cancelar sesión"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
+          </div>
         </div>
+
+        {showMuscleGroupTag && (
+          <div className="font-barlow text-[10px] tracking-[4px] text-primary font-semibold mb-3 uppercase">
+            {exercise.muscleGroup}
+          </div>
+        )}
 
         <div
           className={cn(
@@ -837,7 +838,7 @@ export default function ActiveSession({
           </div>
         )}
 
-        <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="mt-4 hidden sm:flex items-center justify-between gap-3">
           <button
             onClick={() => goToSet(activeSetIdx - 1)}
             disabled={activeSetIdx === 0 || animatingSet}
@@ -865,7 +866,7 @@ export default function ActiveSession({
           </button>
         </div>
 
-        <div className="mt-2 text-center font-barlow text-[10px] tracking-[2px] text-muted-foreground uppercase sm:hidden">
+        <div className="mt-3 text-center font-barlow text-[10px] tracking-[2px] text-muted-foreground uppercase sm:hidden">
           Desliza para cambiar set
         </div>
 
@@ -899,11 +900,6 @@ export default function ActiveSession({
       </div>
 
       <div className="px-8 pb-7">
-        <div className="flex justify-between mb-2">
-          <div className="font-barlow text-[10px] tracking-[3px] text-secondary">
-            {totalCompletedExercises} / {session.exercises.length} EJERCICIOS
-          </div>
-        </div>
         <div className="h-0.5 bg-border rounded-sm overflow-hidden">
           <div
             className="h-full bg-primary rounded-sm transition-[width] duration-400 ease-in-out shadow-[0_0_6px_var(--orange-glow)]"
