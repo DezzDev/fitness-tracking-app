@@ -1,18 +1,20 @@
 // src/features/profile/components/ProfileImageUpload.tsx
 import {useRef, useState} from 'react';
-import { Camera, Loader2, Upload } from 'lucide-react';
+import { Camera, Loader2, Trash2, Upload } from 'lucide-react';
 
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Button} from '@/components/ui/button';
 import { Card, CardContent, CardDescription , CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/store/authStore';
-import { useUploadProfileImage } from '../hooks/useProfile';
+import { useDeleteProfileImage, useUploadProfileImage } from '../hooks/useProfile';
 
 export default function ProfileImageUpload(){
 	const user = useAuthStore((state)=> state.user);
 	const {mutate: uploadImage, isPending} = useUploadProfileImage();
+	const {mutate: removeImage, isPending: isDeleting} = useDeleteProfileImage();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [preview, setPreview] = useState<string | null>(null);
+	const isBusy = isPending || isDeleting;
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
 		const file =  e.target.files?.[0];
@@ -21,6 +23,12 @@ export default function ProfileImageUpload(){
 		// Validar tipo de archivo
 		if(!file.type.startsWith('image/')){
 			alert('Por favor selecciona un archivo de imagen');
+			return;
+		}
+
+		const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+		if (!allowedTypes.includes(file.type)) {
+			alert('Formato no valido. Usa JPG, PNG o WEBP');
 			return;
 		}
 
@@ -52,6 +60,14 @@ export default function ProfileImageUpload(){
 		fileInputRef.current?.click();
 	}
 
+	const handleDeleteImage = () => {
+		if (!user?.profileImage) {
+			return;
+		}
+
+		removeImage();
+	};
+
 	return(
 		<Card className='rounded-none border-border'>
 			<CardHeader>
@@ -74,7 +90,7 @@ export default function ProfileImageUpload(){
 					</Avatar>
 
 					{/* Loading Overlay */}
-					{isPending && (
+					{isBusy && (
 						<div className='absolute inset-0 bg-black/50 rounded-full flex items-center justify-center'>
 							<Loader2 className='w-8 h-8 text-white animate-spin' />
 						</div>
@@ -84,7 +100,7 @@ export default function ProfileImageUpload(){
 					<button 
 						type='button'
 						onClick={handleButtonClick}
-						disabled={isPending}
+						disabled={isBusy}
 						className='absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full hover:bg-accent transition-colors disabled:opacity-50'
 					>
 						<Camera size={20}/>
@@ -98,14 +114,14 @@ export default function ProfileImageUpload(){
 					accept='image/*'
 					onChange={handleFileChange}
 					className='hidden'
-					disabled={isPending}				
+					disabled={isBusy}				
 				/>
 
 				{/* Botón de subida */}
 				<Button
 					variant='outline'
 					onClick={handleButtonClick}
-					disabled={isPending}
+					disabled={isBusy}
 					className='w-full rounded-none tracking-widest'
 				>
 					{isPending ? (
@@ -122,10 +138,31 @@ export default function ProfileImageUpload(){
 
 				</Button>
 
+				{user?.profileImage && (
+					<Button
+						variant='outline'
+						onClick={handleDeleteImage}
+						disabled={isBusy}
+						className='w-full rounded-none tracking-widest'
+					>
+						{isDeleting ? (
+							<>
+								<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+								Eliminando...
+							</>
+						) : (
+							<>
+								<Trash2 className='mr-2 h-4 w-4'/>
+								Eliminar foto
+							</>
+						)}
+					</Button>
+				)}
+
 				{/* Información */}
 				<div className='text-xs text-muted-foreground text-center space-y-1'>
 					<p>Tamaño máximo 5MB</p>
-					<p>Formatos: JPG, PNG, GIF</p>
+					<p>Formatos: JPG, PNG, WEBP</p>
 				</div>
 			</CardContent>
 		</Card>

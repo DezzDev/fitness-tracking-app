@@ -71,7 +71,6 @@ export function useChangePassword() {
  */
 export function useUploadProfileImage() {
 	const queryClient = useQueryClient();
-	const user = useAuthStore((state) => state.user);
 
 	return useMutation({
 		mutationFn: async (file: File) => {
@@ -85,13 +84,7 @@ export function useUploadProfileImage() {
 				throw new Error('El archivo debe ser una imagen')
 			}
 
-			const imageUrl = await usersApi.uploadProfileImage(file);
-
-			if(!user) throw new Error('Usuario no autenticado');
-
-			// Actualizar perfil con nueva imagen
-			if(!user.id) throw new Error('id del usuario no encontrado');
-			return usersApi.updateProfile(user?.id, { profileImage: imageUrl });
+			return usersApi.uploadProfileImage(file);
 		},
 		onSuccess: (updateUser)=>{
 			queryClient.setQueryData(queryKeys.profile, updateUser)
@@ -103,6 +96,23 @@ export function useUploadProfileImage() {
 			toast.error(handleApiError(error, 'No se pudo actualizar la imagen'))
 		}
 	})
+}
+
+export function useDeleteProfileImage() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: () => usersApi.deleteProfileImage(),
+		onSuccess: (updatedUser) => {
+			queryClient.setQueryData(queryKeys.profile, updatedUser);
+			useAuthStore.setState({ user: updatedUser });
+
+			toast.success('Imagen eliminada');
+		},
+		onError: (error: unknown) => {
+			toast.error(handleApiError(error, 'No se pudo eliminar la imagen'));
+		},
+	});
 }
 
 /**

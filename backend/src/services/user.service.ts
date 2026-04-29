@@ -10,6 +10,7 @@ import { createAppError } from '@/middlewares/error.middleware';
 import { handleServiceError } from '@/utils/error.utils';
 import { authService } from './auth.service';
 import { securityEventRepository } from '@/repositories/securityEvent.repository';
+import { getDataUriSize, isValidDataUri, processImageToBase64 } from '@/utils/image.utils';
 
 
 
@@ -18,6 +19,7 @@ import { securityEventRepository } from '@/repositories/securityEvent.repository
 // ============================================
 
 const SALT_ROUNDS = 10;
+const MAX_PROFILE_IMAGE_SIZE_BYTES = 1024 * 1024;
 
 // ============================================
 // FUNCIONES PURAS: Utilidades
@@ -241,6 +243,75 @@ export const userService = {
         'UserService.update',
         'Unable to update user',
         { userId: id, input }
+      );
+    }
+  },
+
+  updateProfileImage: async (userId: string, imageBuffer: Buffer): Promise<User> => {
+    try {
+      const existingUser = await userRepository.findById(userId);
+
+      if (!existingUser) {
+        throw createAppError('User not found', 404);
+      }
+
+      const base64Image = await processImageToBase64(imageBuffer, {
+        maxWidth: 500,
+        maxHeight: 500,
+        quality: 85,
+      });
+
+      if (!isValidDataUri(base64Image)) {
+        throw createAppError('Invalid image format', 400);
+      }
+
+      const imageSize = getDataUriSize(base64Image);
+
+      if (imageSize > MAX_PROFILE_IMAGE_SIZE_BYTES) {
+        throw createAppError(
+          `Processed image too large (${(imageSize / 1024 / 1024).toFixed(2)}MB). Max 1MB`,
+          400
+        );
+      }
+
+      const updatedUser = await userRepository.update(userId, {
+        profileImage: base64Image,
+      });
+
+      return sanitizeUser(updatedUser);
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.updateProfileImage',
+        'Unable to update profile image',
+        { userId }
+      );
+    }
+  },
+
+  deleteProfileImage: async (userId: string): Promise<User> => {
+    try {
+      const existingUser = await userRepository.findById(userId);
+
+      if (!existingUser) {
+        throw createAppError('User not found', 404);
+      }
+
+      if (!existingUser.profileImage) {
+        throw createAppError('User has no profile image', 400);
+      }
+
+      const updatedUser = await userRepository.update(userId, {
+        profileImage: null,
+      });
+
+      return sanitizeUser(updatedUser);
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.deleteProfileImage',
+        'Unable to delete profile image',
+        { userId }
       );
     }
   },

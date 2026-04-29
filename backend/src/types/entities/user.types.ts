@@ -7,7 +7,7 @@ export interface User {
 	name: string;
 	age: number;
 	role: 'user' | 'admin';
-	profileImage: string,
+	profileImage: string | null,
 	isActive: boolean;
 	createdAt: Date;
 	updatedAt: Date;
@@ -30,10 +30,10 @@ export type UserRow = {
 	name: string;
 	age: number;
 	role: 'user' | 'admin';
-  profile_image: string,
+  profile_image?: string | null,
   is_active: boolean;
-	password_hash: string;
+	password_hash?: string;
 	created_at: string;
 	updated_at: string;
-  token_version: number;
+  token_version?: number;
 };

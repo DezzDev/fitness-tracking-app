@@ -21,12 +21,29 @@ const mapRowToUser = (row: UserRow): User => ({
   age: row.age,
   role: row.role,
   isActive: row.is_active,
-  profileImage: row.profile_image,
+  profileImage: row.profile_image ?? null,
   createdAt: new Date(row.created_at),
   updatedAt: new Date(row.updated_at),
-  tokenVersion: row.token_version
+  tokenVersion: row.token_version ?? 0
 
 });
+
+const mapUserFieldToDbColumn = (field: string): string => {
+  const fieldMap: Record<string, string> = {
+    profileImage: 'profile_image',
+    isActive: 'is_active',
+    tokenVersion: 'token_version',
+  };
+
+  return fieldMap[field] ?? field;
+};
+
+type DbUpdateValue = string | number | boolean | null;
+
+const mapUpdateDataToDbColumns = (data: UserUpdateData): Record<string, DbUpdateValue> => {
+  const entries = Object.entries(data).map(([key, value]) => [mapUserFieldToDbColumn(key), value]);
+  return Object.fromEntries(entries) as Record<string, DbUpdateValue>;
+};
 
 // const mapUserToRow = (user: User): Omit<UserRow, 'created_at' | 'updated_at' | 'password_hash'> => ({
 // 	id: user.id,
@@ -66,13 +83,27 @@ const queries = {
   },
 
   findByEmail: {
-    sql: 'SELECT * FROM users WHERE email = ? AND is_active = 1',
+    sql: `
+      SELECT id, email, name, age, role, is_active, profile_image, created_at, updated_at, token_version
+      FROM users
+      WHERE email = ? AND is_active = 1
+    `,
+    args: (email: string) => [email]
+  },
+
+  findByEmailWithPassword: {
+    sql: `
+      SELECT id, email, name, age, role, is_active, created_at, updated_at, token_version, password_hash
+      FROM users
+      WHERE email = ? AND is_active = 1
+    `,
     args: (email: string) => [email]
   },
 
   findAll: {
     sql: `
-			SELECT * FROM users
+			SELECT id, email, name, age, role, is_active, created_at, updated_at, token_version
+      FROM users
 			ORDER BY created_at DESC
 			LIMIT ? OFFSET ?
 		`,
@@ -91,7 +122,7 @@ const queries = {
 			WHERE id = ?
 			RETURNING *
 		`,
-    args: (id: string, data: UserUpdateData) => {
+    args: (id: string, data: Record<string, DbUpdateValue>) => {
       const values = Object.values(data);
       return [...values, id];
     }
@@ -205,8 +236,8 @@ export const userRepository = {
     email: string
   ): Promise<(User & { passwordHash: string }) | null> => {
     const result = await execute({
-      sql: queries.findByEmail.sql,
-      args: queries.findByEmail.args(email)
+      sql: queries.findByEmailWithPassword.sql,
+      args: queries.findByEmailWithPassword.args(email)
     });
 
     if (result.rows.length === 0) return null;
@@ -215,7 +246,7 @@ export const userRepository = {
 
     return {
       ...mapRowToUser(row),
-      passwordHash: row.password_hash
+      passwordHash: row.password_hash ?? ''
     };
   },
 
@@ -277,7 +308,8 @@ export const userRepository = {
   * Actualizar usuario
   */
   update: async (id: string, data: UserUpdateData): Promise<User> => {
-    const fields = Object.keys(data);
+    const dbData = mapUpdateDataToDbColumns(data);
+    const fields = Object.keys(dbData);
 
     if (fields.length === 0) {
       throw new Error('No fields to update');
@@ -286,7 +318,7 @@ export const userRepository = {
     const result = await executeWithRetry(client =>
       client.execute({
         sql: queries.update.sql(fields),
-        args: queries.update.args(id, data)
+        args: queries.update.args(id, dbData)
       })
     );
 

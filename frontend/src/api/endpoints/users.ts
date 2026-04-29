@@ -40,12 +40,11 @@ export const usersApi={
 	/**
 	 * Subir imagen de perfil
 	 */
-	uploadProfileImage: async (file: File): Promise<string> =>{
+	uploadProfileImage: async (file: File): Promise<User> =>{
 		const formData = new FormData();
-		formData.append('image', file)
+		formData.append('profileImage', file)
 
-		// Endpoint pendiente de implementar en la API
-		const response = await apiClient.post<ApiResponse<{url: string}>>(
+		const response = await apiClient.post<ApiResponse<User>>(
 			'/users/me/profile-image',
 			formData,
 			{
@@ -54,7 +53,23 @@ export const usersApi={
 				}
 			}
 		)
-		return response.data.data!.url;
+
+		const updatedUser = response.data.data!;
+		localStorage.setItem('user', JSON.stringify(updatedUser));
+
+		return updatedUser;
+	},
+
+	/**
+	 * Eliminar imagen de perfil
+	 */
+	deleteProfileImage: async (): Promise<User> => {
+		const response = await apiClient.delete<ApiResponse<User>>('/users/me/profile-image');
+
+		const updatedUser = response.data.data!;
+		localStorage.setItem('user', JSON.stringify(updatedUser));
+
+		return updatedUser;
 	},
 
 	/**

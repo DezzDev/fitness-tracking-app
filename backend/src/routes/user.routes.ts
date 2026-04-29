@@ -19,6 +19,7 @@ import {
 import * as userController from '@/controllers/user.controller';
 import { requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
 import { requireAdmin } from '@/middlewares/authorize.middleware';
+import { uploadProfileImage } from '@/middlewares/upload.middleware';
 
 const router: Router = Router();
 
@@ -58,6 +59,19 @@ router.get(
 	'/me',
 	requireAuth,
 	userController.getProfile
+);
+
+router.post(
+	'/me/profile-image',
+	requireAuth,
+	uploadProfileImage.single('profileImage'),
+	userController.uploadProfileImage
+);
+
+router.delete(
+	'/me/profile-image',
+	requireAuth,
+	userController.deleteProfileImage
 );
 
 /**

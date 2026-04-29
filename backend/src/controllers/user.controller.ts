@@ -171,6 +171,38 @@ export const getProfile = asyncHandler(async (req: Request, res: Response): Prom
 });
 
 /**
+ * POST /users/me/profile-image
+ * Subir imagen de perfil
+ */
+export const uploadProfileImage = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+  if (!req.user) {
+    throw createAppError('User not authenticated', 401);
+  }
+
+  if (!req.file) {
+    throw createAppError('No image provided', 400);
+  }
+
+  const userUpdated = await userService.updateProfileImage(req.user.userId, req.file.buffer);
+
+  ResponseHandler.success(res, userUpdated, 'Profile image updated successfully');
+});
+
+/**
+ * DELETE /users/me/profile-image
+ * Eliminar imagen de perfil
+ */
+export const deleteProfileImage = asyncHandler(async (req: Request, res: Response): Promise<undefined> => {
+  if (!req.user) {
+    throw createAppError('User not authenticated', 401);
+  }
+
+  const userUpdated = await userService.deleteProfileImage(req.user.userId);
+
+  ResponseHandler.success(res, userUpdated, 'Profile image deleted successfully');
+});
+
+/**
  * PATCH /users/me/password
  * Cambiar contraseña del usuario autenticado
  */

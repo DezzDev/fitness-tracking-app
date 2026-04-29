@@ -1,18 +1,19 @@
 // src/types/express.d.ts
 
 declare global {
-	namespace Express {
-		interface Request {
-			user?: {
-				userId: string;
-				role: 'user' | 'admin';
+		namespace Express {
+			interface Request {
+				user?: {
+					userId: string;
+					role: 'user' | 'admin';
         tokenVersion: number;
-			},
-			validatedBody?: Record<string, unknown>;
-			validatedQuery?: Record<string, unknown>;
-			validatedParams?: Record<string, unknown>;
+				},
+				file?: Express.Multer.File;
+				validatedBody?: Record<string, unknown>;
+				validatedQuery?: Record<string, unknown>;
+				validatedParams?: Record<string, unknown>;
+			}
 		}
-	}
 }
 
 
