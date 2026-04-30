@@ -2,10 +2,12 @@
 
 export type SecurityEventType = 
   | 'login' 
+  | 'login_demo'
   | 'logout' 
   | 'token_refresh' 
   | 'token_reuse' 
-  | 'password_change';
+  | 'password_change'
+  | 'demo_expired_cleanup';
 
 export interface SecurityEvent {
   id: string;

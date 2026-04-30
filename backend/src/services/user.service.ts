@@ -3,6 +3,7 @@
 // todos los errores que se lanzan desde servicios deben de ser appErrors
 
 import bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 import { User } from '@/types';
 import { LoginInput, RegisterInput, UpdateUserInput } from '@/schemas/user.schema';
 import { userRepository } from '@/repositories/user.repository';
@@ -11,6 +12,7 @@ import { handleServiceError } from '@/utils/error.utils';
 import { authService } from './auth.service';
 import { securityEventRepository } from '@/repositories/securityEvent.repository';
 import { getDataUriSize, isValidDataUri, processImageToBase64 } from '@/utils/image.utils';
+import logger from '@/utils/logger';
 
 
 
@@ -20,6 +22,7 @@ import { getDataUriSize, isValidDataUri, processImageToBase64 } from '@/utils/im
 
 const SALT_ROUNDS = 10;
 const MAX_PROFILE_IMAGE_SIZE_BYTES = 1024 * 1024;
+const DEMO_TTL_HOURS = 24;
 
 // ============================================
 // FUNCIONES PURAS: Utilidades
@@ -61,7 +64,12 @@ export const userService = {
       const user = await userRepository.create(input, passwordHash);
 
       // 4. Generar token
-      const {accessToken} = await authService.generateTokenPair({ userId: user.id, role: user.role, tokenVersion: user.tokenVersion || 0 });
+      const {accessToken} = await authService.generateTokenPair({
+        userId: user.id,
+        role: user.role,
+        isDemo: user.isDemo,
+        tokenVersion: user.tokenVersion || 0
+      });
 
       // 5. Retornar usuario sanitizado y token
       return {
@@ -107,6 +115,7 @@ export const userService = {
       const tokens = await authService.generateTokenPair({
         userId: user.id,
         role: user.role,
+        isDemo: user.isDemo,
         tokenVersion: user.tokenVersion || 0,
       })
 
@@ -422,6 +431,79 @@ export const userService = {
         error,
         'UserService.deleteMockUsers',
         'Unable to delete mock users',
+      );
+    }
+  },
+
+  /**
+   * Crear usuario demo temporal e iniciar sesion
+   */
+  demoLogin: async (): Promise<{
+    user: User;
+    tokens: { accessToken: string; refreshToken: string; tokenId: string }
+  }> => {
+    try {
+      const randomSuffix = randomBytes(6).toString('hex');
+      const email = `demo-${Date.now()}-${randomSuffix}@demo.local`;
+      const tempPassword = randomBytes(24).toString('hex');
+      const passwordHash = await hashPassword(tempPassword);
+      const demoExpiresAt = new Date(Date.now() + DEMO_TTL_HOURS * 60 * 60 * 1000);
+
+      const user = await userRepository.create(
+        {
+          email,
+          name: 'Demo User',
+          age: 25,
+          role: 'user',
+          profileImage: null,
+          password: tempPassword,
+          isDemo: true,
+          demoExpiresAt,
+        },
+        passwordHash
+      );
+
+      const tokens = await authService.generateTokenPair({
+        userId: user.id,
+        role: user.role,
+        isDemo: true,
+        tokenVersion: user.tokenVersion || 0,
+      });
+
+      await securityEventRepository.create({
+        userId: user.id,
+        eventType: 'login_demo',
+        tokenId: tokens.tokenId,
+        success: true,
+        details: 'Temporary demo user login successful',
+      });
+
+      return {
+        user: sanitizeUser(user),
+        tokens,
+      };
+    } catch (error) {
+      throw handleServiceError(error, 'UserService.demoLogin', 'Unable to create demo session');
+    }
+  },
+
+  /**
+   * Eliminar usuarios demo expirados
+   */
+  deleteExpiredDemoUsers: async (): Promise<number> => {
+    try {
+      const deleted = await userRepository.deleteExpiredDemoUsers();
+
+      if (deleted > 0) {
+        logger.info('Expired demo users cleaned', { deleted });
+      }
+
+      return deleted;
+    } catch (error) {
+      throw handleServiceError(
+        error,
+        'UserService.deleteExpiredDemoUsers',
+        'Unable to clean expired demo users'
       );
     }
   },

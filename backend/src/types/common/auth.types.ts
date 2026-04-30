@@ -5,6 +5,7 @@ export type Role = 'user' | 'admin';
 export interface JWTPayload {
   userId: string;
   role: Role;
+  isDemo: boolean;
   tokenVersion:number;
 }
 

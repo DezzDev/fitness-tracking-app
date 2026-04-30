@@ -15,6 +15,7 @@ interface AuthState {
 
 	// Actions
 	login: (email: string, password: string) => Promise<void>;
+	loginDemo: () => Promise<void>;
 	register: (data: RegisterData) => Promise<void>;
 	logout: () => Promise<void>;
   logoutAll: () => Promise<void>;
@@ -52,6 +53,37 @@ export const useAuthStore = create<AuthState>((set) => ({
 				const axiosError = error as AxiosError;
 				errorMessage = (axiosError.response?.data as { message?: string })?.message || errorMessage;
 			}
+			set({
+				error: errorMessage,
+				isLoading: false
+			});
+			throw error;
+		}
+	},
+
+	/**
+	 * Iniciar sesion demo
+	 */
+	loginDemo: async () => {
+		set({ isLoading: true, error: null });
+
+		try {
+			const { user } = await authApi.loginDemo();
+
+			set({
+				user,
+				isAuthenticated: true,
+				isLoading: false,
+				accessToken: getAccessToken()
+			});
+		} catch (error: unknown) {
+			let errorMessage = 'Error al iniciar demo';
+			if (error && typeof error === 'object' && 'response' in error) {
+				const axiosError = error as AxiosError;
+				errorMessage =
+					(axiosError.response?.data as { message?: string })?.message || errorMessage;
+			}
+
 			set({
 				error: errorMessage,
 				isLoading: false

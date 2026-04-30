@@ -97,10 +97,16 @@ export const authenticate = (options: AuthOptions = {}) => {
         });
       }
 
+      // Bloquear usuarios demo expirados
+      if (user.isDemo && user.demoExpiresAt && user.demoExpiresAt.getTime() < Date.now()) {
+        throw createAppError('DEMO_EXPIRED', 401, true, { code: 'DEMO_EXPIRED' });
+      }
+
       // Adjuntar usuario a la request
       req.user = {
         userId: payload.userId,
         role: payload.role,
+        isDemo: user.isDemo,
         tokenVersion: payload.tokenVersion,
       };
 
@@ -143,3 +149,14 @@ export const requireAuth = authenticate();
  * Autenticación opcional (permite continuar sin token)
  */
 export const optionalAuth = authenticate({ required: false });
+
+/**
+ * Bloquea rutas para usuarios demo
+ */
+export const forbidDemoUser = (req: Request, _res: Response, next: NextFunction): void => {
+  if (req.user?.isDemo) {
+    throw createAppError('DEMO_RESTRICTED_ACTION', 403, true, { code: 'DEMO_RESTRICTED_ACTION' });
+  }
+
+  next();
+};

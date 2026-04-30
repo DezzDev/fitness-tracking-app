@@ -17,7 +17,7 @@ import {
 	UpdateUserSchema,
 } from '@/schemas/user.schema';
 import * as userController from '@/controllers/user.controller';
-import { requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
+import { forbidDemoUser, requireAuth } from '@/middlewares/auth.middleware'; // Crearemos después
 import { requireAdmin } from '@/middlewares/authorize.middleware';
 import { uploadProfileImage } from '@/middlewares/upload.middleware';
 
@@ -45,6 +45,15 @@ router.post(
 	'/login',
 	validateBody(LoginSchema),
 	userController.login
+);
+
+/**
+ * POST /users/demo-login
+ * Login rapido con usuario demo temporal
+ */
+router.post(
+	'/demo-login',
+	userController.demoLogin
 );
 
 // ============================================
@@ -82,6 +91,7 @@ router.delete(
 router.patch(
 	'/:id',
 	requireAuth,
+	forbidDemoUser,
 	validateParams(UserIdSchema),
 	validateBody(UpdateUserSchema),
 	userController.updateUser
@@ -94,6 +104,7 @@ router.patch(
 router.patch(
 	'/me/password',
 	requireAuth,
+	forbidDemoUser,
 	validateBody(ChangePasswordSchema),
 	userController.changePassword
 );

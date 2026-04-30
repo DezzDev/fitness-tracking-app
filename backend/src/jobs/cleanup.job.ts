@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { refreshTokenRepository } from '@/repositories/refreshToken.repository';
+import { userService } from '@/services/user.service';
 import logger from '@/utils/logger';
 
 export const startCleanupJobs = () => {
@@ -13,6 +14,19 @@ export const startCleanupJobs = () => {
       logger.info(`Deleted ${deleted} expired tokens`);
     } catch (error) {
       logger.error('Cleanup job failed', { error });
+    }
+  });
+
+  // Ejecutar cada 6 horas
+  cron.schedule('0 */6 * * *', async () => {
+    try {
+      logger.info('Starting expired demo users cleanup...');
+
+      const deleted = await userService.deleteExpiredDemoUsers();
+
+      logger.info(`Deleted ${deleted} expired demo users`);
+    } catch (error) {
+      logger.error('Demo cleanup job failed', { error });
     }
   });
 

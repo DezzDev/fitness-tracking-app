@@ -12,6 +12,8 @@ export interface User {
 	role: 'user' | 'admin';
 	profileImage?: string;
 	isActive: boolean;
+	isDemo?: boolean;
+	demoExpiresAt?: string | null;
 	createdAt: string;
 	updatedAt: string;
 }

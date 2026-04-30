@@ -23,6 +23,7 @@ export const authService = {
   generateTokenPair: async (data: {
     userId: string,
     role: Role,
+    isDemo: boolean,
     tokenVersion: number,
     parentTokenId?: string,
     deviceInfo?: string,
@@ -35,6 +36,7 @@ export const authService = {
       const accessToken = generateAccessToken({
         userId: data.userId,
         role: data.role,
+        isDemo: data.isDemo,
         tokenVersion: data.tokenVersion
       })
 
@@ -42,6 +44,7 @@ export const authService = {
       const { token: refreshToken, tokenId, expiresAt } = generateRefreshToken({
         userId: data.userId,
         role: data.role,
+        isDemo: data.isDemo,
         tokenVersion: data.tokenVersion
       })
 
@@ -62,7 +65,15 @@ export const authService = {
         error,
         'AuthService.generateTokenPair',
         'Unable to generate token pair',
-        { userId: data.userId, role: data.role, tokenVersion: data.tokenVersion, parentTokenId: data.parentTokenId, deviceInfo: data.deviceInfo, ipAddress: data.ipAddress }
+        {
+          userId: data.userId,
+          role: data.role,
+          isDemo: data.isDemo,
+          tokenVersion: data.tokenVersion,
+          parentTokenId: data.parentTokenId,
+          deviceInfo: data.deviceInfo,
+          ipAddress: data.ipAddress
+        }
       );
     }
   },
@@ -144,6 +155,7 @@ export const authService = {
       const tokens = await authService.generateTokenPair({
         userId: user.id,
         role: user.role,
+        isDemo: user.isDemo,
         tokenVersion: user.tokenVersion || 0,
         parentTokenId: decoded.tokenId,
         deviceInfo: data.userAgent,

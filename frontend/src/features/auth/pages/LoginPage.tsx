@@ -18,9 +18,10 @@ import { loginSchema, type LoginFormData } from "../schemas/authSchemas";
 
 function LoginPage() {
 	const navigate = useNavigate();
-	const { login, error, clearError } = useAuthStore();
+	const { login, loginDemo, error, clearError } = useAuthStore();
 	const [ showPassword, setShowPassword ] = useState(false);
 	const [ isLoading, setIsLoading ] = useState(false);
+	const [ isDemoLoading, setIsDemoLoading ] = useState(false);
 
 	const {
 		register,
@@ -48,6 +49,18 @@ function LoginPage() {
 			setIsLoading(false);
 		}
 	}
+
+	const onDemoSubmit = async () => {
+		setIsDemoLoading(true);
+		clearError();
+
+		try {
+			await loginDemo();
+			navigate('/dashboard');
+		} finally {
+			setIsDemoLoading(false);
+		}
+	};
 
 	return (
 
@@ -128,7 +141,7 @@ function LoginPage() {
 					type="submit"
 					className="w-full glow-orange-sm hover:glow-orange transition-shadow"
 					size={"lg"}
-					disabled={isLoading}
+					disabled={isLoading || isDemoLoading}
 				>
 					{isLoading ? (
 						<>
@@ -137,6 +150,23 @@ function LoginPage() {
 						</>
 					) : (
 						'Iniciar sesi\u00F3n'
+					)}
+				</Button>
+
+				<Button
+					type="button"
+					variant="outline"
+					className="w-full"
+					onClick={onDemoSubmit}
+					disabled={isLoading || isDemoLoading}
+				>
+					{isDemoLoading ? (
+						<>
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							Iniciando demo...
+						</>
+					) : (
+						'Probar demo'
 					)}
 				</Button>
 

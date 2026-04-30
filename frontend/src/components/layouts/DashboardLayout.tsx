@@ -103,6 +103,23 @@ function DashboardLayout() {
 
 	return (
 		<div className="flex flex-col flex-1 bg-background text-foreground min-h-screen">
+			{user?.isDemo && (
+				<div className="border-b border-border bg-(--orange-subtle)">
+					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-3">
+						<p className="font-barlow text-xs tracking-[1px] uppercase text-muted-foreground">
+							Estas en modo demo. Tus datos son temporales.
+						</p>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => navigate('/register')}
+						>
+							Crear cuenta y guardar mi progreso
+						</Button>
+					</div>
+				</div>
+			)}
+
 			{pendingSession && (
 				<PendingWorkoutDecisionModal
 					open={isPendingModalOpen}

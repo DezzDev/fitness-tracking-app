@@ -31,6 +31,8 @@ export const createMockUser = (overrides?: Partial<User>): User =>({
 	role: 'user',
 	profileImage: 'http://localhost:3000/public/images/default-avatar.jpg',
 	isActive: true,
+	isDemo: false,
+	demoExpiresAt: null,
 	createdAt: new Date(),
 	updatedAt: new Date(),
   tokenVersion: 0,

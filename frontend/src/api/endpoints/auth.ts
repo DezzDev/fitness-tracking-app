@@ -38,6 +38,20 @@ export const authApi = {
 		return authData;
 	},
 
+	/**
+	 * Login demo temporal
+	 */
+	loginDemo: async (): Promise<AuthResponse> => {
+		const response = await apiClient.post<ApiResponse<AuthResponse>>('/users/demo-login');
+
+		const authData = response.data.data!;
+
+		setAccessToken(authData.accessToken);
+		localStorage.setItem('user', JSON.stringify(authData.user));
+
+		return authData;
+	},
+
   /**
    * Refresh tokens
    * Renovar access token usando refresh token almacenado en cookies
@@ -62,7 +76,7 @@ export const authApi = {
 	logout: async ():Promise<void> =>{
     try{
       // llamar backend para revocar refresh token
-      await apiClient.post('/users/logout');
+			await apiClient.post('/auth/logout');
     }catch(error){
       // aunque falle, limpiar localmente
       console.error("Logout error:", error);

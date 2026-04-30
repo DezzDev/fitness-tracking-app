@@ -52,6 +52,12 @@ const clearAccessToken = () => {
   localStorage.removeItem('accessToken');
 }
 
+const clearAuthAndRedirect = () => {
+  clearAccessToken();
+  localStorage.removeItem('user');
+  window.location.href = '/login';
+}
+
 
 // Interceptor para agregar token de autenticación
 apiClient.interceptors.request.use(
@@ -126,11 +132,7 @@ apiClient.interceptors.response.use(
         // si el refresh falla, limpiar todo y redirigir a login
         processQueue(refreshError, null);
 
-        clearAccessToken();
-        localStorage.removeItem('user');
-
-        // Redirigir a login
-        window.location.href = '/login';
+        clearAuthAndRedirect();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -171,10 +173,17 @@ apiClient.interceptors.response.use(
 
       // solo cerrar sesión si no es una de las rutas excluidas
       if (!shouldNotLogout){
-        clearAccessToken();
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        clearAuthAndRedirect();
       }
+    }
+
+    // caso 4: demo expirada
+    if (
+      error.response?.status === 401 &&
+      (error.response?.data as { details?: { code?: string } })?.details?.code === 'DEMO_EXPIRED'
+    ) {
+      clearAuthAndRedirect();
+      return Promise.reject(error);
     }
 
     return Promise.reject(error);

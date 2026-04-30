@@ -72,6 +72,25 @@ export const login = asyncHandler(async (req: Request, res: Response): Promise<u
     'Login successfully');
 });
 
+/**
+ * POST /users/demo-login
+ * Login de demo temporal
+ */
+export const demoLogin = asyncHandler(async (_req: Request, res: Response): Promise<undefined> => {
+  const result = await userService.demoLogin();
+
+  res.cookie('refreshToken', result.tokens.refreshToken, getRefreshTokenCookieOptions());
+
+  ResponseHandler.success(
+    res,
+    {
+      user: result.user,
+      accessToken: result.tokens.accessToken
+    },
+    'Demo login successfully'
+  );
+});
+
 // ============================================
 // USER CRUD CONTROLLERS
 // ============================================

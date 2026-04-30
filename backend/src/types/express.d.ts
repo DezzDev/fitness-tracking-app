@@ -1,11 +1,12 @@
 // src/types/express.d.ts
 
 declare global {
-		namespace Express {
+			namespace Express {
 			interface Request {
 				user?: {
 					userId: string;
 					role: 'user' | 'admin';
+          isDemo: boolean;
         tokenVersion: number;
 				},
 				file?: Express.Multer.File;

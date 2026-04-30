@@ -21,6 +21,8 @@ const mapRowToUser = (row: UserRow): User => ({
   age: row.age,
   role: row.role,
   isActive: row.is_active,
+  isDemo: Boolean(row.is_demo),
+  demoExpiresAt: row.demo_expires_at ? new Date(row.demo_expires_at) : null,
   profileImage: row.profile_image ?? null,
   createdAt: new Date(row.created_at),
   updatedAt: new Date(row.updated_at),
@@ -32,6 +34,8 @@ const mapUserFieldToDbColumn = (field: string): string => {
   const fieldMap: Record<string, string> = {
     profileImage: 'profile_image',
     isActive: 'is_active',
+    isDemo: 'is_demo',
+    demoExpiresAt: 'demo_expires_at',
     tokenVersion: 'token_version',
   };
 
@@ -62,18 +66,24 @@ const mapUpdateDataToDbColumns = (data: UserUpdateData): Record<string, DbUpdate
 const queries = {
   create: {
     sql: `
-			INSERT INTO users (id, email, password_hash, name, age, role, profile_image, created_at, updated_at)
-			VALUES (?,?,?,?,?,?,?,datetime('now'),datetime('now'))
+			INSERT INTO users (id, email, password_hash, name, age, role, profile_image, is_demo, demo_expires_at, created_at, updated_at)
+			VALUES (?,?,?,?,?,?,?,?,?,datetime('now'),datetime('now'))
 			RETURNING *
 		`,
-    args: (id: string, data: UserCreateData, password_hash: string) => [
+    args: (
+      id: string,
+      data: UserCreateData & { isDemo?: boolean; demoExpiresAt?: Date | null },
+      password_hash: string
+    ) => [
       id,
       data.email,
       password_hash,
       data.name,
       data.age,
       data.role,
-      data.profileImage
+      data.profileImage,
+      data.isDemo ? 1 : 0,
+      data.demoExpiresAt ? data.demoExpiresAt.toISOString() : null
     ]
   },
 
@@ -84,7 +94,7 @@ const queries = {
 
   findByEmail: {
     sql: `
-      SELECT id, email, name, age, role, is_active, profile_image, created_at, updated_at, token_version
+      SELECT id, email, name, age, role, is_active, is_demo, demo_expires_at, profile_image, created_at, updated_at, token_version
       FROM users
       WHERE email = ? AND is_active = 1
     `,
@@ -93,7 +103,7 @@ const queries = {
 
   findByEmailWithPassword: {
     sql: `
-      SELECT id, email, name, age, role, is_active, created_at, updated_at, token_version, password_hash
+      SELECT id, email, name, age, role, is_active, is_demo, demo_expires_at, created_at, updated_at, token_version, password_hash
       FROM users
       WHERE email = ? AND is_active = 1
     `,
@@ -102,7 +112,7 @@ const queries = {
 
   findAll: {
     sql: `
-			SELECT id, email, name, age, role, is_active, created_at, updated_at, token_version
+			SELECT id, email, name, age, role, is_active, is_demo, demo_expires_at, created_at, updated_at, token_version
       FROM users
 			ORDER BY created_at DESC
 			LIMIT ? OFFSET ?
@@ -170,6 +180,16 @@ const queries = {
       RETURNING *
     `,
     args: (id: string) => [id]
+  },
+
+  deleteExpiredDemoUsers: {
+    sql: `
+      DELETE FROM users
+      WHERE is_demo = 1
+      AND demo_expires_at IS NOT NULL
+      AND demo_expires_at < datetime('now')
+    `,
+    args: () => []
   }
 
 };
@@ -185,7 +205,10 @@ export const userRepository = {
    * Crear un nuevo usuario
    */
 
-  create: async (data: UserCreateData, passwordHash: string): Promise<User> => {
+  create: async (
+    data: UserCreateData & { isDemo?: boolean; demoExpiresAt?: Date | null },
+    passwordHash: string
+  ): Promise<User> => {
     const id = uuidv4();
 
     const result = await executeWithRetry(client => client.execute({
@@ -407,5 +430,17 @@ export const userRepository = {
 
     return mapRowToUser(result.rows[0] as unknown as UserRow);
 
+  },
+
+  /**
+   * Eliminar usuarios demo expirados
+   */
+  deleteExpiredDemoUsers: async (): Promise<number> => {
+    const result = await execute({
+      sql: queries.deleteExpiredDemoUsers.sql,
+      args: queries.deleteExpiredDemoUsers.args()
+    });
+
+    return result.rowsAffected || 0;
   }
 }

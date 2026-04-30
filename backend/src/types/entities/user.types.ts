@@ -9,13 +9,18 @@ export interface User {
 	role: 'user' | 'admin';
 	profileImage: string | null,
 	isActive: boolean;
+	isDemo: boolean;
+	demoExpiresAt: Date | null;
 	createdAt: Date;
 	updatedAt: Date;
   tokenVersion: number;
 };
 
 // Para insert en DB
-export type UserCreateData = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'tokenVersion'> & {
+export type UserCreateData = Omit<
+  User,
+  'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isDemo' | 'demoExpiresAt' | 'tokenVersion'
+> & {
 	password: string;
 };
 
@@ -32,6 +37,8 @@ export type UserRow = {
 	role: 'user' | 'admin';
   profile_image?: string | null,
   is_active: boolean;
+	is_demo?: boolean;
+	demo_expires_at?: string | null;
 	password_hash?: string;
 	created_at: string;
 	updated_at: string;
