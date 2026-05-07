@@ -13,13 +13,15 @@ interface AuthState {
 	error: string | null;
   accessToken: string | null;
 
-	// Actions
+// Actions
 	login: (email: string, password: string) => Promise<void>;
 	loginDemo: () => Promise<void>;
 	register: (data: RegisterData) => Promise<void>;
 	logout: () => Promise<void>;
-  logoutAll: () => Promise<void>;
+  	logoutAll: () => Promise<void>;
 	loadUser: () => void;
+	hydrateUserFromServer: () => Promise<void>;
+	syncUserFromStorage: () => void;
 	clearError: () => void;
   setAccessToken: (token: string) => void; 
 }
@@ -183,6 +185,48 @@ export const useAuthStore = create<AuthState>((set) => ({
 			user,
 			isAuthenticated,
 		})
+	},
+
+	/**
+	 * Revalidar usuario contra backend (para sincronizar profileImage cross-device)
+	 * Si falla 401, limpia sesion completamente.
+	 */
+	hydrateUserFromServer: async () => {
+		const token = getAccessToken();
+		if (!token) return;
+
+		try {
+			const user = await authApi.getProfile();
+
+			set({
+				user,
+				isAuthenticated: true,
+			});
+		} catch (error: unknown) {
+			const axiosError = error as AxiosError;
+			if (axiosError.response?.status === 401) {
+				set({
+					user: null,
+					isAuthenticated: false,
+					accessToken: null,
+				});
+				localStorage.removeItem('accessToken');
+				localStorage.removeItem('user');
+			}
+		}
+	},
+
+	/**
+	 * Sincronizar usuario desde localStorage (para cross-tab)
+	 */
+	syncUserFromStorage: () => {
+		const user = authApi.getCurrentUser();
+		const isAuthenticated = authApi.isAuthenticated();
+
+		set({
+			user,
+			isAuthenticated,
+		});
 	},
 
 	/**

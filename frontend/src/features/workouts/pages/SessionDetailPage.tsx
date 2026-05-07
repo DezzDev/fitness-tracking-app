@@ -6,7 +6,6 @@ import { es } from "date-fns/locale";
 import {
   ArrowLeft,
   Dumbbell,
-  Copy,
   Trash2,
   AlertTriangle,
   TrendingUp,

@@ -4,8 +4,6 @@ import { Trash2, AlertTriangle, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -27,11 +25,6 @@ export default function AccountSettings() {
 	const { mutate: deleteAccount, isPending } = useDeleteAccount();
 	const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
 	const [ confirmText, setConfirmText ] = useState('');
-
-	// Estados de configuración (estos se guardan en la base de datos)
-	const [ emailNotifications, setEmailNotifications ] = useState(true);
-	const [ pushNotifications, setPushNotifications ] = useState(true);
-	const [ marketingEmails, setMarketingEmails ] = useState(false);
 
 	const handleDeleteAccount = () => {
 		deleteAccount(undefined, {

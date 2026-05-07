@@ -196,7 +196,7 @@ function DashboardLayout() {
 										</Avatar>
 									</button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end" className="w-56">
+								<DropdownMenuContent align="end" className="w-56 rounded-none ">
 									<DropdownMenuLabel> Mi cuenta </DropdownMenuLabel>
 									<DropdownMenuSeparator />
 									<DropdownMenuItem onClick={() => navigate('/profile')}>

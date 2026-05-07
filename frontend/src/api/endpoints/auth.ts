@@ -110,7 +110,11 @@ export const authApi = {
 		const response= await apiClient.get<ApiResponse<User>>(
 			'/users/me'
 		);
-		return response.data.data!;
+		const user = response.data.data!;
+
+		localStorage.setItem('user', JSON.stringify(user));
+
+		return user;
 	},
 
 	/**

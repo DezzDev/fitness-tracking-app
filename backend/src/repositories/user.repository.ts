@@ -103,7 +103,7 @@ const queries = {
 
   findByEmailWithPassword: {
     sql: `
-      SELECT id, email, name, age, role, is_active, is_demo, demo_expires_at, created_at, updated_at, token_version, password_hash
+      SELECT id, email, name, age, role, is_active, is_demo, demo_expires_at, profile_image, created_at, updated_at, token_version, password_hash
       FROM users
       WHERE email = ? AND is_active = 1
     `,
