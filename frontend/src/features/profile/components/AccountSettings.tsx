@@ -101,10 +101,10 @@ export default function AccountSettings() {
 						</div>
 					</div>
 
-					<Separator />
+					{/* <Separator /> */}
 
 					{/* Notificaciones */}
-					<div className='space-y-4'>
+					{/* <div className='space-y-4'>
 						<h3 className='font-medium tracking-widest'>Notificaciones</h3>
 
 						<div className="flex items-center justify-between">
@@ -154,7 +154,7 @@ export default function AccountSettings() {
 								onCheckedChange={setMarketingEmails}
 							/>
 						</div>
-					</div>
+					</div> */}
 
 					<Separator />
 					{/* Zona de peligro */}

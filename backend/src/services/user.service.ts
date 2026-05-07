@@ -12,9 +12,9 @@ import { handleServiceError } from '@/utils/error.utils';
 import { authService } from './auth.service';
 import { securityEventRepository } from '@/repositories/securityEvent.repository';
 import { getDataUriSize, isValidDataUri, processImageToBase64 } from '@/utils/image.utils';
+import { workoutTemplateService } from './workoutTemplate.service';
+import { CreateWorkoutTemplateInput } from '@/schemas/workoutTemplate.schema';
 import logger from '@/utils/logger';
-
-
 
 // ============================================
 // CONSTANTES
@@ -23,6 +23,48 @@ import logger from '@/utils/logger';
 const SALT_ROUNDS = 10;
 const MAX_PROFILE_IMAGE_SIZE_BYTES = 1024 * 1024;
 const DEMO_TTL_HOURS = 24;
+
+// ============================================
+// RUTINA INICIAL - Constantes
+// ============================================
+
+const INITIAL_TEMPLATE_EXERCISES = [
+  { id: '916135f4-4e11-43df-831e-5715f86879ad', name: 'Dominadas pronas', sets: 3, reps: 6 },
+  { id: '658805c3-58d9-4a85-befb-fe373d1495bd', name: 'Flexiones', sets: 3, reps: 12 },
+  { id: 'f4d965c4-6b02-4917-89bc-b63cde23fa03', name: 'Sentadillas', sets: 3, reps: 15 },
+  { id: 'dcd18278-8e0d-4ead-b741-71b426df463e', name: 'Crunch abdominal', sets: 3, reps: 20 },
+] as const;
+
+// ============================================
+// FUNCIONES PURAS: Utilidades
+// ============================================
+
+/**
+ * Crear plantilla inicial para un usuario nuevo
+ * Lanza error si falla para garantizar que el flujo de registro/demo falle.
+ */
+const createInitialTemplateForUser = async (userId: string): Promise<void> => {
+  const today = new Date();
+  const dayOfWeek = (today.getDay() + 6) % 7;
+
+  const exercises: CreateWorkoutTemplateInput['exercises'] = INITIAL_TEMPLATE_EXERCISES.map(
+    (exercise, index) => ({
+      exerciseId: exercise.id,
+      orderIndex: index,
+      suggestedSets: exercise.sets,
+      suggestedReps: exercise.reps,
+    })
+  );
+
+  await workoutTemplateService.create(userId, {
+    name: 'Rutina Inicial',
+    description: 'Entrenamiento inicial para comenzar.',
+    scheduledDayOfWeek: dayOfWeek,
+    exercises,
+  });
+
+  logger.info('Initial template created', { userId, templateName: 'Rutina Inicial' });
+};
 
 // ============================================
 // FUNCIONES PURAS: Utilidades
@@ -62,6 +104,9 @@ export const userService = {
 
       // 3. Crear usuario
       const user = await userRepository.create(input, passwordHash);
+
+      // 3. Crear plantilla inicial obligatoria
+      await createInitialTemplateForUser(user.id);
 
       // 4. Generar token
       const {accessToken} = await authService.generateTokenPair({
@@ -463,6 +508,10 @@ export const userService = {
         passwordHash
       );
 
+      // 2. Crear plantilla inicial obligatoria
+      await createInitialTemplateForUser(user.id);
+
+      // 3. Generar tokens
       const tokens = await authService.generateTokenPair({
         userId: user.id,
         role: user.role,

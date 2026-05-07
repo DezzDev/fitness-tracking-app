@@ -647,16 +647,6 @@ export default function SessionDetailPage() {
         {/* Acciones */}
         <div className="flex gap-3 pt-4">
           <Button
-            variant="outline"
-            size="lg"
-            className="uppercase font-barlow font-semibold tracking-wide"
-            onClick={() => {/* TODO: Implementar duplicar */ }}
-          >
-            <Copy className="h-5 w-5 mr-2" />
-            Duplicar
-          </Button>
-
-          <Button
             variant="destructive"
             size="lg"
             className="uppercase font-barlow font-semibold tracking-wide"

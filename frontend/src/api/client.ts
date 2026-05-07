@@ -163,6 +163,7 @@ apiClient.interceptors.response.use(
       const noLogoutRoutes = [
         '/users/me/password',
         '/users/login',
+        '/users/demo-login',
         '/users/register',
         '/auth/refresh',
       ]

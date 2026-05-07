@@ -67,7 +67,7 @@ export default function SessionsList() {
 				</div>
 			) : sessions.length === 0 ? (
 				/* Empty state */
-				<Card className="border-2 border-dashed border-border bg-muted/5">
+				<Card className="border-2 border-dashed border-border bg-muted/5 rounded-none">
 					<div className="p-12 text-center max-w-sm mx-auto space-y-4">
 						<div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto">
 							<Dumbbell className="h-8 w-8 text-muted-foreground" />
