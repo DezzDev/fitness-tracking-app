@@ -13,14 +13,14 @@ export default function AuthLayout ({children, title, subtitle}:AuthLayoutProps)
 			{/* Panel izquierdo branding */}
 			<div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12">
 				{/* Background gradient + noise */}
-				<div className="absolute inset-0 bg-gradient-to-br from-[#111114] via-[#08080a] to-[#1a0d05]" />
+				<div className="absolute inset-0 bg-linear-to-br from-[#111114] via-[#08080a] to-[#1a0d05]" />
 				<div className="absolute inset-0 opacity-[0.03]" style={{
 					backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
 				}} />
 
 				{/* Decorative glow orb */}
-				<div className="absolute -bottom-32 -left-32 w-96 h-96 bg-[var(--orange)] rounded-full opacity-[0.07] blur-[120px]" />
-				<div className="absolute top-1/4 right-0 w-64 h-64 bg-[var(--orange-warm)] rounded-full opacity-[0.04] blur-[100px]" />
+				<div className="absolute -bottom-32 -left-32 w-96 h-96 bg-primary rounded-full opacity-[0.07] blur-[120px]" />
+				<div className="absolute top-1/4 right-0 w-64 h-64 bg-accent rounded-full opacity-[0.04] blur-[100px]" />
 
 				{/* Content */}
 				<div className="relative z-10">
@@ -59,7 +59,7 @@ export default function AuthLayout ({children, title, subtitle}:AuthLayoutProps)
 			</div>
 
 			{/* Panel derecho formulario */}
-			<div className="flex-1 flex items-center justify-center p-8 bg-[var(--surface)]">
+			<div className="flex-1 flex items-center justify-center p-8 bg-(--surface)">
 				<div className="w-full max-w-md space-y-6">
 					{/* Logo m&oacute;vil */}
 					<div className="lg:hidden text-center mb-8">

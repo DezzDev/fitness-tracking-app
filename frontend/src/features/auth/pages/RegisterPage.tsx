@@ -100,6 +100,7 @@ function RegisterPage() {
 						placeholder="Nombre"
 						autoComplete="name"
 						disabled={isLoading}
+            className="rounded-none"
 						{...register('name')}
 					/>
 					{errors.name && (
@@ -116,6 +117,7 @@ function RegisterPage() {
 						placeholder="tu@email.com"
 						autoComplete="email"
 						disabled={isLoading}
+            className="rounded-none"
 						{...register('email')}
 					/>
 					{errors.email && (
@@ -134,6 +136,7 @@ function RegisterPage() {
 						min={"15"}
 						max={"120"}
 						disabled={isLoading}
+            className="rounded-none"
 						{...register('age', { valueAsNumber: true })}
 					/>
 					{errors.age && (
@@ -151,6 +154,7 @@ function RegisterPage() {
 							placeholder="***********"
 							autoComplete="new-password"
 							disabled={isLoading}
+            className="rounded-none"
 							{...register('password')}
 						/>
 						<button
@@ -199,6 +203,7 @@ function RegisterPage() {
 							placeholder="***********"
 							autoComplete="new-password"
 							disabled={isLoading}
+            className="rounded-none"
 							{...register('confirmPassword')}
 						/>
 						<button
@@ -246,7 +251,7 @@ function RegisterPage() {
 				{/* Submit Button */}
 				<Button
 					type="submit"
-					className="w-full glow-orange-sm hover:glow-orange transition-shadow"
+					className="w-full glow-orange-sm rounded-none hover:glow-orange transition-shadow"
 					size={"lg"}
 					disabled={isLoading}
 				>
