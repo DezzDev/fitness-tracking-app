@@ -39,6 +39,7 @@ const getCookieDomain = (): string | undefined => {
 
 export const getRefreshTokenCookieOptions = (): CookieOptions => {
   const domain = getCookieDomain();
+  console.log({isProduction});
 
   return {
     httpOnly: true,

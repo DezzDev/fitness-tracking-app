@@ -31,20 +31,7 @@ const app = express();
 app.use('/public', express.static('public'));
 
 // Middlewares globales
-// Middleware de logging
-app.use((req, _res, next) => {
-  logger.info(`🟢 Request recibido: method: ${req.method}; url: ${req.url}`);
-  next();
-});
 
-// Request logging (desarrollo)
-if (isDevelopment) {
-
-  app.use((req, _res, next) => {
-    logger.debug(`${req.method} ${req.path}`, { body: req.body, query: req.query });
-    next();
-  });
-}
 
 
 app.use(helmet());
@@ -57,6 +44,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // cookie parser
 app.use(cookieParser());
+
+// Middleware de logging
+app.use((req, _res, next) => {
+  logger.info(`🟢 Request recibido: method: ${req.method}; 
+    url: ${req.url}; 
+    cookies: ${JSON.stringify(req.cookies)}; 
+    origin: ${req.headers.origin}`);
+  next();
+});
+
+// Request logging (desarrollo)
+if (isDevelopment) {
+
+  app.use((req, _res, next) => {
+    logger.debug(`${req.method} ${req.path}`, { body: req.body, query: req.query });
+    next();
+  });
+}
 
 
 // ============================================
@@ -106,6 +111,7 @@ async function startServer() {
       logger.info(`🚀 Server running on PORT:${env.PORT}`);
       logger.info(`📝 Environment: ${env.NODE_ENV}`);
       logger.info(`📊 Log level: ${env.LOG_LEVEL}`);
+      logger.info(`🔗 Version : Daniel`);
     });
 
     const gracefulShutdown = async (signal: string) => {
