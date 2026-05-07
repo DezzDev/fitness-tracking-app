@@ -111,7 +111,7 @@ async function startServer() {
       logger.info(`🚀 Server running on PORT:${env.PORT}`);
       logger.info(`📝 Environment: ${env.NODE_ENV}`);
       logger.info(`📊 Log level: ${env.LOG_LEVEL}`);
-      logger.info(`🔗 Version : Daniel`);
+      logger.info(`🔗 Version : 1.0.0`);
     });
 
     const gracefulShutdown = async (signal: string) => {
