@@ -862,9 +862,9 @@ export default function ActiveSession({
           <button
             onClick={() => addSet(currentIdx)}
             disabled={animatingExercise}
-            className="flex items-center justify-between border border-dashed border-border rounded-none px-5 py-2 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 justify-between border border-dashed border-border rounded-none px-5 py-2 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Plus className='w-4 h-4 mr-2' /> SET
+            <Plus className='w-4 h-4' /> SET
           </button>
 
           <button
@@ -888,9 +888,9 @@ export default function ActiveSession({
           <button
             onClick={() => addSet(currentIdx)}
             disabled={animatingExercise}
-            className="border border-dashed border-border rounded-none px-4 py-1.5 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 border border-dashed border-border rounded-none px-4 py-1.5 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            + SET
+            <Plus className='w-4 h-4' /> SET
           </button>
         </div>
       </div>
