@@ -57,9 +57,6 @@ JWT_REFRESH_SECRET=tu_refresh_secret
 JWT_ACCESS_EXPIRY=15m
 JWT_REFRESH_EXPIRY=7d
 
-COOKIE_SECURE=false
-COOKIE_DOMAIN=localhost
-
 # Opcional para CORS en producción:
 # ALLOWED_ORIGINS=https://tu-frontend.com
 ```

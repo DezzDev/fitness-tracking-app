@@ -17,8 +17,6 @@ interface EnvConfig {
 	JWT_REFRESH_SECRET:string;
 	JWT_ACCESS_EXPIRY:string;
 	JWT_REFRESH_EXPIRY:string;
-  COOKIE_SECURE: boolean;
-  COOKIE_DOMAIN: string;
 }
 
 const EnvSchema = z.object({
@@ -31,8 +29,6 @@ const EnvSchema = z.object({
 	JWT_REFRESH_SECRET: z.string({ error: "Invalid jwt secret" }),
 	JWT_ACCESS_EXPIRY: z.string({ error: "Invalid jwt expiry" }),
 	JWT_REFRESH_EXPIRY: z.string({ error: "Invalid jwt expiry" }),
-  COOKIE_SECURE: z.string().transform((v) => v === 'true').default(false),
-  COOKIE_DOMAIN: z.string().default('localhost')
 });
 
 // ============================================

@@ -27,38 +27,25 @@ const parseDurationToMs = (duration: string): number => {
 
 const refreshCookieMaxAgeMs = parseDurationToMs(env.JWT_REFRESH_EXPIRY);
 
-const getCookieDomain = (): string | undefined => {
-  const domain = env.COOKIE_DOMAIN?.trim();
 
-  if (!domain || domain === 'localhost') {
-    return undefined;
-  }
-
-  return domain;
-};
 
 export const getRefreshTokenCookieOptions = (): CookieOptions => {
-  const domain = getCookieDomain();
-  console.log({isProduction});
 
   return {
     httpOnly: true,
-    secure: isProduction ? true : env.COOKIE_SECURE,
+    secure: isProduction,
     sameSite: isProduction ? 'none' : 'lax',
     maxAge: refreshCookieMaxAgeMs,
     path: '/',
-    ...(domain ? { domain } : {}),
   };
 };
 
 export const getRefreshTokenClearCookieOptions = (): CookieOptions => {
-  const domain = getCookieDomain();
 
   return {
     httpOnly: true,
-    secure: isProduction ? true : env.COOKIE_SECURE,
+    secure: isProduction,
     sameSite: isProduction ? 'none' : 'lax',
     path: '/',
-    ...(domain ? { domain } : {}),
   };
 };
