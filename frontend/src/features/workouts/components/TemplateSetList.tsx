@@ -33,7 +33,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 	return (
 		<div className='space-y-3'>
 			<div className="flex items-center justify-between">
-				<h5 className='text-sm font-medium'>Series</h5>
+				<h5 className='text-sm font-medium'>Sets</h5>
 				<Button
 					type='button'
 					size={'sm'}
@@ -42,13 +42,13 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
           className='rounded-none'
 				>
 					<Plus className='w-4 h-4 mr-2' />
-					Agregar Serie
+					Agregar Set
 				</Button>
 			</div>
 
 			{fields.length === 0 && (
 				<p className="text-sm text-muted-foreground italic">
-					Sin series detalladas. Haz clic en &quot;Agregar Serie&quot; para definir los objetivos por serie.
+					Sin sets detallados. Haz clic en &quot;Agregar Set&quot; para definir los objetivos por set.
 				</p>
 			)}
 
@@ -61,7 +61,7 @@ export default function TemplateSetList({ control, exerciseIndex, errors }: Temp
 						{/* Header de la serie */}
 						<div className="flex items-center justify-between">
 							<Badge variant={'default'} className='rounded-none tracking-widest'>
-								Serie {setIndex + 1}
+								Set {setIndex + 1}
 							</Badge>
 
 							<Button

@@ -6,7 +6,9 @@ import type {
 } from '@/types';
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react';
 import { cn } from '@/lib/utils';
-import { X, MessageSquare, Trash2 } from 'lucide-react';
+import { X, MessageSquare, Trash2, Plus, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 interface ActiveSessionProps {
   session: WorkoutSessionWithExercises;
@@ -422,17 +424,17 @@ export default function ActiveSession({
       prev.map((sets, ei) =>
         ei === exerciseIdx
           ? [
-              ...sets,
-              {
-                setNumber: sets.length + 1,
-                reps: undefined,
-                weight: undefined,
-                durationSeconds: undefined,
-                restSeconds: undefined,
-                notes: undefined,
-                isCompleted: false,
-              },
-            ]
+            ...sets,
+            {
+              setNumber: sets.length + 1,
+              reps: undefined,
+              weight: undefined,
+              durationSeconds: undefined,
+              restSeconds: undefined,
+              notes: undefined,
+              isCompleted: false,
+            },
+          ]
           : sets
       )
     );
@@ -493,17 +495,17 @@ export default function ActiveSession({
         ? -16
         : 16
       : animatingSet && setTransitionPhase === 'in'
-      ? setCardSlideDir > 0
-        ? 16
-        : -16
-      : 0;
+        ? setCardSlideDir > 0
+          ? 16
+          : -16
+        : 0;
 
   const cardOffsetX = isDraggingSet ? dragOffsetX : animatedSetOffset;
   const cardOpacity = isDraggingSet
     ? Math.max(0.78, 1 - Math.abs(dragOffsetX) / 280)
     : animatingSet
-    ? 0
-    : 1;
+      ? 0
+      : 1;
 
   return (
     <div
@@ -589,7 +591,7 @@ export default function ActiveSession({
       >
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 flex flex-wrap">
-            <div className="font-barlow text-[11px] tracking-[3px] text-muted-foreground uppercase leading-5">
+            <div className="font-barlow text-[11px] tracking-[3px] text-primary uppercase leading-5">
               {session.title}
             </div>
           </div>
@@ -642,8 +644,8 @@ export default function ActiveSession({
                     ? 'w-6 bg-primary'
                     : 'w-6 bg-border'
                   : set.isCompleted
-                  ? 'w-2 bg-primary/70'
-                  : 'w-2 bg-border'
+                    ? 'w-2 bg-primary/70'
+                    : 'w-2 bg-border'
               )}
               aria-label={`Ir al set ${set.setNumber}`}
             />
@@ -687,84 +689,89 @@ export default function ActiveSession({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
-              <SetInput
-                label="REPS"
-                value={activeSet.reps}
-                onChange={(value) =>
-                  updateSetField(currentIdx, activeSetIdx, 'reps', parseNumericInput(value, true))
-                }
-                integer
-              />
+            <div className='grid grid-cols-6'>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 col-span-5">
+                <SetInput
+                  label="Reps"
+                  value={activeSet.reps}
+                  onChange={(value) =>
+                    updateSetField(currentIdx, activeSetIdx, 'reps', parseNumericInput(value, true))
+                  }
+                  integer
+                />
 
-              <SetInput
-                label="KG"
-                value={activeSet.weight}
-                onChange={(value) =>
-                  updateSetField(
-                    currentIdx,
-                    activeSetIdx,
-                    'weight',
-                    parseNumericInput(value, false)
-                  )
-                }
-                step="0.5"
-                integer={false}
-              />
+                <SetInput
+                  label="Peso (kg) "
+                  value={activeSet.weight}
+                  onChange={(value) =>
+                    updateSetField(
+                      currentIdx,
+                      activeSetIdx,
+                      'weight',
+                      parseNumericInput(value, false)
+                    )
+                  }
+                  step="0.5"
+                  integer={false}
+                />
 
-              <SetInput
-                label="SEG"
-                value={activeSet.durationSeconds}
-                onChange={(value) =>
-                  updateSetField(
-                    currentIdx,
-                    activeSetIdx,
-                    'durationSeconds',
-                    parseNumericInput(value, true)
-                  )
-                }
-                integer
-              />
+                <SetInput
+                  label="Duración (seg)"
+                  value={activeSet.durationSeconds}
+                  onChange={(value) =>
+                    updateSetField(
+                      currentIdx,
+                      activeSetIdx,
+                      'durationSeconds',
+                      parseNumericInput(value, true)
+                    )
+                  }
+                  integer
+                />
 
-              <SetInput
-                label="DESC"
-                value={activeSet.restSeconds}
-                onChange={(value) =>
-                  updateSetField(
-                    currentIdx,
-                    activeSetIdx,
-                    'restSeconds',
-                    parseNumericInput(value, true)
-                  )
-                }
-                integer
-              />
-            </div>
+                <SetInput
+                  label="Descanso (seg)"
+                  value={activeSet.restSeconds}
+                  onChange={(value) =>
+                    updateSetField(
+                      currentIdx,
+                      activeSetIdx,
+                      'restSeconds',
+                      parseNumericInput(value, true)
+                    )
+                  }
+                  integer
+                />
+              </div>
+              <div className="flex flex-col items-center justify-center gap-12 col-span-1 sm:flex-row sm:gap-4 ">
 
-            <div className="mt-4 flex items-center gap-2">
-              <button
-                onClick={() => toggleNotes(activeSetIdx)}
-                className={cn(
-                  'p-1 transition-colors',
-                  activeSet.notes
-                    ? 'text-primary'
-                    : 'text-muted-foreground/40 hover:text-muted-foreground'
+                {currentSets.length > 1 && (
+                  <button
+                    onClick={() => deleteSet(currentIdx, activeSetIdx)}
+                    className="p-1 text-destructive hover:text-destructive/80 transition-colors"
+                    aria-label="Eliminar set"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 )}
-                aria-label="Notas"
-              >
-                <MessageSquare className="h-3.5 w-3.5" />
-              </button>
 
-              {currentSets.length > 1 && (
                 <button
-                  onClick={() => deleteSet(currentIdx, activeSetIdx)}
-                  className="p-1 text-destructive hover:text-destructive/80 transition-colors"
-                  aria-label="Eliminar set"
+                  onClick={() => toggleNotes(activeSetIdx)}
+                  className={cn(
+                    'p-1 transition-colors',
+                    activeSet.notes
+                      ? 'text-primary'
+                      : 'text-muted-foreground/40 hover:text-muted-foreground'
+                  )}
+                  aria-label="Notas"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <MessageSquare className="h-3.5 w-3.5" />
                 </button>
-              )}
+              </div>
+
             </div>
+
+
 
             {!!expandedNotes[`${currentIdx}-${activeSetIdx}`] && (
               <div className="mt-3">
@@ -788,7 +795,7 @@ export default function ActiveSession({
 
             <div className="mt-4 border-t border-border pt-3 space-y-2">
               <div className="text-[10px] font-barlow tracking-[2px] uppercase text-muted-foreground">
-                Comparacion con sesion anterior
+                Comparación con sesión anterior
               </div>
 
               {activePreviousSet ? (
@@ -843,34 +850,34 @@ export default function ActiveSession({
             onClick={() => goToSet(activeSetIdx - 1)}
             disabled={activeSetIdx === 0 || animatingSet}
             className={cn(
-              'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
+              'flex items-center gap-2 bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
               activeSetIdx === 0
                 ? 'text-border cursor-default'
                 : 'text-muted-foreground cursor-pointer'
             )}
           >
-            ← SET ANTERIOR
+            <ArrowLeft className='w-4 h-4 mr-2'/> SET ANTERIOR
           </button>
 
           <button
             onClick={() => addSet(currentIdx)}
             disabled={animatingExercise}
-            className="border border-dashed border-border rounded-none px-5 py-2 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 justify-between border border-dashed border-border rounded-none px-5 py-2 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            + SET
+            <Plus className='w-4 h-4' /> SET
           </button>
 
           <button
             onClick={() => goToSet(activeSetIdx + 1)}
             disabled={activeSetIdx === currentSets.length - 1 || animatingSet}
             className={cn(
-              'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
+              'flex items-center gap-2 bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
               activeSetIdx === currentSets.length - 1
                 ? 'text-border cursor-default'
                 : 'text-muted-foreground cursor-pointer'
             )}
           >
-            SIGUIENTE SET →
+            SIGUIENTE SET <ArrowRight className='w-4 h-4 mr-2'/>
           </button>
         </div>
 
@@ -881,9 +888,9 @@ export default function ActiveSession({
           <button
             onClick={() => addSet(currentIdx)}
             disabled={animatingExercise}
-            className="border border-dashed border-border rounded-none px-4 py-1.5 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 border border-dashed border-border rounded-none px-4 py-1.5 font-barlow text-[10px] tracking-[3px] uppercase text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            + SET
+            <Plus className='w-4 h-4' /> SET
           </button>
         </div>
       </div>
@@ -903,8 +910,8 @@ export default function ActiveSession({
           {isExerciseCompleted
             ? 'EJERCICIO COMPLETADO'
             : activeSet?.isCompleted
-            ? 'SET COMPLETADO'
-            : '+ COMPLETAR SET'}
+              ? 'SET COMPLETADO'
+              : 'COMPLETAR SET'}
         </button>
       </div>
 
@@ -922,25 +929,25 @@ export default function ActiveSession({
           onClick={() => goToExercise(currentIdx - 1, -1)}
           disabled={currentIdx === 0}
           className={cn(
-            'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
+            'flex items-center gap-2 bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
             currentIdx === 0
               ? 'text-border cursor-default'
               : 'text-muted-foreground cursor-pointer'
           )}
         >
-          ← EJERCICIO ANTERIOR
+          <ArrowLeft className='w-4 h-4 mr-2'/> EJERCICIO ANTERIOR
         </button>
         <button
           onClick={() => goToExercise(currentIdx + 1, 1)}
           disabled={currentIdx === session.exercises.length - 1}
           className={cn(
-            'bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
+            'flex items-center gap-2 bg-transparent border-none font-barlow text-[11px] tracking-[2px] p-0',
             currentIdx === session.exercises.length - 1
               ? 'text-border cursor-default'
               : 'text-muted-foreground cursor-pointer'
           )}
         >
-          SIGUIENTE EJERCICIO →
+          SIGUIENTE EJERCICIO <ArrowRight className='w-4 h-4 ml-2'/>
         </button>
       </div>
     </div>
@@ -957,19 +964,19 @@ interface SetInputProps {
 
 function SetInput({ label, value, onChange, step, integer = true }: SetInputProps) {
   return (
-    <div className="flex items-center gap-1">
-      <input
+    <div className="space-y-1">
+      <Label className="font-barlow text-[9px] tracking-[2px] text-muted-foreground">
+        {label}
+      </Label>
+      <Input
         type="number"
         inputMode={integer ? 'numeric' : 'decimal'}
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value)}
         step={step ?? '1'}
         min="0"
-        className="w-16 bg-transparent border border-border rounded-none px-1.5 py-1 font-bebas text-[18px] text-foreground text-center focus:outline-none focus:border-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="bg-transparent border border-border rounded-none px-1.5 py-1 font-bebas text-[18px] text-foreground text-center focus:outline-none focus:border-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
-      <span className="font-barlow text-[9px] tracking-[2px] text-muted-foreground">
-        {label}
-      </span>
     </div>
   );
 }
