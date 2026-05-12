@@ -51,6 +51,7 @@ export type WorkoutSessionWithTemplateName = WorkoutSession & {
 export type WorkoutSessionWithMetrics = WorkoutSession & {
 	totalExercises: number;
 	totalSets: number;
+	totalReps: number;
 	totalVolumeKg: number;
 }
 
@@ -134,6 +135,7 @@ export type WorkoutSessionWithTemplateNameRow = WorkoutSessionRow & {
 export type WorkoutSessionWithMetricsRow = WorkoutSessionRow & {
 	total_exercises: number;
 	total_sets: number;
+	total_reps: number;
 	total_volume_kg: number;
 }
 

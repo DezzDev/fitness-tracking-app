@@ -156,6 +156,7 @@ export interface WorkoutSession {
 export interface WorkoutSessionWithMetrics extends WorkoutSession {
 	totalExercises: number;
 	totalSets: number;
+	totalReps: number;
 	totalVolumeKg: number;
 }
 

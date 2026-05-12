@@ -96,6 +96,7 @@ const mapRowToWorkoutSessionWithMetrics = (row: WorkoutSessionWithMetricsRow): W
   createdAt: toDate(row.created_at),
   totalExercises: row.total_exercises || 0,
   totalSets: row.total_sets || 0,
+  totalReps: row.total_reps || 0,
   totalVolumeKg: row.total_volume_kg || 0,
 });
 
@@ -206,6 +207,7 @@ const queries = {
           ws.*,
           COUNT(DISTINCT wse.id) as total_exercises,
           COUNT(wss.id) as total_sets,
+          COALESCE(SUM(wss.reps), 0) as total_reps,
           COALESCE(SUM(wss.weight * wss.reps), 0) as total_volume_kg
         FROM workout_sessions ws
         LEFT JOIN workout_session_exercises wse ON wse.session_id = ws.id
